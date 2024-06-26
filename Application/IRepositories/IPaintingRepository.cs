@@ -8,6 +8,8 @@ public interface IPaintingRepository : IGenericRepository<Painting>
     Task<List<Painting>> List20WiningPaintingAsync();
 
     Task<List<Painting>> ListPaintingForPreliminaryRound(Guid id);
+    
+    Task<List<Painting>> ListPaintingForFinalRound(Guid id);
 
     //Task<List<Competitor>> ListCompetitorPassRound(Guid id);
 }

@@ -26,6 +26,11 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
     {
         return await DbSet.Where(x => x.RoundId == id && x.Status == PaintingStatus.Accepted.ToString()).OrderByDescending(x => x.UpdatedTime).ToListAsync();
     }
+    
+    public async Task<List<Painting>> ListPaintingForFinalRound(Guid id)
+    {
+        return await DbSet.Where(x => x.RoundId == id && x.Status == PaintingStatus.FinalRound.ToString()).OrderByDescending(x => x.UpdatedTime).ToListAsync();
+    }
 
     /*public async Task<List<Acc>> ListCompetitorPassRound(Guid id)
     {

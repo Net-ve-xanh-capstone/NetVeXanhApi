@@ -12,6 +12,6 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
 
     public async Task<Schedule?> GetById(Guid id)
     {
-        return await DbSet.Include(s => s.Painting).FirstOrDefaultAsync(s => s.Id == id);
+        return await DbSet.Include(s => s.Painting).Include(s => s.AwardSchedule).FirstOrDefaultAsync(s => s.Id == id);
     }
 }

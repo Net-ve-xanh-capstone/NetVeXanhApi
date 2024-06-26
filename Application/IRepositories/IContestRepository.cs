@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Application.ViewModels.ContestViewModels;
+using Domain.Models;
 
 namespace Application.IRepositories;
 

@@ -4,7 +4,7 @@ public class ContestViewModel
 {
     public DateTime CreatedTime { get; set; }
     public Guid? CreatedBy { get; set; }
-    public DateTime UpdatedTime { get; set; }
+    public DateTime? UpdatedTime { get; set; }
     public string Name { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }

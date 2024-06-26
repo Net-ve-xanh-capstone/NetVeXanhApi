@@ -1,4 +1,5 @@
 ﻿using Application.BaseModels;
+using Application.IRepositories;
 using Application.IService;
 using Application.ViewModels.ContestViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ public class ContestController : Controller
 {
     private readonly IContestService _contestService;
 
-    public ContestController(IContestService contestService)
+    public ContestController(IContestService contestService, IContestRepository contestRepository)
     {
         _contestService = contestService;
     }

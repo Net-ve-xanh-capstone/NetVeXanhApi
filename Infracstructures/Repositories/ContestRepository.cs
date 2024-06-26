@@ -1,4 +1,8 @@
-﻿using Application.IRepositories;
+﻿using System.Diagnostics;
+using Application.IRepositories;
+using Application.ViewModels.ContestViewModels;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

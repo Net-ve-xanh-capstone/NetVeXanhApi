@@ -1,6 +1,6 @@
 ﻿namespace Application.SendModels.Painting;
 
-public class RatingPainting
+public class RatingPreliminaryRound
 {
     public Guid ScheduleId { get; set; }
     public List<Guid> Paintings { get; set; }

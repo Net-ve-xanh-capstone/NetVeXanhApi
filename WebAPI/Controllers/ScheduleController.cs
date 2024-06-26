@@ -17,9 +17,9 @@ public class ScheduleController : Controller
         _scheduleService = scheduleService;
     }
 
-    #region Create Schedule For Preliminary Round
+    #region Create Schedule
 
-    [HttpPost]
+    [HttpPost("/Preliminary")]
     public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest Schedule)
     {
         try
@@ -32,6 +32,45 @@ public class ScheduleController : Controller
             }
 
             var result = await _scheduleService.CreateScheduleForPreliminaryRound(Schedule);
+            if (result == false)
+            {
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status",
+                });
+            }
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Create Schedule Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+    
+    [HttpPost("/Final")]
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest Schedule)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                var errorMessages = string.Join("; ",
+                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+            }
+
+            var result = await _scheduleService.CreateScheduleForFinalRound(Schedule);
             if (result == false)
             {
                 return BadRequest(new BaseFailedResponseModel
@@ -159,7 +198,7 @@ public class ScheduleController : Controller
     #region Rating Preliminary Round
 
     [HttpPost("RatingPreliminaryRound")]
-    public async Task<IActionResult> RatingPreliminaryRound(RatingPainting rating)
+    public async Task<IActionResult> RatingPreliminaryRound(RatingPreliminaryRound rating)
     {
         try
         {

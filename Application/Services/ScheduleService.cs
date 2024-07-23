@@ -86,8 +86,12 @@ public class ScheduleService : IScheduleService
     {
         //Get Paintings Of Preliminary round
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId);
-
-        var award = _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId).Result?.EducationalLevel.Award
+        var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
+        if (round?.EndTime > DateTime.Today)
+        {
+            throw new Exception("Bạn Không Thể Lên Lịch Chấm Khi Cuộc Thi Chưa Kết Thúc");
+        }
+        var award = round?.EducationalLevel.Award
             .FirstOrDefault(a => a.Rank == RankAward.Preliminary.ToString());
 
         if (award == null) throw new Exception("Award not found.");
@@ -141,13 +145,19 @@ public class ScheduleService : IScheduleService
     {
         try
         {
+            var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
+            if (round?.EndTime > DateTime.Today)
+            {
+                throw new Exception("Bạn Không Thể Lên Lịch Chấm Khi Cuộc Thi Chưa Kết Thúc");
+            }
+            
             //Get Paintings Of Preliminary round
             var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId);
             var result = SplitList(listPainting, schedule.ListExaminer.Count);
 
 
             //Get all award of educationLevel
-            var award = _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId).Result?.EducationalLevel.Award
+            var award = round?.EducationalLevel.Award
                 .Where(a => a.Rank != RankAward.Preliminary.ToString())
                 .OrderBy(a => (RankAward)Enum.Parse(typeof(RankAward), a.Rank)).ToList();
             if (award == null) throw new Exception("Award not found.");

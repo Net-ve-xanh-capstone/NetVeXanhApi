@@ -62,14 +62,17 @@ public class RoundTopicService : IRoundTopicService
             var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
             list = round.RoundTopic.ToList();
         }
-        else
+        else if(6 <= yearOld && yearOld <= 11)
         {
             var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
             var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng B"));
             var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
             list = round.RoundTopic.ToList();
         }
-
+        else
+        {
+            throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
+        }
         return _mapper.Map<List<RoundTopicViewModel>>(list);
     }
 

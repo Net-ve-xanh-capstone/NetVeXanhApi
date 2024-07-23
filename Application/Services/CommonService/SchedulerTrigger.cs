@@ -16,13 +16,13 @@ public class SchedulerTrigger : ISchedulerTrigger
     public async Task ScheduleTrigger()
     {
         Console.WriteLine("Check");
-        await Schedule();
+        /*await OutDateSchedule();
         await Contest();
         await Round();
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();*/
     }
     
-    public async Task Schedule()
+    public async Task OutDateSchedule()
     {
         var end = await _unitOfWork.ScheduleRepo.SchedulerTrigger();
         if (end.Any())

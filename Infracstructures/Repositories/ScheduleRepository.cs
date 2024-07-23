@@ -32,6 +32,6 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
 
     public async Task<List<Schedule>> SchedulerTrigger()
     {
-        return await DbSet.Include(src => src.AwardSchedule).Include(src => src.Painting).Where(src => src.EndDate <= DateTime.Now && src.Status == ScheduleStatus.Rating.ToString()).ToListAsync();
+        return await DbSet.Include(src => src.Account).Include(src => src.AwardSchedule).Include(src => src.Painting).Where(src => src.EndDate <= DateTime.Now && src.Status == ScheduleStatus.Rating.ToString()).ToListAsync();
     }
 }

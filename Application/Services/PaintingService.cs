@@ -39,14 +39,21 @@ public class PaintingService : IPaintingService
     public async Task<bool> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
     {
         var painting = _mapper.Map<Painting>(request);
-        painting.Status = PaintingStatus.Draft.ToString();
-        painting.Code = "";
-        painting.RoundTopicId = request.RoundTopicId;
-        await _unitOfWork.PaintingRepo.AddAsync(painting);
-        await _unitOfWork.SaveChangesAsync();
-        var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
-        painting.Code = await GeneratePaintingCode(painting.Id, roundTopic!.RoundId);
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        var rt = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
+        var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(rt!.RoundId);
+        if (check)
+        {
+            painting.Status = PaintingStatus.Draft.ToString();
+            painting.Code = "";
+            painting.RoundTopicId = request.RoundTopicId;
+            await _unitOfWork.PaintingRepo.AddAsync(painting);
+            await _unitOfWork.SaveChangesAsync();
+            var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
+            painting.Code = await GeneratePaintingCode(painting.Id, roundTopic!.RoundId);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        throw new Exception("Khong trong thoi gian nop bai");
     }
 
     #endregion
@@ -92,6 +99,23 @@ public class PaintingService : IPaintingService
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
         if (check)
         {
+            //Check Age
+            var yearOld = DateTime.Today.Year - request.Birthday.Year;
+            var level = roundTopic.Round.EducationalLevel.Level;
+            if (2 <= yearOld && yearOld <= 5)
+            {
+                if (level != "Bảng A") throw new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
+            }
+            else if (6 <= yearOld && yearOld <= 10)
+            {
+                if (level != "Bảng B") throw new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
+            }
+            else
+            {
+                new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
+            }
+            
+            //Add DB
             if (request.Status == PaintingStatus.Submitted.ToString() ||
                 request.Status == PaintingStatus.Rejected.ToString() ||
                 request.Status == PaintingStatus.Accepted.ToString())
@@ -110,10 +134,12 @@ public class PaintingService : IPaintingService
                 await _unitOfWork.SaveChangesAsync();
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
-
-                await _mailService.SendAccountInformation(competitor);
-
-                return await _unitOfWork.SaveChangesAsync() > 0;
+                
+                _unitOfWork.AccountRepo.Update(competitor);
+                var result = await _unitOfWork.SaveChangesAsync() > 0;
+                
+                //await _mailService.SendAccountInformation(competitor);
+                return result;
             }
 
             throw new Exception("Trang Thai Khong Hop Le");

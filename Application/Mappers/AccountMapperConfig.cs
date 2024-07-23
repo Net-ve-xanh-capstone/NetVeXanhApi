@@ -16,7 +16,8 @@ public partial class MapperConfigs : Profile
     {
         CreateMap<CreateAccountRequest, Account>();
         CreateMap<StaffCreatePaintingRequest, Account>()
-            .ForMember(dest => dest.Id, src => src.MapFrom(opt => Guid.NewGuid()))
+            //.ForMember(dest => dest.Id, src => src.MapFrom(opt => Guid.NewGuid()))
+            .ForMember(dest => dest.Status, src => src.MapFrom(opt => AccountStatus.Active.ToString()))
             .ForMember(dest => dest.Role, src => src.MapFrom(opt => Role.Competitor.ToString()))
             .ForMember(dest => dest.Username, src => src.MapFrom(opt => Guid.NewGuid()))
             .ForMember(dest => dest.Password, src => src.MapFrom(opt => Guid.NewGuid()));

@@ -106,6 +106,12 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return result;
     }
 
+    public Task<bool> CheckContestExist(DateTime startTime)
+    {
+        return DbSet.AnyAsync(src =>
+            src.StartTime.Year == startTime.Year && src.Status == ContestStatus.Active.ToString());
+    }
+
     public async Task<List<Contest>> EndContest()
     {
         return await DbSet.Where(src => src.EndTime <= DateTime.Now && src.Status == ContestStatus.Active.ToString()).ToListAsync();

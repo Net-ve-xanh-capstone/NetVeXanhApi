@@ -1,4 +1,5 @@
-﻿using Application.IRepositories;
+﻿using System.Text.RegularExpressions;
+using Application.IRepositories;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +61,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         return await DbSet.FirstOrDefaultAsync(a => a.Code == code && a.Status == AccountStatus.Active.ToString());
     }
-
+    
     public async Task<int> CreateNumberOfAccountCode(string roleCode)
     {
         var listAccount = await DbSet.ToListAsync();
@@ -80,7 +81,12 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         }
 
         int maxNumber = filteredAccounts
-            .Select(a => int.TryParse(a.Code.Substring(roleCode.Length), out var number) ? number : 0)
+            .Select(a =>
+            {
+                // Dùng biểu thức chính quy để lấy phần số từ mã
+                var match = Regex.Match(a.Code, @"\d+$");
+                return match.Success ? int.Parse(match.Value) : 0;
+            })
             .DefaultIfEmpty(0)
             .Max();
 

@@ -1,4 +1,5 @@
 ﻿using Application.IService;
+using Application.IService.IValidationService;
 using Application.SendModels.Painting;
 using FluentValidation;
 
@@ -6,26 +7,36 @@ namespace WebAPI.Validation.PaintingValidation;
 
 public class CompetitorCreatePaintingRequestValidator : AbstractValidator<CompetitorCreatePaintingRequest>
 {
-    private readonly IAccountService _accountService;
+    private readonly IAccountValidationService _accountValidationService;
     public CompetitorCreatePaintingRequestValidator()
     {
         // Validate AccountId
         RuleFor(x => x.AccountId)
-            .NotEmpty().WithMessage("AccountId là bắt buộc.")
-            .NotEqual(Guid.Empty).WithMessage("AccountId phải là một GUID hợp lệ.")
-            .MustAsync(async (userId, cancellation) =>
-            {
-                try
+        .NotEmpty().WithMessage("AccountId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.AccountId.ToString()), () =>
+        {
+            RuleFor(x => x.AccountId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("AccountId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
                 {
-                    return await _accountService.IsExistedId(userId);
-                }
-                catch (Exception)
-                {
-                    // Xử lý lỗi kiểm tra ID
-                    return false; // Giả sử ID không tồn tại khi có lỗi
-                }
-            })
-            .WithMessage("CurrentUserId không tồn tại.");
+                    RuleFor(x => x.AccountId)
+                        .MustAsync(async (userId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _accountValidationService.IsExistedId(userId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("AccountId không tồn tại.");
+                });
+        });
 
         // Validate Image
         RuleFor(x => x.Image)

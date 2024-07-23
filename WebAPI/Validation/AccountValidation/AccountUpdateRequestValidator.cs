@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Application.IService;
+using Application.IService.IValidationService;
 using Application.SendModels.AccountSendModels;
 using FluentValidation;
 
@@ -7,7 +8,7 @@ namespace WebAPI.Validation.AccountValidation;
 
 public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequest>
 {
-    private readonly IAccountService _accountService;
+    private readonly IAccountValidationService _accountValidationService;
     public AccountUpdateRequestValidator()
     {
         RuleFor(user => user.Id)
@@ -16,7 +17,7 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
             {
                 try
                 {
-                    return await _accountService.IsExistedId(userId);
+                    return await _accountValidationService.IsExistedId(userId);
                 }
                 catch (Exception)
                 {
@@ -24,7 +25,7 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
                     return false; // Giả sử ID không tồn tại khi có lỗi
                 }
             })
-            .WithMessage("Id không tồn tại."); ; 
+            .WithMessage("Id không tồn tại."); ;
 
         RuleFor(user => user.Birthday)
             .NotEmpty().WithMessage("Ngày sinh không được để trống.")

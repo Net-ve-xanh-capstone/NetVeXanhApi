@@ -188,11 +188,7 @@ public class AccountService : IAccountService
         return _mapper.Map<List<AccountViewModel>>(listAccount);
     }
 
-    //Check Id is Exist
-    public async Task<bool> IsExistedId(Guid id)
-    {
-        return await _unitOfWork.AccountRepo.IsExistIdAsync(id);
-    }
+    
 
     #region Validate
     public async Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account)

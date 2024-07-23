@@ -1,4 +1,5 @@
 ﻿using Application.IService;
+using Application.IService.IValidationService;
 using Application.SendModels.Collection;
 using FluentValidation;
 
@@ -6,7 +7,7 @@ namespace WebAPI.Validation.CollectionValidation;
 
 public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
 {
-    private readonly IAccountService _accountService;
+    private readonly IAccountValidationService _accountValidationService;
     public CollectionRequestValidator()
     {
         RuleFor(c => c.Name)
@@ -17,22 +18,32 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
             .NotEmpty().WithMessage("Hình ảnh không được để trống.")
             .Must(BeAValidUrl).WithMessage("Hình ảnh phải là một URL hợp lệ.");
 
-        RuleFor(c => c.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.")
-            .MustAsync(async (userId, cancellation) =>
-            {
-                try
+        RuleFor(x => x.CurrentUserId)
+        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
+        {
+            RuleFor(x => x.CurrentUserId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
                 {
-                    return await _accountService.IsExistedId(userId);
-                }
-                catch (Exception)
-                {
-                    // Xử lý lỗi kiểm tra ID
-                    return false; // Giả sử ID không tồn tại khi có lỗi
-                }
-            })
-            .WithMessage("CurrentUserId không tồn tại.");
+                    RuleFor(x => x.CurrentUserId)
+                        .MustAsync(async (userId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _accountValidationService.IsExistedId(userId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CurrentUserId không tồn tại.");
+                });
+        });
     }
     private bool BeAValidUrl(string url)
     {

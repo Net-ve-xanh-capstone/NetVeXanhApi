@@ -1,11 +1,13 @@
 ﻿using Application.IRepositories;
 using Application.IService;
 using Application.IService.ICommonService;
+using Application.IService.IValidationService;
 using Application.IValidators;
 using Application.Jobs;
 using Application.Mappers;
 using Application.Services;
 using Application.Services.CommonService;
+using Application.Services.ValidationService;
 using Infracstructures;
 using Infracstructures.Repositories;
 using Infracstructures.ScheduleTrigger;
@@ -110,6 +112,10 @@ public static class DependencyInjection
         //RoundTopic
         services.AddTransient<IRoundTopicRepository, RoundTopicRepository>();
         services.AddTransient<IRoundTopicService, RoundTopicService>();
+
+
+        //Validation Service
+        services.AddScoped<IAccountValidationService, AccountValidationService>();
 
         #endregion
 

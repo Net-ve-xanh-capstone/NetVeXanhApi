@@ -7,6 +7,7 @@ public class PaintingViewModel
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime SubmitTime { get; set; }
+    public string TopicId { get; set; }
     public string TopicName { get; set; }
     public string RoundName { get; set; }
     public string Level { get; set; }

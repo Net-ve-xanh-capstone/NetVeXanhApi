@@ -31,6 +31,7 @@ public partial class MapperConfigs : Profile
 
         CreateMap<PaintingViewModel, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
+            .ForPath(dest => dest.RoundTopic.Topic.Id, opt => opt.MapFrom(src => src.TopicId))
             .ForPath(dest => dest.RoundTopic.Topic.Name, opt => opt.MapFrom(src => src.TopicName))
             .ForPath(dest => dest.RoundTopic.Round.Name, opt => opt.MapFrom(src => src.RoundName))
             .ForPath(dest => dest.RoundTopic.Round.EducationalLevel.Level, opt => opt.MapFrom(src => src.Level))

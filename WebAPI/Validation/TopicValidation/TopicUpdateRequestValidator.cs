@@ -9,9 +9,10 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
     private readonly IAccountService _accountService;
     public TopicUpdateRequestValidator()
     {
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên không được trống.")
-            .Length(2, 50).WithMessage("Tên phải trong khoảng 2 tới 50 kí tự.");
+        // Validate Id
+        RuleFor(x => x.Id)
+            .NotEmpty().WithMessage("Id không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("Id phải là kiểu GUID.");
 
         RuleFor(x => x.CurrentUserId)
             .NotEmpty()

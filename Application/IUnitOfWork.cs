@@ -1,6 +1,6 @@
 ﻿using Application.IRepositories;
 
-namespace Infracstructures;
+namespace Application;
 
 public interface IUnitOfWork
 {

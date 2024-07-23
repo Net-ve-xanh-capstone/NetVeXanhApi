@@ -169,6 +169,19 @@ public class TopicController : Controller
     {
         try
         {
+            var validationResult = await _topicService.ValidateTopicUpdateRequest(updateTopic);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _topicService.UpdateTopic(updateTopic);
             if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
             return Ok(new BaseResponseModel

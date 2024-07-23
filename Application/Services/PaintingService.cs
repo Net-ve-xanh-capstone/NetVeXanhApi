@@ -386,9 +386,22 @@ public class PaintingService : IPaintingService
 
     #endregion
 
+
+
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.PaintingRepo.IsExistIdAsync(id);
     }
+
+    #region Get Painting By Code
+
+    public async Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid accountId)
+    {
+        var painting = await _unitOfWork.PaintingRepo.GetPaintingsByContestAndAccountAsync(contestId, accountId);
+        if (painting == null) throw new Exception("Khong tim thay Painting");
+        return _mapper.Map<PaintingViewModel>(painting);
+    }
+
+    #endregion
 }

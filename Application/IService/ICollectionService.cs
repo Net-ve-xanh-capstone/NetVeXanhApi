@@ -2,6 +2,8 @@
 using Application.SendModels.Collection;
 using Application.ViewModels.CollectionViewModels;
 using Application.ViewModels.PaintingViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -16,4 +18,7 @@ public interface ICollectionService
     Task<(List<CollectionViewModel>, int)> GetCollectionByAccountId(ListModels listCollectionModel, Guid accountId);
     Task<List<CollectionPaintingViewModel>> Get6StaffCollection();
     Task<bool> IsExistedId(Guid id);
+    Task<ValidationResult> ValidateCollectionRequest(CollectionRequest collection);
+
+    Task<ValidationResult> ValidateCollectionUpdateRequest(UpdateCollectionRequest collectionUpdate);
 }

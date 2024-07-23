@@ -2,10 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Award;
+using Application.SendModels.Topic;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -18,15 +20,17 @@ public class AwardService : IAwardService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public AwardService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime, IConfiguration configuration,
-        IClaimsService claimsService)
+        IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
+        _validatorFactory = validatorFactory;
     }
 
     #region Add Award
@@ -108,4 +112,15 @@ public class AwardService : IAwardService
     {
         return await _unitOfWork.AwardRepo.IsExistIdAsync(id);
     }
+    #region Validate
+    public async Task<ValidationResult> ValidateAwardRequest(AwardRequest award)
+    {
+        return await _validatorFactory.AwardRequestValidator.ValidateAsync(award);
+    }
+
+    public async Task<ValidationResult> ValidateTopicUpdateRequest(UpdateAwardRequest awardUpdate)
+    {
+        return await _validatorFactory.UpdateAwardRequestValidator.ValidateAsync(awardUpdate);
+    }
+    #endregion
 }

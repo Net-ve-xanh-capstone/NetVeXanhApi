@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Category;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,19 @@ public class CategoryController : ControllerBase
     {
         try
         {
+            var validationResult = await _categoryService.ValidateCategoryRequest(category);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _categoryService.AddCategory(category);
             return Ok(new BaseResponseModel
             {
@@ -49,11 +63,24 @@ public class CategoryController : ControllerBase
     #region Update Category
 
     [HttpPut]
-    public async Task<IActionResult> UpdateCategory(UpdateCategoryRequest updateCategoryViewModel)
+    public async Task<IActionResult> UpdateCategory(UpdateCategoryRequest updateCategory)
     {
         try
         {
-            var result = await _categoryService.UpdateCategory(updateCategoryViewModel);
+            var validationResult = await _categoryService.ValidateCategoryUpdateRequest(updateCategory);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
+            var result = await _categoryService.UpdateCategory(updateCategory);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

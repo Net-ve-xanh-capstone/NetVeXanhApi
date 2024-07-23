@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.EducationalLevel;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +21,24 @@ public class EducationalLevelController : Controller
     #region Create EducationalLevel
 
     [HttpPost]
-    public async Task<IActionResult> CreateEducationalLevel(EducationalLevelRequest EducationalLevel)
+    public async Task<IActionResult> CreateEducationalLevel(EducationalLevelRequest educationalLevel)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _educationalLevelService.ValidateLevelRequest(educationalLevel);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _educationalLevelService.CreateEducationalLevel(EducationalLevel);
+            var result = await _educationalLevelService.CreateEducationalLevel(educationalLevel);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -203,6 +210,19 @@ public class EducationalLevelController : Controller
     {
         try
         {
+            var validationResult = await _educationalLevelService.ValidateLevelUpdateRequest(updateEducationalLevel);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _educationalLevelService.UpdateEducationalLevel(updateEducationalLevel);
             if (result == null) return NotFound(new { Success = false, Message = "EducationalLevel not found" });
             return Ok(new BaseResponseModel

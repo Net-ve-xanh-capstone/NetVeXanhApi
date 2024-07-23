@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Category;
 using Application.ViewModels.CategoryViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -16,4 +18,6 @@ public interface ICategoryService
     Task<List<CategoryViewModel>> ListAllCategoryUnused();
     Task<List<CategoryViewModel>> ListAllCategoryUsed();
     Task<bool> IsExistedId(Guid id);
+    Task<ValidationResult> ValidateCategoryRequest(CategoryRequest category);
+    Task<ValidationResult> ValidateCategoryUpdateRequest(UpdateCategoryRequest categoryUpdate);
 }

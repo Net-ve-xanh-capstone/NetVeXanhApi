@@ -2,10 +2,13 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.EducationalLevel;
+using Application.SendModels.Topic;
 using Application.ViewModels.EducationalLevelViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -18,15 +21,17 @@ public class EducationalLevelService : IEducationalLevelService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public EducationalLevelService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration, IClaimsService claimsService)
+        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -184,4 +189,16 @@ public class EducationalLevelService : IEducationalLevelService
     {
         return await _unitOfWork.EducationalLevelRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidateLevelRequest(EducationalLevelRequest level)
+    {
+        return await _validatorFactory.EducationalLevelRequestValidator.ValidateAsync(level);
+    }
+
+    public async Task<ValidationResult> ValidateLevelUpdateRequest(EducationalLevelUpdateRequest levelUpdate)
+    {
+        return await _validatorFactory.EducationalLevelUpdateRequestValidator.ValidateAsync(levelUpdate);
+    }
+    #endregion
 }

@@ -2,11 +2,13 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Collection;
+using Application.SendModels.Topic;
 using Application.ViewModels.CollectionViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -19,15 +21,17 @@ public class CollectionService : ICollectionService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public CollectionService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration, IClaimsService claimsService)
+        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
+        _validatorFactory = validatorFactory;
     }
 
     #region Add Collection
@@ -162,4 +166,15 @@ public class CollectionService : ICollectionService
     {
         return await _unitOfWork.CollectionRepo.IsExistIdAsync(id);
     }
+    #region Validate
+    public async Task<ValidationResult> ValidateCollectionRequest(CollectionRequest collection)
+    {
+        return await _validatorFactory.CollectionRequestValidator.ValidateAsync(collection);
+    }
+
+    public async Task<ValidationResult> ValidateCollectionUpdateRequest(UpdateCollectionRequest collectionUpdate)
+    {
+        return await _validatorFactory.UpdateCollectionRequestValidator.ValidateAsync(collectionUpdate);
+    }
+    #endregion
 }

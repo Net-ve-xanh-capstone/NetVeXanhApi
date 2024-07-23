@@ -2,9 +2,11 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.AccountSendModels;
+using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using AutoMapper;
 using Domain.Enums;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -20,10 +22,11 @@ public class AccountService : IAccountService
     private readonly IMapper _mapper;
     private readonly ISessionServices _sessionServices;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public AccountService(IUnitOfWork unitOfWork, ICurrentTime currentTime,
         IConfiguration configuration, ISessionServices sessionServices,
-        IClaimsService claimsService, IMapper mapper)
+        IClaimsService claimsService, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _currentTime = currentTime;
@@ -31,6 +34,7 @@ public class AccountService : IAccountService
         _sessionServices = sessionServices;
         _claimsService = claimsService;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     public Task<bool?> CreateSubAccount(SubAccountRequest request)
@@ -189,4 +193,16 @@ public class AccountService : IAccountService
     {
         return await _unitOfWork.AccountRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account)
+    {
+        return await _validatorFactory.AccountUpdateRequestValidator.ValidateAsync(account);
+    }
+
+    public async Task<ValidationResult> ValidateSubAccountRequest(SubAccountRequest accountUpdate)
+    {
+        return await _validatorFactory.SubAccountRequestValidator.ValidateAsync(accountUpdate);
+    }
+    #endregion
 }

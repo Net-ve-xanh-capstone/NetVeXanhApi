@@ -13,8 +13,19 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
         RuleFor(x => x.AccountId)
             .NotEmpty().WithMessage("AccountId là bắt buộc.")
             .NotEqual(Guid.Empty).WithMessage("AccountId phải là một GUID hợp lệ.")
-            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
-            .WithMessage("AccountId không tồn tại.");
+            .MustAsync(async (userId, cancellation) =>
+            {
+                try
+                {
+                    return await _accountService.IsExistedId(userId);
+                }
+                catch (Exception)
+                {
+                    // Xử lý lỗi kiểm tra ID
+                    return false; // Giả sử ID không tồn tại khi có lỗi
+                }
+            })
+            .WithMessage("CurrentUserId không tồn tại.");
 
         // Validate Image
         RuleFor(x => x.Image)

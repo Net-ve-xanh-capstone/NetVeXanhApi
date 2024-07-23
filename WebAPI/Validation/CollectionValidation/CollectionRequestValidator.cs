@@ -20,7 +20,18 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
         RuleFor(c => c.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.")
             .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.")
-            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .MustAsync(async (userId, cancellation) =>
+            {
+                try
+                {
+                    return await _accountService.IsExistedId(userId);
+                }
+                catch (Exception)
+                {
+                    // Xử lý lỗi kiểm tra ID
+                    return false; // Giả sử ID không tồn tại khi có lỗi
+                }
+            })
             .WithMessage("CurrentUserId không tồn tại.");
     }
     private bool BeAValidUrl(string url)

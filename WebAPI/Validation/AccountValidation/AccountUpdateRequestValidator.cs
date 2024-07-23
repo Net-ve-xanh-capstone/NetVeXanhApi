@@ -12,8 +12,19 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
     {
         RuleFor(user => user.Id)
             .NotEmpty().WithMessage("Id không được để trống.")
-            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
-            .WithMessage("Id không tồn tại."); 
+            .MustAsync(async (userId, cancellation) =>
+            {
+                try
+                {
+                    return await _accountService.IsExistedId(userId);
+                }
+                catch (Exception)
+                {
+                    // Xử lý lỗi kiểm tra ID
+                    return false; // Giả sử ID không tồn tại khi có lỗi
+                }
+            })
+            .WithMessage("Id không tồn tại."); ; 
 
         RuleFor(user => user.Birthday)
             .NotEmpty().WithMessage("Ngày sinh không được để trống.")

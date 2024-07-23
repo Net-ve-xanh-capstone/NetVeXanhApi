@@ -8,8 +8,12 @@ namespace WebAPI.Validation.RoundValidation;
 public class RoundRequestValidator : AbstractValidator<RoundRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public RoundRequestValidator()
+
+    public RoundRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
+
+
         RuleFor(contest => contest.Name)
             .NotEmpty().WithMessage("Tên cuộc thi không được để trống")
             .Length(3, 100).WithMessage("Tên cuộc thi phải có độ dài từ 3 đến 100 ký tự");

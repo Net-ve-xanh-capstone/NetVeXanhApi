@@ -8,8 +8,10 @@ namespace WebAPI.Validation.ScheduleValidation;
 public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public ScheduleRequestValidator()
+
+    public ScheduleRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(review => review.Description)
             .MaximumLength(500).WithMessage("Mô tả không được vượt quá 500 ký tự");
 

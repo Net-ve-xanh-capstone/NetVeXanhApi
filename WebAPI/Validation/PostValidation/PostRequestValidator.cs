@@ -9,8 +9,10 @@ namespace WebAPI.Validation.PostValidation;
 public class PostRequestValidator : AbstractValidator<PostRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public PostRequestValidator()
+
+    public PostRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         // Validate Url
         RuleFor(x => x.Url)
             .NotEmpty().WithMessage("Url là bắt buộc.")

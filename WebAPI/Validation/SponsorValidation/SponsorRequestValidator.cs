@@ -8,8 +8,10 @@ namespace WebAPI.Validation.SponsorValidation;
 public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public SponsorRequestValidator()
+
+    public SponsorRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(org => org.Name)
             .NotEmpty().WithMessage("Tên tổ chức không được để trống")
             .Length(3, 100).WithMessage("Tên tổ chức phải có độ dài từ 3 đến 100 ký tự");

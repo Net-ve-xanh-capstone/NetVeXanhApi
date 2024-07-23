@@ -8,8 +8,10 @@ namespace WebAPI.Validation.PaintingValidation;
 public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreatePaintingRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public StaffCreatePaintingRequestValidator()
+
+    public StaffCreatePaintingRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         // Validate FullName
         RuleFor(x => x.FullName)
             .NotEmpty().WithMessage("Họ tên là bắt buộc.")

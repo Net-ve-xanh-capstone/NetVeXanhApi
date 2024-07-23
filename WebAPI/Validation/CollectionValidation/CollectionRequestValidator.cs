@@ -8,8 +8,10 @@ namespace WebAPI.Validation.CollectionValidation;
 public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public CollectionRequestValidator()
+
+    public CollectionRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");

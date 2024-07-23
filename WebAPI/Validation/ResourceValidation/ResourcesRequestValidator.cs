@@ -8,8 +8,12 @@ namespace WebAPI.Validation.ResourceValidation;
 public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public ResourcesRequestValidator()
+
+    public ResourcesRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
+
+
         // Validate Sponsorship
         RuleFor(x => x.Sponsorship)
             .NotEmpty().WithMessage("Sponsorship không được trống.")

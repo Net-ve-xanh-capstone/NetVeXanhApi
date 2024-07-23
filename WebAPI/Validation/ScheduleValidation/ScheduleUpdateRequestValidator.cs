@@ -1,6 +1,7 @@
 ﻿using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Schedule;
+using Application.Services.ValidationService;
 using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
@@ -8,12 +9,39 @@ namespace WebAPI.Validation.ScheduleValidation;
 public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public ScheduleUpdateRequestValidator()
+    private readonly IScheduleValidationService _schduleValidationService;
+
+    public ScheduleUpdateRequestValidator(IAccountValidationService accountValidationService, IScheduleValidationService schduleValidationService)
     {
+        _accountValidationService = accountValidationService;
+        _schduleValidationService = schduleValidationService;
         // Validate Id
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id không được trống.")
-            .NotEqual(Guid.Empty).WithMessage("Id phải là kiểu GUID.");
+        .NotEmpty().WithMessage("Id không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
+        {
+            RuleFor(x => x.Id)
+                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .WithMessage("Id phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Id)
+                        .MustAsync(async (topicId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _schduleValidationService.IsExistedId(topicId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("Id không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)

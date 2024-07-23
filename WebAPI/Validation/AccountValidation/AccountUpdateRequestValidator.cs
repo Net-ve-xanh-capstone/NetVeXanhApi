@@ -9,8 +9,10 @@ namespace WebAPI.Validation.AccountValidation;
 public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public AccountUpdateRequestValidator()
+    public AccountUpdateRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
+
         RuleFor(user => user.Id)
             .NotEmpty().WithMessage("Id không được để trống.")
             .MustAsync(async (userId, cancellation) =>

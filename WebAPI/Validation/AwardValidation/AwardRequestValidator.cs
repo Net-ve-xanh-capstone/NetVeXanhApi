@@ -8,8 +8,10 @@ namespace WebAPI.Validation.AwardValidation;
 public class AwardRequestValidator : AbstractValidator<AwardRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public AwardRequestValidator()
+
+    public AwardRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(x => x.Rank)
             .NotEmpty().WithMessage("Rank không được để trống.")
             .Length(1, 50).WithMessage("Rank phải có độ dài từ 1 đến 50 ký tự.");

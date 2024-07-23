@@ -8,8 +8,10 @@ namespace WebAPI.Validation.ContestValidation;
 public class ContestRequestValidator : AbstractValidator<ContestRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public ContestRequestValidator()
+
+    public ContestRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(e => e.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 100).WithMessage("Tên phải có độ dài từ 2 đến 100 ký tự.");

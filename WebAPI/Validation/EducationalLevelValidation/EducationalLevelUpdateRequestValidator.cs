@@ -8,12 +8,39 @@ namespace WebAPI.Validation.EducationalLevelValidation;
 public class EducationalLevelUpdateRequestValidator : AbstractValidator<EducationalLevelUpdateRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public EducationalLevelUpdateRequestValidator()
+    private readonly IEducationalLevelValidationService _levelValidationService;
+
+    public EducationalLevelUpdateRequestValidator(IAccountValidationService accountValidationService, IEducationalLevelValidationService levelValidationService)
     {
-        // Validate ContestId
-        RuleFor(x => x.ContestId)
-            .NotEmpty().WithMessage("ContestId không được trống.")
-            .NotEqual(Guid.Empty).WithMessage("ContestId phải là kiểu GUID.");
+        _accountValidationService = accountValidationService;
+        _levelValidationService = levelValidationService;
+        // Validate Id
+        RuleFor(x => x.Id)
+        .NotEmpty().WithMessage("Id không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
+        {
+            RuleFor(x => x.Id)
+                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .WithMessage("Id phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Id)
+                        .MustAsync(async (topicId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _levelValidationService.IsExistedId(topicId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("Id không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)

@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.IService.IValidationService
 {
-    internal interface IAwardValidationService
+    public interface IAwardValidationService
     {
+        Task<bool> IsExistedId(Guid id);
     }
 }

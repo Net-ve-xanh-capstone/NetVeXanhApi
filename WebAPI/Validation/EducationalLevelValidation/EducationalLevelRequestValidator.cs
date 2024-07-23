@@ -8,8 +8,10 @@ namespace WebAPI.Validation.EducationalLevelValidation;
 public class EducationalLevelRequestValidator : AbstractValidator<EducationalLevelRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public EducationalLevelRequestValidator()
+
+    public EducationalLevelRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         // Validate Level
         RuleFor(x => x.Level)
             .NotEmpty().WithMessage("Level không được trống.")

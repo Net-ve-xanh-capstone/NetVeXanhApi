@@ -8,8 +8,10 @@ namespace WebAPI.Validation.ReportValidation;
 public class ReportRequestValidator : AbstractValidator<ReportRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public ReportRequestValidator()
+
+    public ReportRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         // Validate Title
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title không được trống.")

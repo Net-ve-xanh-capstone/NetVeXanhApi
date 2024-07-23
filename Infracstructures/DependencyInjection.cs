@@ -116,7 +116,24 @@ public static class DependencyInjection
 
         //Validation Service
         services.AddScoped<IAccountValidationService, AccountValidationService>();
-
+        services.AddScoped<IAwardScheduleValidationService, AwardScheduleValidationService>();
+        services.AddScoped<IAwardValidationService, AwardValidationService>();
+        services.AddScoped<ICategoryValidationService, CategoryValidationService>();
+        services.AddScoped<ICollectionValidationService, CollectionValidationService>();
+        services.AddScoped<IContestValidationService, ContestValidationService>();
+        services.AddScoped<IEducationalLevelValidationService, EducationalLevelValidationService>();
+        services.AddScoped<IImageValidationService, ImageValidationService>();
+        services.AddScoped<INotificationValidationService, NotificationValidationService>();
+        services.AddScoped<IPaintingCollectionValidationService, PaintingCollectionValidationService>();
+        services.AddScoped<IPaintingValidationService, PaintingValidationService>();
+        services.AddScoped<IPostValidationService, PostValidationService>();
+        services.AddScoped<IReportValidationService, ReportValidationService>();
+        services.AddScoped<IResourceValidationService, ResourceValidationService>();
+        services.AddScoped<IRoundTopicValidationService, RoundTopicValidationService>();
+        services.AddScoped<IRoundValidationService, RoundValidationService>();
+        services.AddScoped<IScheduleValidationService, ScheduleValidationService>();
+        services.AddScoped<ISponsorValidationService, SponsorValidationService>();
+        services.AddScoped<ITopicValidationService, TopicValidationService>();
         #endregion
 
         #region Config validators

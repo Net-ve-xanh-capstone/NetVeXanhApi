@@ -8,8 +8,10 @@ namespace WebAPI.Validation.CategoryValidation;
 public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public CategoryRequestValidator()
+
+    public CategoryRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         RuleFor(x => x.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 

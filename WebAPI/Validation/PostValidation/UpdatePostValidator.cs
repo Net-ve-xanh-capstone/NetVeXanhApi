@@ -9,13 +9,39 @@ namespace WebAPI.Validation.PostValidation;
 public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public UpdatePostValidator()
+    private readonly IPostValidationService _postValidationService;
+
+    public UpdatePostValidator(IAccountValidationService accountValidationService, IPostValidationService postValidationService)
     {
+        _accountValidationService = accountValidationService;
+        _postValidationService = postValidationService;
         // Validate Id
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id là bắt buộc.")
-            .NotEqual(Guid.Empty).WithMessage("Id phải là một GUID hợp lệ.");
+        .NotEmpty().WithMessage("Id không được để trống.");
 
+        When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
+        {
+            RuleFor(x => x.Id)
+                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .WithMessage("Id phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Id)
+                        .MustAsync(async (topicId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _postValidationService.IsExistedId(topicId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("Id không tồn tại.");
+                });
+        });
         // Validate Url
         RuleFor(x => x.Url)
             .Must(BeAValidUrl).WithMessage("Url phải là một URL hợp lệ và sử dụng HTTP hoặc HTTPS.");

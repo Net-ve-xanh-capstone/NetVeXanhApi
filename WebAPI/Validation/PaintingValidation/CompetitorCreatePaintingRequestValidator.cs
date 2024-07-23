@@ -8,8 +8,10 @@ namespace WebAPI.Validation.PaintingValidation;
 public class CompetitorCreatePaintingRequestValidator : AbstractValidator<CompetitorCreatePaintingRequest>
 {
     private readonly IAccountValidationService _accountValidationService;
-    public CompetitorCreatePaintingRequestValidator()
+
+    public CompetitorCreatePaintingRequestValidator(IAccountValidationService accountValidationService)
     {
+        _accountValidationService = accountValidationService;
         // Validate AccountId
         RuleFor(x => x.AccountId)
         .NotEmpty().WithMessage("AccountId không được để trống.");

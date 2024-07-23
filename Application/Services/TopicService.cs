@@ -121,15 +121,15 @@ public class TopicService : ITopicService
     }
 
 
-    //Validate
+    #region Validate
     public async Task<ValidationResult> ValidateTopicRequest(TopicRequest topic)
     {
         return await _validatorFactory.TopicRequestValidator.ValidateAsync(topic);
     }
 
-    public async Task<ValidationResult> ValidateTopicUpdateRequest(TopicUpdateRequest topicupdate)
+    public async Task<ValidationResult> ValidateTopicUpdateRequest(TopicUpdateRequest topicUpdate)
     {
-        return await _validatorFactory.TopicUpdateRequestValidator.ValidateAsync(topicupdate);
+        return await _validatorFactory.TopicUpdateRequestValidator.ValidateAsync(topicUpdate);
     }
-
+    #endregion
 }

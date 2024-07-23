@@ -1,8 +1,11 @@
 ﻿using Application.IService;
 using Application.SendModels.RoundTopic;
+using Application.SendModels.Topic;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 
 namespace Application.Services;
@@ -12,11 +15,13 @@ public class RoundTopicService : IRoundTopicService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public RoundTopicService(IUnitOfWork unitOfWork, IMapper mapper)
+    public RoundTopicService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Delete Topic In Round
@@ -91,4 +96,16 @@ public class RoundTopicService : IRoundTopicService
     {
         return await _unitOfWork.RoundTopicRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidateRoundTopicRequest(RoundTopicRequest roundtopic)
+    {
+        return await _validatorFactory.RoundTopicRequestValidator.ValidateAsync(roundtopic);
+    }
+
+    public async Task<ValidationResult> ValidateRoundTopicDeleteRequest(RoundTopicDeleteRequest roundtopicDelete)
+    {
+        return await _validatorFactory.RoundTopicDeleteRequestValidator.ValidateAsync(roundtopicDelete);
+    }
+    #endregion
 }

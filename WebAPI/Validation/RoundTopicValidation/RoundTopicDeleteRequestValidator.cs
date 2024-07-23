@@ -6,7 +6,6 @@ namespace WebAPI.Validation.RoundTopicValidation;
 
 public class RoundTopicDeleteRequestValidator : AbstractValidator<RoundTopicDeleteRequest>
 {
-    private readonly IAccountService _accountService;
     public RoundTopicDeleteRequestValidator()
     {
         // Validate RoundId
@@ -17,8 +16,6 @@ public class RoundTopicDeleteRequestValidator : AbstractValidator<RoundTopicDele
         // Validate TopicId
         RuleFor(x => x.TopicId)
             .NotEmpty().WithMessage("TopicId không được trống.")
-            .NotEqual(Guid.Empty).WithMessage("TopicId phải là kiểu GUID.")
-            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
-            .WithMessage("CurrentUserId không tồn tại.");
+            .NotEqual(Guid.Empty).WithMessage("TopicId phải là kiểu GUID.");
     }
 }

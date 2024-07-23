@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Post;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +22,24 @@ public class PostController : Controller
     #region Create Post
 
     [HttpPost]
-    public async Task<IActionResult> CreatePost(PostRequest Post)
+    public async Task<IActionResult> CreatePost(PostRequest post)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _postService.ValidatePostRequest(post);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _postService.CreatePost(Post);
+            var result = await _postService.CreatePost(post);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -162,6 +170,19 @@ public class PostController : Controller
     {
         try
         {
+            var validationResult = await _postService.ValidatePostUpdateRequest(updatePost);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _postService.UpdatePost(updatePost);
             if (result == null) return NotFound(new { Success = false, Message = "Post not found" });
             return Ok(new BaseResponseModel

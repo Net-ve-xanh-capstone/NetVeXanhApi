@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Post;
 using Application.ViewModels.PostViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -17,4 +19,8 @@ public interface IPostService
 
     Task<(List<PostViewModel>, int)> SearchByTitleDescription(ListModels listModels, string searchString);
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidatePostRequest(PostRequest post);
+
+    Task<ValidationResult> ValidatePostUpdateRequest(PostUpdateRequest postUpdate);
 }

@@ -2,6 +2,8 @@
 using Application.SendModels.Round;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -16,4 +18,7 @@ public interface IRoundService
     Task<(List<TopicViewModel>, int)> GetTopicInRound(Guid id, ListModels listModels);
     Task<(List<RoundViewModel>, int)> GetRoundByEducationalLevelId(ListModels listLevelModel, Guid levelId);
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidateRoundRequest(RoundRequest round);
+    Task<ValidationResult> ValidateRoundUpdateRequest(RoundUpdateRequest roundUpdate);
 }

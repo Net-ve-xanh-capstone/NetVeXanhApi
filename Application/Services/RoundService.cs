@@ -141,10 +141,6 @@ public class RoundService : IRoundService
     {
         var today = _currentTime.GetCurrentTime();
         var result = await _unitOfWork.RoundRepo.GetRoundsOfThisYear();
-        if (result[1].EducationalLevel.Contest.StartTime >= today || today >= result[1].EducationalLevel.Contest.EndTime)
-        {
-            return null;
-        }
         return _mapper.Map<List<RoundViewModel>>(result);
     }
     #endregion

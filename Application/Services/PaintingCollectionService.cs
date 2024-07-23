@@ -1,8 +1,11 @@
 ﻿using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.PaintingCollection;
+using Application.SendModels.Topic;
 using AutoMapper;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 
 namespace Application.Services;
@@ -14,15 +17,17 @@ public class PaintingCollectionService : IPaintingCollectionService
     private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public PaintingCollectionService(IUnitOfWork unitOfWork, IAuthentication authentication, IMapper mapper,
-        IMailService mailService, IClaimsService claimsService)
+        IMailService mailService, IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _claimsService = claimsService;
         _mailService = mailService;
         _authentication = authentication;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     public async Task<bool> AddPaintingToCollection(PaintingCollectionRequest addPaintingCollectionViewModel)
@@ -47,4 +52,12 @@ public class PaintingCollectionService : IPaintingCollectionService
     {
         return await _unitOfWork.PaintingCollectionRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidatePaintingCollectionRequest(PaintingCollectionRequest paintingcollection)
+    {
+        return await _validatorFactory.PaintingCollectionRequestValidator.ValidateAsync(paintingcollection);
+    }
+
+    #endregion
 }

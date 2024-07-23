@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.PaintingCollection;
+using Application.SendModels.Topic;
+using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -24,6 +26,19 @@ public class PaintingCollectionController : Controller
     {
         try
         {
+            var validationResult = await _paintingCollectionService.ValidatePaintingCollectionRequest(addPaintingCollectionViewModel);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _paintingCollectionService.AddPaintingToCollection(addPaintingCollectionViewModel);
             return Ok(new BaseResponseModel
             {

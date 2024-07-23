@@ -1,16 +1,20 @@
 ﻿using Application.BaseModels;
 using Application.ViewModels.SponsorViewModels;
+using FluentValidation.Results;
 using Infracstructures.SendModels.Sponsor;
 
 namespace Application.IService;
 
 public interface ISponsorService
 {
-    public Task<bool> CreateSponsor(SponsorRequest sponsor);
-    public Task<(List<SponsorViewModel>, int)> GetListSponsor(ListModels listModels);
-    public Task<SponsorViewModel?> GetSponsorById(Guid id);
-    public Task<bool> UpdateSponsor(SponsorUpdateRequest updateSponsor);
-    public Task<bool> DeleteSponsor(Guid id);
+    Task<bool> CreateSponsor(SponsorRequest sponsor);
+    Task<(List<SponsorViewModel>, int)> GetListSponsor(ListModels listModels);
+    Task<SponsorViewModel?> GetSponsorById(Guid id);
+    Task<bool> UpdateSponsor(SponsorUpdateRequest updateSponsor);
+    Task<bool> DeleteSponsor(Guid id);
     Task<List<SponsorViewModel>> GetAllSponsor();
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidateSponsorRequest(SponsorRequest sponsor);
+    Task<ValidationResult> ValidateSponsorUpdateRequest(SponsorUpdateRequest updateSponsor);
 }

@@ -114,6 +114,13 @@ public class TopicService : ITopicService
     #endregion
 
 
+    //Check Id is Exist
+    public async Task<bool> IsExistedId(Guid id)
+    {
+        return await _unitOfWork.SponsorRepo.IsExistIdAsync(id);
+    }
+
+
     //Validate
     public async Task<ValidationResult> ValidateTopicRequest(TopicRequest topic)
     {

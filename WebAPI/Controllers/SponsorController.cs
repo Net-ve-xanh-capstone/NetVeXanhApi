@@ -1,5 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Infracstructures.SendModels.Sponsor;
 using Microsoft.AspNetCore.Mvc;
@@ -25,13 +27,19 @@ public class SponsorController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _sponsorService.ValidateSponsorRequest(sponsor);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
             var result = await _sponsorService.CreateSponsor(sponsor);
             return Ok(new BaseResponseModel
             {
@@ -168,6 +176,18 @@ public class SponsorController : Controller
     {
         try
         {
+            var validationResult = await _sponsorService.ValidateSponsorUpdateRequest(updatesponsor);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+            }
             var result = await _sponsorService.UpdateSponsor(updatesponsor);
             if (result == null) return NotFound(new { Success = false, Message = "Sponsor not found" });
             return Ok(new BaseResponseModel

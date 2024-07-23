@@ -1,9 +1,11 @@
 ﻿using Application.BaseModels;
 using Application.IService;
+using Application.SendModels.Topic;
 using Application.ViewModels.SponsorViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Infracstructures.SendModels.Sponsor;
 
@@ -15,10 +17,13 @@ public class SponsorService : ISponsorService
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public SponsorService(IUnitOfWork unitOfWork, IMapper mapper)
+    private readonly IValidatorFactory _validatorFactory;
+
+    public SponsorService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -99,9 +104,19 @@ public class SponsorService : ISponsorService
     }
 
     #endregion
+
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.SponsorRepo.IsExistIdAsync(id);
+    }
+
+    public async Task<ValidationResult> ValidateSponsorRequest(SponsorRequest sponsor)
+    {
+        return await _validatorFactory.SponsorRequestValidator.ValidateAsync(sponsor);
+    }
+    public async Task<ValidationResult> ValidateSponsorUpdateRequest(SponsorUpdateRequest updateSponsor)
+    {
+        return await _validatorFactory.SponsorUpdateRequestValidator.ValidateAsync(updateSponsor);
     }
 }

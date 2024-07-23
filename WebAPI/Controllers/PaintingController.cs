@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Painting;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Infracstructures.SendModels.Painting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,11 +24,24 @@ public class PaintingController : Controller
     #region Draft Painting For Preliminary Round
 
     [HttpPost("draftepainting1stround")]
-    public async Task<IActionResult> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
+    public async Task<IActionResult> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest paintingrequest)
     {
+        var validationResult = await _paintingService.ValidateCompetitorCreateRequest(paintingrequest);
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            var response = new BaseFailedResponseModel
+            {
+                Status = 400,
+                Message = "Validation failed",
+                Result = false,
+                Errors = errors
+            };
+            return BadRequest(response);
+        }
         try
         {
-            var result = await _paintingService.DraftPaintingForPreliminaryRound(request);
+            var result = await _paintingService.DraftPaintingForPreliminaryRound(paintingrequest);
             if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
             return Ok(new BaseResponseModel
             {
@@ -53,11 +68,24 @@ public class PaintingController : Controller
 
     [HttpPost("submitepainting1stround")]
     public async Task<IActionResult> SubmitPaintingForPreliminaryRound(
-        CompetitorCreatePaintingRequest competitorCreatePainting)
+        CompetitorCreatePaintingRequest paintingRequest)
     {
         try
         {
-            var result = await _paintingService.SubmitPaintingForPreliminaryRound(competitorCreatePainting);
+            var validationResult = await _paintingService.ValidateCompetitorCreateRequest(paintingRequest);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
+            var result = await _paintingService.SubmitPaintingForPreliminaryRound(paintingRequest);
             if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
             return Ok(new BaseResponseModel
             {
@@ -88,6 +116,19 @@ public class PaintingController : Controller
     {
         try
         {
+            var validationResult = await _paintingService.ValidateStaffCreateRequest(staffCreatePainting);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _paintingService.StaffSubmitPaintingForPreliminaryRound(staffCreatePainting);
             if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
             return Ok(new BaseResponseModel
@@ -118,6 +159,7 @@ public class PaintingController : Controller
     {
         try
         {
+            //Chưa validate
             var result = await _paintingService.StaffSubmitPaintingForFinalRound(request);
             if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
 
@@ -145,11 +187,24 @@ public class PaintingController : Controller
     #region Update Painting
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdatePainting(UpdatePaintingRequest updatePaintingViewModel)
+    public async Task<IActionResult> UpdatePainting(UpdatePaintingRequest updatePainting)
     {
         try
         {
-            var result = await _paintingService.UpdatePainting(updatePaintingViewModel);
+            var validationResult = await _paintingService.ValidateUpdatePaintingRequest(updatePainting);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
+            var result = await _paintingService.UpdatePainting(updatePainting);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
             {
@@ -226,6 +281,19 @@ public class PaintingController : Controller
     {
         try
         {
+            var validationResult = await _paintingService.ValidatePaintingUpdateStatusRequest(request);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _paintingService.ReviewDecisionOfPainting(request);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
@@ -256,6 +324,19 @@ public class PaintingController : Controller
     {
         try
         {
+            var validationResult = await _paintingService.ValidatePaintingUpdateStatusRequest(request);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _paintingService.FinalDecisionOfPainting(request);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
@@ -463,6 +544,19 @@ public class PaintingController : Controller
     {
         try
         {
+            var validationResult = await _paintingService.ValidateFilterPaintingRequest(filterPainting);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var (list, totalPage) = await _paintingService.FilterPainting(filterPainting, listPaintingModel);
             if (totalPage < listPaintingModel.PageNumber)
                 return NotFound(new BaseResponseModel

@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Painting;
 using Application.ViewModels.PaintingViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures.SendModels.Painting;
 
 namespace Application.IService;
@@ -36,4 +38,11 @@ public interface IPaintingService
 
     #endregion
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
+    Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);
+    Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting);
+    Task<ValidationResult> ValidateRatingRequest(RatingRequest painting);
+    Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting);
+    Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting);
 }

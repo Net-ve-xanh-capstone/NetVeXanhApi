@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Schedule;
+﻿using Application.IService;
+using Application.SendModels.Schedule;
 using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
 
 public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 {
+    private readonly IAccountService _accountService;
     public ScheduleRequestValidator()
     {
         RuleFor(review => review.Description)
@@ -24,6 +26,8 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 
         RuleFor(review => review.CurrentUserId)
             .NotEmpty().WithMessage("ID người dùng hiện tại không được để trống")
-            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ");
+            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

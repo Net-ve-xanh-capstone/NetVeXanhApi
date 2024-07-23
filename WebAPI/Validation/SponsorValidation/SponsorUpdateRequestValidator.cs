@@ -11,13 +11,13 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
     {
         // Validate Id
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.")
-            .NotEqual(Guid.Empty).WithMessage("Id must be a valid GUID.");
+            .NotEmpty().WithMessage("Id không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("Id phải là kiểu GUID.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
+            .NotEmpty().WithMessage("CurrentUserId không được trống.")
             .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId phải là kiểu GUID.");
     }
 }

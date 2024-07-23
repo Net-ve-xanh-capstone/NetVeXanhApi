@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Round;
+﻿using Application.IService;
+using Application.SendModels.Round;
 using FluentValidation;
 
 namespace WebAPI.Validation.RoundValidation;
 
 public class RoundRequestValidator : AbstractValidator<RoundRequest>
 {
+    private readonly IAccountService _accountService;
     public RoundRequestValidator()
     {
         RuleFor(contest => contest.Name)
@@ -29,6 +31,8 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
 
         RuleFor(contest => contest.CurrentUserId)
             .NotEmpty().WithMessage("ID người dùng hiện tại không được để trống")
-            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ");
+            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

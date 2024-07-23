@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Category;
+﻿using Application.IService;
+using Application.SendModels.Category;
 using FluentValidation;
 
 namespace WebAPI.Validation.CategoryValidation;
 
 public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
 {
+    private readonly IAccountService _accountService;
     public UpdateCategoryRequestValidator()
     {
         RuleFor(c => c.Id)
@@ -13,7 +15,9 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
 
         RuleFor(c => c.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.");
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
 
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")

@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Award;
+﻿using Application.IService;
+using Application.SendModels.Award;
 using FluentValidation;
 
 namespace WebAPI.Validation.AwardValidation;
 
 public class AwardRequestValidator : AbstractValidator<AwardRequest>
 {
+    private readonly IAccountService _accountService;
     public AwardRequestValidator()
     {
         RuleFor(x => x.Rank)
@@ -27,6 +29,8 @@ public class AwardRequestValidator : AbstractValidator<AwardRequest>
 
         RuleFor(x => x.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không hợp lệ.");
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không hợp lệ.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

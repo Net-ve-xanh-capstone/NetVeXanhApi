@@ -1,24 +1,29 @@
-﻿using Application.SendModels.Resources;
+﻿using Application.IService;
+using Application.SendModels.Resources;
 using FluentValidation;
 
 namespace WebAPI.Validation.ResourceValidation;
 
 public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdateRequest>
 {
+    private readonly IAccountService _accountService;
+
     public ResourcesUpdateRequestValidator()
     {
         // Validate Id
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.")
-            .NotEqual(Guid.Empty).WithMessage("Id must be a valid GUID.");
+            .NotEmpty().WithMessage("Id không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("Id phải là kiểu GUID.");
 
         // Validate Sponsorship
         RuleFor(x => x.Sponsorship)
-            .MaximumLength(200).WithMessage("Sponsorship must be less than 200 characters.");
+            .MaximumLength(200).WithMessage("Sponsorship phải có ít hơn 200 chữ.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+            .NotEmpty().WithMessage("CurrentUserId không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId phải là kiểu GUID.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

@@ -1,18 +1,22 @@
-﻿using Application.SendModels.Topic;
+﻿using Application.IService;
+using Application.SendModels.Topic;
 using FluentValidation;
 
 namespace WebAPI.Validation.TopicValidation;
 
 public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
 {
+    private readonly IAccountService _accountService;
     public TopicUpdateRequestValidator()
     {
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Role name is required.")
-            .Length(2, 50).WithMessage("Role name must be between 2 and 50 characters.");
+            .NotEmpty().WithMessage("Tên không được trống.")
+            .Length(2, 50).WithMessage("Tên phải trong khoảng 2 tới 50 kí tự.");
 
         RuleFor(x => x.CurrentUserId)
             .NotEmpty()
-            .WithMessage("CurrentUserId is required.");
+            .WithMessage("CurrentUserId không được trống.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

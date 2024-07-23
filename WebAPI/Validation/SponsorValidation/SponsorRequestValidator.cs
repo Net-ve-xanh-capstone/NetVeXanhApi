@@ -1,10 +1,12 @@
-﻿using FluentValidation;
+﻿using Application.IService;
+using FluentValidation;
 using Infracstructures.SendModels.Sponsor;
 
 namespace WebAPI.Validation.SponsorValidation;
 
 public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
 {
+    private readonly IAccountService _accountService;
     public SponsorRequestValidator()
     {
         RuleFor(org => org.Name)
@@ -29,6 +31,8 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
 
         RuleFor(org => org.CurrentUserId)
             .NotEmpty().WithMessage("ID người dùng hiện tại không được để trống")
-            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ");
+            .NotEqual(Guid.Empty).WithMessage("ID người dùng hiện tại không hợp lệ")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

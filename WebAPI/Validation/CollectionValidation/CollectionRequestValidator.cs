@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Collection;
+﻿using Application.IService;
+using Application.SendModels.Collection;
 using FluentValidation;
 
 namespace WebAPI.Validation.CollectionValidation;
 
 public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
 {
+    private readonly IAccountService _accountService;
     public CollectionRequestValidator()
     {
         RuleFor(c => c.Name)
@@ -17,7 +19,9 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
 
         RuleFor(c => c.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.");
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
     private bool BeAValidUrl(string url)
     {

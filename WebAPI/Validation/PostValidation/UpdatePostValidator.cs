@@ -1,4 +1,5 @@
-﻿using Application.SendModels.Post;
+﻿using Application.IService;
+using Application.SendModels.Post;
 using FluentValidation;
 using WebAPI.Validation.ImageValidation;
 
@@ -6,37 +7,40 @@ namespace WebAPI.Validation.PostValidation;
 
 public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 {
+    private readonly IAccountService _accountService;
     public UpdatePostValidator()
     {
         // Validate Id
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Id is required.")
-            .NotEqual(Guid.Empty).WithMessage("Id must be a valid GUID.");
+            .NotEmpty().WithMessage("Id là bắt buộc.")
+            .NotEqual(Guid.Empty).WithMessage("Id phải là một GUID hợp lệ.");
 
         // Validate Url
         RuleFor(x => x.Url)
-            .Must(BeAValidUrl).WithMessage("Url must be a valid URL and use HTTP or HTTPS.");
+            .Must(BeAValidUrl).WithMessage("Url phải là một URL hợp lệ và sử dụng HTTP hoặc HTTPS.");
 
         // Validate CategoryId
         RuleFor(x => x.CategoryId)
-            .NotEqual(Guid.Empty).When(x => x.CategoryId.HasValue).WithMessage("CategoryId must be a valid GUID.");
+            .NotEqual(Guid.Empty).When(x => x.CategoryId.HasValue).WithMessage("CategoryId phải là một GUID hợp lệ.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+            .NotEmpty().WithMessage("CurrentUserId là bắt buộc.")
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
 
         // Validate DeleteImages
         RuleFor(x => x.DeleteImages)
-            .NotNull().WithMessage("DeleteImages list cannot be null.")
-            .Must(images => images == null || images.All(image => image != Guid.Empty)).WithMessage("Each image GUID in DeleteImages must be a valid GUID.");
+            .NotNull().WithMessage("Danh sách DeleteImages không được để null.")
+            .Must(images => images == null || images.All(image => image != Guid.Empty)).WithMessage("Mỗi GUID trong DeleteImages phải là một GUID hợp lệ.");
 
         // Validate NewImages
         RuleFor(x => x.NewImages)
-            .NotNull().WithMessage("NewImages list cannot be null.")
-            .Must(images => images == null || images.Any()).WithMessage("NewImages list must contain at least one item.")
+            .NotNull().WithMessage("Danh sách NewImages không được để null.")
+            .Must(images => images == null || images.Any()).WithMessage("Danh sách NewImages phải chứa ít nhất một mục.")
             .ForEach(image => image
-                .SetValidator(new ImageRequestValidator())); // Assuming you have an ImageRequestValidator for validating individual images
+                .SetValidator(new ImageRequestValidator())); // Giả định rằng bạn có một ImageRequestValidator để kiểm tra từng hình ảnh
     }
 
     private bool BeAValidUrl(string url)

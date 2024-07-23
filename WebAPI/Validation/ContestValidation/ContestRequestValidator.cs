@@ -1,10 +1,12 @@
-﻿using Application.SendModels.Contest;
+﻿using Application.IService;
+using Application.SendModels.Contest;
 using FluentValidation;
 
 namespace WebAPI.Validation.ContestValidation;
 
 public class ContestRequestValidator : AbstractValidator<ContestRequest>
 {
+    private readonly IAccountService _accountService;
     public ContestRequestValidator()
     {
         RuleFor(e => e.Name)
@@ -29,7 +31,9 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
 
         RuleFor(e => e.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.");
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
 
         RuleFor(e => e.Round1StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 1 không được để trống.")

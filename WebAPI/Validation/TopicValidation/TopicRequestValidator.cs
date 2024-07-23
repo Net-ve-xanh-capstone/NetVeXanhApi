@@ -15,8 +15,8 @@ public class TopicRequestValidator : AbstractValidator<TopicRequest>
 
         RuleFor(x => x.CurrentUserId)
             .NotEmpty()
-            .WithMessage("CurrentUserId is required.")
+            .WithMessage("CurrentUserId không được trống.")
             .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
-            .WithMessage("CurrentUserId does not exist.");
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

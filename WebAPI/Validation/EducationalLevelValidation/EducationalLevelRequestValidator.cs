@@ -1,25 +1,29 @@
-﻿using Application.SendModels.EducationalLevel;
+﻿using Application.IService;
+using Application.SendModels.EducationalLevel;
 using FluentValidation;
 
 namespace WebAPI.Validation.EducationalLevelValidation;
 
 public class EducationalLevelRequestValidator : AbstractValidator<EducationalLevelRequest>
 {
+    private readonly IAccountService _accountService;
     public EducationalLevelRequestValidator()
     {
         // Validate Level
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Length(1, 50).WithMessage("Level must be between 1 and 50 characters.");
+            .NotEmpty().WithMessage("Level không được trống.")
+            .Length(1, 50).WithMessage("Level phải có từ 1 tới 50 chữ.");
 
         // Validate ContestId
         RuleFor(x => x.ContestId)
-            .NotEmpty().WithMessage("ContestId is required.")
-            .NotEqual(Guid.Empty).WithMessage("ContestId must be a valid GUID.");
+            .NotEmpty().WithMessage("ContestId không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("ContestId phải là kiểu GUID.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+            .NotEmpty().WithMessage("CurrentUserId không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("CurrentUserId phải là kiểu GUID.")
+            .MustAsync(async (userId, cancellation) => await _accountService.IsExistedId(userId))
+            .WithMessage("CurrentUserId không tồn tại.");
     }
 }

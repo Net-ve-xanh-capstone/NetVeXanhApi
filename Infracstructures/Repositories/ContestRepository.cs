@@ -13,7 +13,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public override async Task<List<Contest>> GetAllAsync()
     {
-        return await DbSet
+        return await DbSet.Where(x => x.Status != ContestStatus.Inactive.ToString())
             .Include(x => x.Account)
             .ToListAsync();
     }

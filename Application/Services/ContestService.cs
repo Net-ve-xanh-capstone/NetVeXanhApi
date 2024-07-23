@@ -38,7 +38,7 @@ public class ContestService : IContestService
 
         if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime)) throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
         
-        contest.Status = ContestStatus.Inactive.ToString();
+        contest.Status = ContestStatus.Active.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();
         await _unitOfWork.ContestRepo.AddAsync(contest);
         var check = await _unitOfWork.SaveChangesAsync() > 0;
@@ -59,7 +59,7 @@ public class ContestService : IContestService
         level.Level = "Bảng A";
         level.CreatedBy = addContestViewModel.CurrentUserId;
         level.ContestId = contest.Id;
-        level.Status = EducationalLevelStatus.Inactive.ToString();
+        level.Status = EducationalLevelStatus.Active.ToString();
         level.CreatedTime = _currentTime.GetCurrentTime();
         level.Description = "Mầm Non";
         listLevel.Add(level);
@@ -69,7 +69,7 @@ public class ContestService : IContestService
         level2.Level = "Bảng B";
         level2.CreatedBy = addContestViewModel.CurrentUserId;
         level2.ContestId = contest.Id;
-        level2.Status = EducationalLevelStatus.Inactive.ToString();
+        level2.Status = EducationalLevelStatus.Active.ToString();
         level2.CreatedTime = _currentTime.GetCurrentTime();
         level2.Description = "Tiểu Học";
         listLevel.Add(level2);
@@ -92,7 +92,7 @@ public class ContestService : IContestService
         round.Name = "Vòng Sơ Khảo";
         round.CreatedBy = addContestViewModel.CurrentUserId;
         round.EducationalLevelId = level.Id;
-        round.Status = RoundStatus.Inactive.ToString();
+        round.Status = RoundStatus.Active.ToString();
         round.CreatedTime = _currentTime.GetCurrentTime();
         round.StartTime = addContestViewModel.Round1StartTime;
         round.EndTime = addContestViewModel.Round1EndTime;
@@ -105,7 +105,7 @@ public class ContestService : IContestService
         round2.Name = "Vòng Chung Kết";
         round2.CreatedBy = addContestViewModel.CurrentUserId;
         round2.EducationalLevelId = level.Id;
-        round2.Status = RoundStatus.Inactive.ToString();
+        round2.Status = RoundStatus.Active.ToString();
         round2.CreatedTime = _currentTime.GetCurrentTime();
         round2.StartTime = addContestViewModel.Round2StartTime;
         round2.EndTime = addContestViewModel.Round2EndTime;
@@ -118,7 +118,7 @@ public class ContestService : IContestService
         round3.Name = "Vòng Sơ Khảo";
         round3.CreatedBy = addContestViewModel.CurrentUserId;
         round3.EducationalLevelId = level2.Id;
-        round3.Status = RoundStatus.Inactive.ToString();
+        round3.Status = RoundStatus.Active.ToString();
         round3.CreatedTime = _currentTime.GetCurrentTime();
         round3.StartTime = addContestViewModel.Round1StartTime;
         round3.EndTime = addContestViewModel.Round1EndTime;
@@ -131,7 +131,7 @@ public class ContestService : IContestService
         round4.Name = "Vòng Chung Kết";
         round4.CreatedBy = addContestViewModel.CurrentUserId;
         round4.EducationalLevelId = level2.Id;
-        round4.Status = RoundStatus.Inactive.ToString();
+        round4.Status = RoundStatus.Active.ToString();
         round4.CreatedTime = _currentTime.GetCurrentTime();
         round4.StartTime = addContestViewModel.Round2StartTime;
         round4.EndTime = addContestViewModel.Round2EndTime;

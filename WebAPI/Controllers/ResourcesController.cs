@@ -1,6 +1,9 @@
-﻿using Application.BaseModels;
+﻿using System.Resources;
+using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Resources;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +23,24 @@ public class ResourcesController : Controller
     #region Create Resources
 
     [HttpPost]
-    public async Task<IActionResult> CreateResources(ResourcesRequest Resources)
+    public async Task<IActionResult> CreateResources(ResourcesRequest resources)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _resourcesService.ValidateResourceRequest(resources);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _resourcesService.CreateResources(Resources);
+            var result = await _resourcesService.CreateResources(resources);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -119,6 +128,19 @@ public class ResourcesController : Controller
     {
         try
         {
+            var validationResult = await _resourcesService.ValidateResourceUpdateRequest(updateResources);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _resourcesService.UpdateResources(updateResources);
             return Ok(new BaseResponseModel
             {

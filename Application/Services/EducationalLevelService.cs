@@ -36,7 +36,7 @@ public class EducationalLevelService : IEducationalLevelService
         var a = await _unitOfWork.ContestRepo.GetStartEndTimeByContestId(EducationalLevel.ContestId);
 
         var newEducationalLevel = _mapper.Map<EducationalLevel>(EducationalLevel);
-        newEducationalLevel.Status = EducationalLevelStatus.Active.ToString();
+        newEducationalLevel.Status = EducationalLevelStatus.NotStarted.ToString();
         await _unitOfWork.EducationalLevelRepo.AddAsync(newEducationalLevel);
         var check = await _unitOfWork.SaveChangesAsync() > 0;
         if (check == false) throw new Exception("Tạo EducationalLevl Thất Bại");
@@ -50,7 +50,7 @@ public class EducationalLevelService : IEducationalLevelService
         round.Name = "Vòng Sơ Khảo";
         round.CreatedBy = EducationalLevel.CurrentUserId;
         round.EducationalLevelId = newEducationalLevel.Id;
-        round.Status = RoundStatus.Active.ToString();
+        round.Status = RoundStatus.NotStarted.ToString();
         round.CreatedTime = _currentTime.GetCurrentTime();
         round.StartTime = a.Value.StartTime;
         round.EndTime = a.Value.EndTime;
@@ -63,7 +63,7 @@ public class EducationalLevelService : IEducationalLevelService
         round2.Name = "Vòng Chung Kết";
         round2.CreatedBy = EducationalLevel.CurrentUserId;
         round2.EducationalLevelId = newEducationalLevel.Id;
-        round2.Status = RoundStatus.Active.ToString();
+        round2.Status = RoundStatus.NotStarted.ToString();
         round2.CreatedTime = _currentTime.GetCurrentTime();
         round2.StartTime = a.Value.StartTime;
         round2.EndTime = a.Value.EndTime;
@@ -165,14 +165,14 @@ public class EducationalLevelService : IEducationalLevelService
         if (level == null) throw new Exception("Khong tim thay EducationalLevel");
         foreach (var round in level.Round)
         {
-            round.Status = RoundStatus.Inactive.ToString();
+            round.Status = RoundStatus.Delete.ToString();
             foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
         }
 
         //award
         foreach (var award in level.Award) award.Status = AwardStatus.Inactive.ToString();
 
-        level.Status = EducationalLevelStatus.Inactive.ToString();
+        level.Status = EducationalLevelStatus.Delete.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

@@ -141,7 +141,7 @@ public class ScheduleService : IScheduleService
         try
         {
             var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
-            if (round?.EndTime > DateTime.Today)
+            if (round.Status != RoundStatus.Complete.ToString())
             {
                 throw new Exception("Bạn Không Thể Lên Lịch Chấm Khi Cuộc Thi Chưa Kết Thúc");
             }

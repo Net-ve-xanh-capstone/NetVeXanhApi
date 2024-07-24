@@ -15,6 +15,7 @@ public class PaintingViewModel
     public string ContestName { get; set; }
     public Guid? ScheduleId { get; set; }
     public string Status { get; set; }
+    public string CompetitorCode { get; set; }
     public string Code { get; set; }
     public string OwnerName { get; set; }
 }

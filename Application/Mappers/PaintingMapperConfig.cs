@@ -21,6 +21,7 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Painting, PaintingViewModel>()
+            .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))

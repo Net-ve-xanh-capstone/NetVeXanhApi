@@ -28,7 +28,6 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))
             .ForPath(dest => dest.ContestName,
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name));
-        ;
 
         CreateMap<PaintingViewModel, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
@@ -52,5 +51,12 @@ public partial class MapperConfigs : Profile
             });
 
         CreateMap<Painting, PaintingInCollectionViewModel>();
+
+        CreateMap<Painting, PaintingInCollection2ViewModel>()
+            .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
+            .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
+            .ForPath(dest => dest.ContestName,
+                opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name));
     }
 }

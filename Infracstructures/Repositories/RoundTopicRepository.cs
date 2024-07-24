@@ -11,6 +11,11 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
     {
     }
 
+    public override Task<List<RoundTopic>> GetAllAsync()
+    {
+        return  DbSet.Include(src => src.Round).Include(src => src.Topic).ToListAsync();
+    }
+
     public override Task<RoundTopic?> GetByIdAsync(Guid id)
     {
         return DbSet.Include(src => src.Round).ThenInclude(src => src.EducationalLevel).FirstOrDefaultAsync(src => src.Id == id);

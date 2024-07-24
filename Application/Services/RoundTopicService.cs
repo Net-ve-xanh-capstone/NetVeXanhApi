@@ -42,6 +42,12 @@ public class RoundTopicService : IRoundTopicService
 
     #region Add Topic To Round
 
+    public async Task<List<ListRoundTopicViewModel>> GetAll()
+    {
+        var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
+        return _mapper.Map<List<ListRoundTopicViewModel>>(list);
+    }
+
     public async Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
     {
         var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);

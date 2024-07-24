@@ -8,6 +8,5 @@ public class UpdatePaintingRequest
     public string? Description { get; set; }
     public string? Status { get; set; }
     public Guid? RoundTopicId { get; set; }
-    public string? Code { get; set; }
     public Guid CurrentUserId { get; set; }
 }

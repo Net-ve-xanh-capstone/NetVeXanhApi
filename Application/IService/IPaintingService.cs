@@ -8,6 +8,7 @@ namespace Application.IService;
 public interface IPaintingService
 {
     Task<bool> UpdatePainting(UpdatePaintingRequest updatePainting);
+    Task<bool> UpdatePaintingStaffPermisson(UpdatePaintingRequest updatePainting);
 
     Task<(List<PaintingViewModel>, int)> GetListPainting(ListModels listPaintingModel);
     Task<PaintingViewModel?> GetPaintingByCode(string code);

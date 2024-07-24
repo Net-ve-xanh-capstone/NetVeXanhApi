@@ -219,6 +219,19 @@ public class PaintingService : IPaintingService
     }
 
     #endregion
+    
+    #region Update Painting
+
+    public async Task<bool> UpdatePaintingStaffPermisson(UpdatePaintingRequest updatePainting)
+    {
+        var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
+
+        _mapper.Map(updatePainting, painting);
+
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
+    #endregion
 
     #region Review Decision of Painting
 

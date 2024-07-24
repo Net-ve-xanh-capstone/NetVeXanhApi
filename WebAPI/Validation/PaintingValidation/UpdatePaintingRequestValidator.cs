@@ -15,11 +15,7 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
         // Validate RoundTopicId
         RuleFor(x => x.RoundTopicId)
             .NotEqual(Guid.Empty).When(x => x.RoundTopicId.HasValue).WithMessage("RoundTopicId must be a valid GUID.");
-
-        // Validate Code
-        RuleFor(x => x.Code)
-            .MaximumLength(50).WithMessage("Code must be less than 50 characters.");
-
+        
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId is required.")

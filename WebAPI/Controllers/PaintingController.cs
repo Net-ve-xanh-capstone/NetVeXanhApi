@@ -202,23 +202,6 @@ public class PaintingController : Controller
 
     #endregion
 
-    /*#region Submitted Painting
-
-    [HttpPost("submit")]
-    public async Task<IActionResult> SubmittedPainting(Guid id)
-    {
-        var result = await _paintingService.SubmitPainting(id);
-        if (result == null) return NotFound();
-        return Ok(new BaseResponseModel
-        {
-            Status = Ok().StatusCode,
-            Result = result,
-            Message = "Delete Successfully"
-        });
-    }
-
-    #endregion*/
-
     #region Review Decision of Painting
 
     [HttpPatch("review")]

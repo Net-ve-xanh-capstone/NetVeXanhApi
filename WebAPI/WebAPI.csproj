@@ -9,6 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <None Update="EmailTemplates\**\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <PackageReference Include="FluentAssertions" Version="7.0.0-alpha.4"/>
         <PackageReference Include="FluentValidation" Version="11.9.1"/>
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0"/>

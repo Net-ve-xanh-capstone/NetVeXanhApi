@@ -89,6 +89,11 @@ public class ScheduleService : IScheduleService
         var award = round?.EducationalLevel.Award
             .FirstOrDefault(a => a.Rank == RankAward.Preliminary.ToString());
 
+        if (listPainting == null || listPainting!.Count < award!.Quantity)
+        {
+            throw new Exception("Số Lượng Tranh Không Đủ !");
+        }
+
         if (award == null) throw new Exception("Award not found.");
 
         var quantityAward = award.Quantity;
@@ -149,8 +154,7 @@ public class ScheduleService : IScheduleService
             //Get Paintings Of Preliminary round
             var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId);
             var result = SplitList(listPainting, schedule.ListExaminer.Count);
-
-
+            
             //Get all award of educationLevel
             var award = round?.EducationalLevel.Award
                 .Where(a => a.Rank != RankAward.Preliminary.ToString())

@@ -498,4 +498,33 @@ public class PaintingController : Controller
     }
 
     #endregion
+
+    #region Get Painting By Account Contest
+    [HttpGet("getpaintingbyaccountcontest")]
+    public async Task<IActionResult> GetPaintingByAccountContest([FromQuery] Guid contestId, [FromQuery] Guid accountId)
+    {
+        try
+        {
+            var result = await _paintingService.GetPaintingByAccountContest(contestId, accountId);
+            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Painting Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 }

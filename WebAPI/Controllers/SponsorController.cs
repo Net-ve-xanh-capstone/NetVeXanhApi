@@ -119,11 +119,7 @@ public class SponsorController : Controller
             {
                 Status = Ok().StatusCode,
                 Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Sponsor>(),
-                    TotalPage = 0
-                },
+                Result = new List<Sponsor>(),
                 Errors = ex
             });
         }

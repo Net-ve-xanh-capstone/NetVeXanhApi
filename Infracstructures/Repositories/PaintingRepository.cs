@@ -141,4 +141,18 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
     {
         return await DbSet.Include(src => src.Account).Where(src => src.RoundTopic.RoundId.Equals(id)).ToListAsync();
     }
+
+    public async Task<Painting> GetPaintingsByContestAndAccountAsync(Guid contestId, Guid accountId)
+    {
+        var paintings = await  DbSet.Include(x => x.RoundTopic)
+                                    .ThenInclude(x => x.Round)
+                                    .ThenInclude(x => x.EducationalLevel)
+                                    .ThenInclude(x => x.Contest)
+                                    .Include(x => x.RoundTopic)
+                                    .ThenInclude(x => x.Topic)
+                                    .Include(x => x.Account)
+                                    .Where(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id  == contestId && x.AccountId == accountId)
+                                    .FirstOrDefaultAsync();
+        return paintings;
+    }
 }

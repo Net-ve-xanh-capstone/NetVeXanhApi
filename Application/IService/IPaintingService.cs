@@ -36,4 +36,5 @@ public interface IPaintingService
 
     #endregion
     Task<bool> IsExistedId(Guid id);
+    Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
 }

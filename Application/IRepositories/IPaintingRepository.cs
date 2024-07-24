@@ -13,4 +13,5 @@ public interface IPaintingRepository : IGenericRepository<Painting>
     Task<List<Guid>> ListAccountIdByListAwardId(List<Guid> listAwardId);
     Task<List<Painting>> FilterPaintingAsync(FilterPaintingRequest filterPainting);
     Task<int> CreateNewNumberOfPaintingCode(Guid? roundId);
+    Task<Painting> GetPaintingsByContestAndAccountAsync(Guid contestId, Guid accountId);
 }

@@ -41,6 +41,12 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
                         .WithMessage("Id không tồn tại.");
                 });
         });
+
+        RuleFor(c => c.Name)
+            .NotEmpty().WithMessage("Tên không được để trống.")
+            .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
+
+        //CurrentUserId
         RuleFor(x => x.CurrentUserId)
         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 

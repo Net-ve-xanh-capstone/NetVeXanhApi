@@ -12,6 +12,8 @@ public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
     public CategoryRequestValidator(IAccountValidationService accountValidationService)
     {
         _accountValidationService = accountValidationService;
+
+        //CurrentUserId
         RuleFor(x => x.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
@@ -38,6 +40,8 @@ public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+
+
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");

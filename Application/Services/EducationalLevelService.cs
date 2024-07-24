@@ -187,8 +187,9 @@ public class EducationalLevelService : IEducationalLevelService
 
         await _unitOfWork.AwardRepo.AddRangeAsync(listAward);
         check = await _unitOfWork.SaveChangesAsync() > 0;
+
         //check
-        if (check == false) throw new Exception("Tạo Level Thất Bại");
+        if (check == false) throw new Exception("Tạo Award Thất Bại");
 
         #endregion
 

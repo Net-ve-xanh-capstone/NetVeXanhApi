@@ -133,7 +133,7 @@ public class PaintingService : IPaintingService
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
                 
-                //await _mailService.SendAccountInformation(competitor);
+                await _mailService.SendAccountInformation(competitor);
                 return result;
             }
 

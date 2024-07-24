@@ -3,6 +3,7 @@ using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -39,7 +40,7 @@ public partial class MapperConfigs : Profile
             .ForMember(des => des.RoundId, src => src.MapFrom(opt => opt.Id))
             .ForMember(des => des.RoundName, src => src.MapFrom(opt => opt.Name))
             .ForMember(des => des.EducationName, src => src.MapFrom(opt => opt.EducationalLevel.Level))
-            .ForMember(des => des.Schedules, src => src.MapFrom(opt => opt.Schedule));
+            .ForMember(des => des.Schedules, src => src.MapFrom(opt => opt.Schedule.Where(s => s.Status != ScheduleStatus.Delete.ToString())));
 
 
     }

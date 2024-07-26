@@ -313,7 +313,41 @@ public class AccountController : ControllerBase
 
     #endregion
 
-    #region Get Account By Id
+    #region Get Competitor By Id
+
+    [HttpGet("getcompetitorbyid/{id}")]
+    public async Task<IActionResult> GetCompetitorById(Guid id)
+    {
+        try
+        {
+            var result = await _accountService.GetCompetitorById(id);
+            if (result == null)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "Account Dont Exist"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Account Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get Account By Code
 
     [HttpGet("getaccountbycode/{code}")]
     public async Task<IActionResult> GetAccountByCode(string code)

@@ -171,6 +171,36 @@ public class PaintingController : Controller
     }
 
     #endregion
+    
+    #region Update Painting
+
+    [HttpPut("satffupdate")]
+    public async Task<IActionResult> UpdatePaintingstaffpermisson(UpdatePaintingRequest updatePaintingViewModel)
+    {
+        try
+        {
+            var result = await _paintingService.UpdatePaintingStaffPermisson(updatePaintingViewModel);
+            if (result == null) return NotFound();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Result = result,
+                Message = "Update Successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Delete Painting
 
@@ -201,23 +231,6 @@ public class PaintingController : Controller
     }
 
     #endregion
-
-    /*#region Submitted Painting
-
-    [HttpPost("submit")]
-    public async Task<IActionResult> SubmittedPainting(Guid id)
-    {
-        var result = await _paintingService.SubmitPainting(id);
-        if (result == null) return NotFound();
-        return Ok(new BaseResponseModel
-        {
-            Status = Ok().StatusCode,
-            Result = result,
-            Message = "Delete Successfully"
-        });
-    }
-
-    #endregion*/
 
     #region Review Decision of Painting
 

@@ -15,6 +15,7 @@ public interface IAccountService
     Task<List<AccountViewModel>> GetAllExaminer();
     Task<(List<AccountViewModel>, int)> GetListInactiveAccount(ListModels listModels);
     Task<AccountViewModel?> GetAccountById(Guid id);
+    Task<AccountViewModel?> GetCompetitorById(Guid id);
     Task<bool?> UpdateAccount(AccountUpdateRequest updateAccount);
     Task<bool?> InactiveAccount(Guid id);
     Task<bool?> ActiveAccount(Guid id);

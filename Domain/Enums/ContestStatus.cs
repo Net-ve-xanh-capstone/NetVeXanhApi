@@ -2,6 +2,8 @@
 
 public enum ContestStatus
 {
-    Active,
-    Inactive
+    NotStarted,   // Chưa bắt đầu
+    InProcess,    // Đang tiến hành
+    Complete,     // Hoàn thành
+    Delete        // Đã xóa
 }

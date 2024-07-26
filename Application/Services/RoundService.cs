@@ -39,7 +39,7 @@ public class RoundService : IRoundService
         foreach (var id in round.listLevel)
         {
             var newRound = _mapper.Map<Round>(round);
-            newRound.Status = RoundStatus.Active.ToString();
+            newRound.Status = RoundStatus.NotStarted.ToString();
             newRound.EducationalLevelId = id;
             newRound.CreatedTime = _currentTime.GetCurrentTime();
             newRound.UpdatedTime = _currentTime.GetCurrentTime();
@@ -94,7 +94,7 @@ public class RoundService : IRoundService
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(id);
         if (round == null) throw new Exception("Khong tim thay Round");
-        round.Status = RoundStatus.Inactive.ToString();
+        round.Status = RoundStatus.Delete.ToString();
         foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;

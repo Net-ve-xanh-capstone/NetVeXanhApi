@@ -1,10 +1,12 @@
 ﻿using Application.SendModels.RoundTopic;
 using Application.ViewModels.TopicViewModels;
+using Domain.Models;
 
 namespace Application.IService;
 
 public interface IRoundTopicService
 {
+    Task<List<ListRoundTopicViewModel>> GetAll();
     Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request);
     Task<bool> AddTopicToRound(RoundTopicRequest roundTopicRequest);
     Task<bool> DeleteTopicInRound(RoundTopicDeleteRequest roundTopicDeleteRequest);

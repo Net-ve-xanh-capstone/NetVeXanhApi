@@ -38,7 +38,7 @@ public class ContestService : IContestService
 
         if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime)) throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
         
-        contest.Status = ContestStatus.Active.ToString();
+        contest.Status = ContestStatus.NotStarted.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();
         await _unitOfWork.ContestRepo.AddAsync(contest);
         var check = await _unitOfWork.SaveChangesAsync() > 0;
@@ -59,7 +59,7 @@ public class ContestService : IContestService
         level.Level = "Bảng A";
         level.CreatedBy = addContestViewModel.CurrentUserId;
         level.ContestId = contest.Id;
-        level.Status = EducationalLevelStatus.Active.ToString();
+        level.Status = EducationalLevelStatus.NotStarted.ToString();
         level.CreatedTime = _currentTime.GetCurrentTime();
         level.Description = "Mầm Non";
         listLevel.Add(level);
@@ -69,7 +69,7 @@ public class ContestService : IContestService
         level2.Level = "Bảng B";
         level2.CreatedBy = addContestViewModel.CurrentUserId;
         level2.ContestId = contest.Id;
-        level2.Status = EducationalLevelStatus.Active.ToString();
+        level2.Status = EducationalLevelStatus.NotStarted.ToString();
         level2.CreatedTime = _currentTime.GetCurrentTime();
         level2.Description = "Tiểu Học";
         listLevel.Add(level2);
@@ -92,7 +92,7 @@ public class ContestService : IContestService
         round.Name = "Vòng Sơ Khảo";
         round.CreatedBy = addContestViewModel.CurrentUserId;
         round.EducationalLevelId = level.Id;
-        round.Status = RoundStatus.Active.ToString();
+        round.Status = RoundStatus.NotStarted.ToString();
         round.CreatedTime = _currentTime.GetCurrentTime();
         round.StartTime = addContestViewModel.Round1StartTime;
         round.EndTime = addContestViewModel.Round1EndTime;
@@ -105,7 +105,7 @@ public class ContestService : IContestService
         round2.Name = "Vòng Chung Kết";
         round2.CreatedBy = addContestViewModel.CurrentUserId;
         round2.EducationalLevelId = level.Id;
-        round2.Status = RoundStatus.Active.ToString();
+        round2.Status = RoundStatus.NotStarted.ToString();
         round2.CreatedTime = _currentTime.GetCurrentTime();
         round2.StartTime = addContestViewModel.Round2StartTime;
         round2.EndTime = addContestViewModel.Round2EndTime;
@@ -118,7 +118,7 @@ public class ContestService : IContestService
         round3.Name = "Vòng Sơ Khảo";
         round3.CreatedBy = addContestViewModel.CurrentUserId;
         round3.EducationalLevelId = level2.Id;
-        round3.Status = RoundStatus.Active.ToString();
+        round3.Status = RoundStatus.NotStarted.ToString();
         round3.CreatedTime = _currentTime.GetCurrentTime();
         round3.StartTime = addContestViewModel.Round1StartTime;
         round3.EndTime = addContestViewModel.Round1EndTime;
@@ -131,7 +131,7 @@ public class ContestService : IContestService
         round4.Name = "Vòng Chung Kết";
         round4.CreatedBy = addContestViewModel.CurrentUserId;
         round4.EducationalLevelId = level2.Id;
-        round4.Status = RoundStatus.Active.ToString();
+        round4.Status = RoundStatus.NotStarted.ToString();
         round4.CreatedTime = _currentTime.GetCurrentTime();
         round4.StartTime = addContestViewModel.Round2StartTime;
         round4.EndTime = addContestViewModel.Round2EndTime;
@@ -158,7 +158,7 @@ public class ContestService : IContestService
         award1.CreatedBy = addContestViewModel.CurrentUserId;
         award1.CreatedTime = _currentTime.GetCurrentTime();
         award1.Quantity = addContestViewModel.Rank1;
-        award1.Status = ContestStatus.Active.ToString();
+        award1.Status = ContestStatus.NotStarted.ToString();
         award1.EducationalLevelId = level.Id;
         listAward.Add(award1);
 
@@ -168,7 +168,7 @@ public class ContestService : IContestService
         award2.CreatedBy = addContestViewModel.CurrentUserId;
         award2.CreatedTime = _currentTime.GetCurrentTime();
         award2.Quantity = addContestViewModel.Rank2;
-        award2.Status = ContestStatus.Active.ToString();
+        award2.Status = ContestStatus.NotStarted.ToString();
         award2.EducationalLevelId = level.Id;
         listAward.Add(award2);
 
@@ -178,7 +178,7 @@ public class ContestService : IContestService
         award3.CreatedBy = addContestViewModel.CurrentUserId;
         award3.CreatedTime = _currentTime.GetCurrentTime();
         award3.Quantity = addContestViewModel.Rank3;
-        award3.Status = ContestStatus.Active.ToString();
+        award3.Status = ContestStatus.NotStarted.ToString();
         award3.EducationalLevelId = level.Id;
         listAward.Add(award3);
 
@@ -188,7 +188,7 @@ public class ContestService : IContestService
         award4.CreatedBy = addContestViewModel.CurrentUserId;
         award4.CreatedTime = _currentTime.GetCurrentTime();
         award4.Quantity = addContestViewModel.Rank4;
-        award4.Status = ContestStatus.Active.ToString();
+        award4.Status = ContestStatus.NotStarted.ToString();
         award4.EducationalLevelId = level.Id;
         listAward.Add(award4);
 
@@ -198,7 +198,7 @@ public class ContestService : IContestService
         award9.CreatedBy = addContestViewModel.CurrentUserId;
         award9.CreatedTime = _currentTime.GetCurrentTime();
         award9.Quantity = addContestViewModel.PassRound1;
-        award9.Status = ContestStatus.Active.ToString();
+        award9.Status = ContestStatus.NotStarted.ToString();
         award9.EducationalLevelId = level.Id;
         listAward.Add(award9);
 
@@ -208,7 +208,7 @@ public class ContestService : IContestService
         award5.CreatedBy = addContestViewModel.CurrentUserId;
         award5.CreatedTime = _currentTime.GetCurrentTime();
         award5.Quantity = addContestViewModel.Rank1;
-        award5.Status = ContestStatus.Active.ToString();
+        award5.Status = ContestStatus.NotStarted.ToString();
         award5.EducationalLevelId = level2.Id;
         listAward.Add(award5);
 
@@ -218,7 +218,7 @@ public class ContestService : IContestService
         award6.CreatedBy = addContestViewModel.CurrentUserId;
         award6.CreatedTime = _currentTime.GetCurrentTime();
         award6.Quantity = addContestViewModel.Rank2;
-        award6.Status = ContestStatus.Active.ToString();
+        award6.Status = ContestStatus.NotStarted.ToString();
         award6.EducationalLevelId = level2.Id;
         listAward.Add(award6);
 
@@ -228,7 +228,7 @@ public class ContestService : IContestService
         award7.CreatedBy = addContestViewModel.CurrentUserId;
         award7.CreatedTime = _currentTime.GetCurrentTime();
         award7.Quantity = addContestViewModel.Rank3;
-        award7.Status = ContestStatus.Active.ToString();
+        award7.Status = ContestStatus.NotStarted.ToString();
         award7.EducationalLevelId = level2.Id;
         listAward.Add(award7);
 
@@ -238,7 +238,7 @@ public class ContestService : IContestService
         award8.CreatedBy = addContestViewModel.CurrentUserId;
         award8.CreatedTime = _currentTime.GetCurrentTime();
         award8.Quantity = addContestViewModel.Rank4;
-        award8.Status = ContestStatus.Active.ToString();
+        award8.Status = ContestStatus.NotStarted.ToString();
         award8.EducationalLevelId = level2.Id;
         listAward.Add(award8);
 
@@ -248,7 +248,7 @@ public class ContestService : IContestService
         award10.CreatedBy = addContestViewModel.CurrentUserId;
         award10.CreatedTime = _currentTime.GetCurrentTime();
         award10.Quantity = addContestViewModel.PassRound1;
-        award10.Status = ContestStatus.Active.ToString();
+        award10.Status = ContestStatus.NotStarted.ToString();
         award10.EducationalLevelId = level.Id;
         listAward.Add(award10);
 
@@ -272,7 +272,7 @@ public class ContestService : IContestService
         if (contest == null) throw new Exception("Khong tim thay Contest");
 
         //Contest
-        contest.Status = ContestStatus.Inactive.ToString();
+        contest.Status = ContestStatus.Delete.ToString();
 
         //Resource
         foreach (var resource in contest.Resources) resource.Status = ResourcesStatus.Inactive.ToString();
@@ -283,14 +283,14 @@ public class ContestService : IContestService
             //round
             foreach (var round in level.Round)
             {
-                round.Status = RoundStatus.Inactive.ToString();
+                round.Status = RoundStatus.Delete.ToString();
                 foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
             }
 
             //award
             foreach (var award in level.Award) award.Status = AwardStatus.Inactive.ToString();
 
-            level.Status = EducationalLevelStatus.Inactive.ToString();
+            level.Status = EducationalLevelStatus.Delete.ToString();
         }
 
 

@@ -16,7 +16,11 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Status == AccountStatus.Active.ToString());
     }
-    
+
+    public async Task<Account?> GetCompetitorByIdAsync(Guid id)
+    {
+        return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Role == Role.Competitor.ToString());
+    }
     public async Task<Account?> Login(string username)
     {
         return await DbSet.FirstOrDefaultAsync(a =>

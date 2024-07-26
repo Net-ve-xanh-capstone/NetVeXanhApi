@@ -12,7 +12,7 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
         _validationServiceManager = validationServiceManager;
         // Validate RoundId
         RuleFor(x => x.RoundId)
-            .NotEmpty().WithMessage("RoundId không được trống.")
+            .NotEmpty().WithMessage("RoundId không được trống.");
         When(x => !string.IsNullOrEmpty(x.RoundId.ToString()), () =>
         {
             RuleFor(x => x.RoundId)
@@ -43,5 +43,36 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
             .Must(list => list.All(id => id != Guid.Empty)).WithMessage("Mọi topicID trong ListTopicId phải là kiểu GUID.")
             .Must(list => list.Distinct().Count() == list.Count).WithMessage("ListTopicId không được trùng.")
             .WithMessage("ListTopicId phải có ít nhất 1 topic ID.");
+
+        RuleFor(x => x.ListTopicId)
+            .NotNull().WithMessage("Danh sách tranh không được để trống.")
+            .Must(paintings => paintings != null && paintings.Any()).WithMessage("Danh sách tranh phải chứa ít nhất một mục.");
+
+        When(x => x.ListTopicId != null && x.ListTopicId.Any(), () =>
+        {
+            RuleForEach(x => x.ListTopicId).ChildRules(topic =>
+            {
+                topic.RuleFor(p => p)
+                    .NotEmpty().WithMessage("Chủ đề không được trống.")
+                    .Must(topicId => Guid.TryParse(topicId.ToString(), out _)).WithMessage("Mỗi GUID của chủ đề phải là một GUID hợp lệ.")
+                    .DependentRules(() =>
+                    {
+                        topic.RuleFor(p => p)
+                            .MustAsync(async (topicId, cancellation) =>
+                            {
+                                try
+                                {
+                                    return await _validationServiceManager.PaintingValidationService.IsExistedId(topicId);
+                                }
+                                catch (Exception)
+                                {
+                                    // Xử lý lỗi kiểm tra ID
+                                    return false; // Giả sử ID không tồn tại khi có lỗi
+                                }
+                            })
+                            .WithMessage("Có chủ đề không tồn tại.");
+                    });
+            });
+        });
     }
 }

@@ -19,9 +19,11 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
             .Length(3, 100).WithMessage("Tên cuộc thi phải có độ dài từ 3 đến 100 ký tự");
 
         RuleFor(contest => contest.StartTime)
+            .NotEmpty().WithMessage("Thời gian bắt đầu không được để trống")
             .LessThan(contest => contest.EndTime).WithMessage("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc");
 
         RuleFor(contest => contest.EndTime)
+            .NotEmpty().WithMessage("Thời gian kết thúc không được để trống")
             .GreaterThan(contest => contest.StartTime).WithMessage("Thời gian kết thúc phải lớn hơn thời gian bắt đầu");
 
         RuleFor(contest => contest.Location)
@@ -32,7 +34,7 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
             .NotEmpty().WithMessage("Mô tả không được để trống");
 
         RuleFor(contest => contest.listLevel)
-            .NotEmpty().WithMessage("Danh sách cấp độ không được để trống");
+            .NotEmpty().WithMessage("Danh sách dối tượng không được để trống");
 
         RuleFor(x => x.CurrentUserId)
         .NotEmpty().WithMessage("CurrentUserId không được để trống.");

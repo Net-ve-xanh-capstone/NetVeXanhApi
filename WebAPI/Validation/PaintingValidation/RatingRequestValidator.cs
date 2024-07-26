@@ -52,8 +52,7 @@ public class RatingRequestValidator : AbstractValidator<RatingRequest>
             RuleForEach(x => x.Paintings).ChildRules(painting =>
             {
                 painting.RuleFor(p => p)
-                    .NotEmpty().WithMessage("Mỗi GUID của tranh phải là một GUID hợp lệ.")
-                    .NotEqual(Guid.Empty).WithMessage("Mỗi GUID của tranh phải là một GUID hợp lệ.")
+                    .NotEmpty().WithMessage("Không có tranh nào để chấm.")
                     .Must(paintingId => Guid.TryParse(paintingId.ToString(), out _)).WithMessage("Mỗi GUID của tranh phải là một GUID hợp lệ.")
                     .DependentRules(() =>
                     {

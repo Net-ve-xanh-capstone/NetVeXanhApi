@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Topic;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.TopicValidation;
 
 public class TopicRequestValidator : AbstractValidator<TopicRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public TopicRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public TopicRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
         RuleFor(x => x.Name)
             .Length(2, 50).WithMessage("Name phải có từ 2 tới 50 ký tự.");
 
@@ -30,7 +30,7 @@ public class TopicRequestValidator : AbstractValidator<TopicRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

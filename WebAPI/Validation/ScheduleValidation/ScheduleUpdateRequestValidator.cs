@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Schedule;
 using Application.Services.ValidationService;
@@ -8,13 +9,10 @@ namespace WebAPI.Validation.ScheduleValidation;
 
 public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IScheduleValidationService _schduleValidationService;
-
-    public ScheduleUpdateRequestValidator(IAccountValidationService accountValidationService, IScheduleValidationService schduleValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ScheduleUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _schduleValidationService = schduleValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -31,7 +29,7 @@ public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRe
                         {
                             try
                             {
-                                return await _schduleValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.ScheduleValidationService.IsExistedId(topicId);
                             }
                             catch (Exception)
                             {
@@ -42,6 +40,13 @@ public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRe
                         .WithMessage("Id không tồn tại.");
                 });
         });
+        RuleFor(review => review.Description)
+            .MaximumLength(500).WithMessage("Mô tả không được vượt quá 500 ký tự");
+
+
+        RuleFor(review => review.EndDate)
+            .GreaterThan(DateTime.Now).WithMessage("Ngày kết thúc phải lớn hơn ngày hiện tại");
+
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -59,7 +64,7 @@ public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRe
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

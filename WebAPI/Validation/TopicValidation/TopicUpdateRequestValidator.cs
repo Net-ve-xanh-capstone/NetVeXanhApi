@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Topic;
 using Application.Services.ValidationService;
@@ -8,16 +9,16 @@ namespace WebAPI.Validation.TopicValidation;
 
 public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly ITopicValidationService _topicValidationService;
-
-    public TopicUpdateRequestValidator(IAccountValidationService accountValidationService, ITopicValidationService topicValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public TopicUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _topicValidationService = topicValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
+
+        RuleFor(x => x.Name)
+            .Length(2, 50).WithMessage("Name phải có từ 2 tới 50 ký tự.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -31,7 +32,7 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
                         {
                             try
                             {
-                                return await _topicValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
                             }
                             catch (Exception)
                             {
@@ -59,7 +60,7 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

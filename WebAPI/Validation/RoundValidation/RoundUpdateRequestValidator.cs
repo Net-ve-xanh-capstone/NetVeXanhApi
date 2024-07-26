@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Round;
 using Application.Services.ValidationService;
@@ -8,13 +9,11 @@ namespace WebAPI.Validation.RoundValidation;
 
 public class RoundUpdateRequestValidator : AbstractValidator<RoundUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IRoundTopicValidationService _roundtopicValidationService;
-
-    public RoundUpdateRequestValidator(IAccountValidationService accountValidationService, IRoundTopicValidationService roundtopicValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public RoundUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _roundtopicValidationService = roundtopicValidationService;
+        _validationServiceManager = validationServiceManager;
+
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -22,16 +21,16 @@ public class RoundUpdateRequestValidator : AbstractValidator<RoundUpdateRequest>
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(roundId => Guid.TryParse(roundId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (roundId, cancellation) =>
                         {
                             try
                             {
-                                return await _roundtopicValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.ResourceValidationService.IsExistedId(roundId);
                             }
                             catch (Exception)
                             {
@@ -43,7 +42,25 @@ public class RoundUpdateRequestValidator : AbstractValidator<RoundUpdateRequest>
                 });
         });
 
-        // Validate CurrentUserId
+        RuleFor(contest => contest.Name)
+            .NotEmpty().WithMessage("Tên cuộc thi không được để trống")
+            .Length(3, 100).WithMessage("Tên cuộc thi phải có độ dài từ 3 đến 100 ký tự");
+
+        RuleFor(contest => contest.StartTime)
+            .NotEmpty().WithMessage("Thời gian bắt đầu không được để trống")
+            .LessThan(contest => contest.EndTime).WithMessage("Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc");
+
+        RuleFor(contest => contest.EndTime)
+            .NotEmpty().WithMessage("Thời gian kết thúc không được để trống")
+            .GreaterThan(contest => contest.StartTime).WithMessage("Thời gian kết thúc phải lớn hơn thời gian bắt đầu");
+
+        RuleFor(contest => contest.Location)
+            .NotEmpty().WithMessage("Địa điểm không được để trống")
+            .Length(3, 100).WithMessage("Địa điểm phải có độ dài từ 3 đến 100 ký tự");
+
+        RuleFor(contest => contest.Description)
+            .NotEmpty().WithMessage("Mô tả không được để trống");
+
         RuleFor(x => x.CurrentUserId)
         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
@@ -59,7 +76,7 @@ public class RoundUpdateRequestValidator : AbstractValidator<RoundUpdateRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

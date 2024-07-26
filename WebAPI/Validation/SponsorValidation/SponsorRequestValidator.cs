@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using FluentValidation;
 using Infracstructures.SendModels.Sponsor;
@@ -7,11 +8,12 @@ namespace WebAPI.Validation.SponsorValidation;
 
 public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public SponsorRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public SponsorRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
+
+
         RuleFor(org => org.Name)
             .NotEmpty().WithMessage("Tên tổ chức không được để trống")
             .Length(3, 100).WithMessage("Tên tổ chức phải có độ dài từ 3 đến 100 ký tự");
@@ -25,8 +27,8 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
             .Length(3, 100).WithMessage("Tên người đại diện phải có độ dài từ 3 đến 100 ký tự");
 
         RuleFor(org => org.Logo)
-            .NotEmpty().WithMessage("Logo không được để trống")
-            .Must(logo => Uri.IsWellFormedUriString(logo, UriKind.RelativeOrAbsolute)).WithMessage("Đường dẫn logo không hợp lệ");
+            .NotEmpty().WithMessage("Logo không được để trống.")
+            .Must(BeAValidUrl).WithMessage("Logo không là một URL hợp lệ.");
 
         RuleFor(org => org.PhoneNumber)
             .NotEmpty().WithMessage("Số điện thoại không được để trống")
@@ -47,7 +49,7 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -58,5 +60,10 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+    }
+    private bool BeAValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

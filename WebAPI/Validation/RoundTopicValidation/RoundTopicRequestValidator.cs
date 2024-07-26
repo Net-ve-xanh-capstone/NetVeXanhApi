@@ -38,11 +38,6 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
         });
 
         // Validate ListTopicId
-        RuleFor(x => x.ListTopicId)
-            .NotNull().WithMessage("ListTopicId không được trống.")
-            .Must(list => list.All(id => id != Guid.Empty)).WithMessage("Mọi topicID trong ListTopicId phải là kiểu GUID.")
-            .Must(list => list.Distinct().Count() == list.Count).WithMessage("ListTopicId không được trùng.")
-            .WithMessage("ListTopicId phải có ít nhất 1 topic ID.");
 
         RuleFor(x => x.ListTopicId)
             .NotNull().WithMessage("Danh sách tranh không được để trống.")

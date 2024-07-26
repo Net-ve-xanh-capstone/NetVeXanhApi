@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Schedule;
 using FluentValidation;
@@ -7,11 +8,11 @@ namespace WebAPI.Validation.ScheduleValidation;
 
 public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public ScheduleRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ScheduleRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
+
         RuleFor(review => review.Description)
             .MaximumLength(500).WithMessage("Mô tả không được vượt quá 500 ký tự");
 
@@ -42,7 +43,7 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.Services.ValidationService;
 using FluentValidation;
@@ -8,13 +9,10 @@ namespace WebAPI.Validation.SponsorValidation;
 
 public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly ISponsorValidationService _sponsorValidationService;
-
-    public SponsorUpdateRequestValidator(IAccountValidationService accountValidationService, ISponsorValidationService sponsorValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public SponsorUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _sponsorValidationService = sponsorValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -31,7 +29,7 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                         {
                             try
                             {
-                                return await _sponsorValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.SponsorValidationService.IsExistedId(topicId);
                             }
                             catch (Exception)
                             {
@@ -42,6 +40,26 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                         .WithMessage("Id không tồn tại.");
                 });
         });
+
+        RuleFor(org => org.Name)
+           .NotEmpty().WithMessage("Tên tổ chức không được để trống")
+           .Length(3, 100).WithMessage("Tên tổ chức phải có độ dài từ 3 đến 100 ký tự");
+
+        RuleFor(org => org.Address)
+            .NotEmpty().WithMessage("Địa chỉ không được để trống")
+            .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự");
+
+        RuleFor(org => org.Delegate)
+            .NotEmpty().WithMessage("Người đại diện không được để trống")
+            .Length(3, 100).WithMessage("Tên người đại diện phải có độ dài từ 3 đến 100 ký tự");
+
+        RuleFor(org => org.Logo)
+            .NotEmpty().WithMessage("Logo không được để trống.")
+            .Must(BeAValidUrl).WithMessage("Logo không là một URL hợp lệ.");
+
+        RuleFor(org => org.PhoneNumber)
+            .NotEmpty().WithMessage("Số điện thoại không được để trống")
+            .Matches(@"^\+?\d{10,15}$").WithMessage("Số điện thoại không hợp lệ");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -59,7 +77,7 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -70,5 +88,10 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+    }
+    private bool BeAValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

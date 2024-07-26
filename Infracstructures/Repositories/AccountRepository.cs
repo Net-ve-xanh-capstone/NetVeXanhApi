@@ -19,7 +19,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
 
     public async Task<Account?> GetCompetitorByIdAsync(Guid id)
     {
-        return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Status == AccountStatus.Active.ToString() && a.Role == Role.Competitor.ToString());
+        return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Role == Role.Competitor.ToString());
     }
     public async Task<Account?> Login(string username)
     {

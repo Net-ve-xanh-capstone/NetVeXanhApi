@@ -1,4 +1,6 @@
-﻿using Application.IService;
+﻿using System.Text.RegularExpressions;
+using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Painting;
 using FluentValidation;
@@ -7,11 +9,10 @@ namespace WebAPI.Validation.PaintingValidation;
 
 public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreatePaintingRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public StaffCreatePaintingRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public StaffCreatePaintingRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate FullName
         RuleFor(x => x.FullName)
             .NotEmpty().WithMessage("Họ tên là bắt buộc.")
@@ -28,9 +29,9 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
             .MaximumLength(250).WithMessage("Địa chỉ phải ít hơn 250 ký tự.");
 
         // Validate Phone
-        RuleFor(x => x.Phone)
-            .NotEmpty().WithMessage("Số điện thoại là bắt buộc.")
-            .Matches(@"^\+?\d{10,15}$").WithMessage("Số điện thoại phải là một số điện thoại hợp lệ (10-15 chữ số).");
+        RuleFor(user => user.Phone)
+            .Must(phone => string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .WithMessage("Số điện thoại không hợp lệ.");
 
         // Validate Birthday
         RuleFor(x => x.Birthday)
@@ -53,8 +54,30 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
 
         // Validate RoundTopicId
         RuleFor(x => x.RoundTopicId)
-            .NotEmpty().WithMessage("RoundTopicId là bắt buộc.")
-            .NotEqual(Guid.Empty).WithMessage("RoundTopicId phải là một GUID hợp lệ.");
+            .NotEmpty().WithMessage("RoundTopicId là bắt buộc.");
+        When(x => !string.IsNullOrEmpty(x.RoundTopicId.ToString()), () =>
+        {
+            RuleFor(x => x.RoundTopicId)
+                .Must(roundtopicId => Guid.TryParse(roundtopicId.ToString(), out _))
+                .WithMessage("RoundTopicId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.RoundTopicId)
+                        .MustAsync(async (roundtopicId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("RoundTopicId không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -72,7 +95,7 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

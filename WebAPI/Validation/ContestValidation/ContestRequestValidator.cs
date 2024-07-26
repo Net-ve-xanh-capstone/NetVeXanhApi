@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Contest;
 using FluentValidation;
@@ -7,11 +8,11 @@ namespace WebAPI.Validation.ContestValidation;
 
 public class ContestRequestValidator : AbstractValidator<ContestRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public ContestRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ContestRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
+
         RuleFor(e => e.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 100).WithMessage("Tên phải có độ dài từ 2 đến 100 ký tự.");
@@ -47,7 +48,7 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -64,16 +65,14 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
             .LessThan(e => e.Round1EndTime).WithMessage("Thời gian bắt đầu vòng 1 phải trước thời gian kết thúc vòng 1.");
 
         RuleFor(e => e.Round1EndTime)
-            .NotEmpty().WithMessage("Thời gian kết thúc vòng 1 không được để trống.")
-            .GreaterThan(e => e.Round1StartTime).WithMessage("Thời gian kết thúc vòng 1 phải sau thời gian bắt đầu vòng 1.");
+            .NotEmpty().WithMessage("Thời gian kết thúc vòng 1 không được để trống.");
 
         RuleFor(e => e.Round2StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 2 không được để trống.")
             .LessThan(e => e.Round2EndTime).WithMessage("Thời gian bắt đầu vòng 2 phải trước thời gian kết thúc vòng 2.");
 
         RuleFor(e => e.Round2EndTime)
-            .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.")
-            .GreaterThan(e => e.Round2StartTime).WithMessage("Thời gian kết thúc vòng 2 phải sau thời gian bắt đầu vòng 2.");
+            .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.");
 
         RuleFor(e => e.Rank1)
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải nhất phải lớn hơn hoặc bằng 1.");

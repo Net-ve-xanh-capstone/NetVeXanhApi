@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.EducationalLevel;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.EducationalLevelValidation;
 
 public class EducationalLevelRequestValidator : AbstractValidator<EducationalLevelRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public EducationalLevelRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public EducationalLevelRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Level
         RuleFor(x => x.Level)
             .NotEmpty().WithMessage("Level không được trống.")
@@ -38,7 +38,7 @@ public class EducationalLevelRequestValidator : AbstractValidator<EducationalLev
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

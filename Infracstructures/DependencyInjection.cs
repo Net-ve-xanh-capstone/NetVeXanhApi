@@ -28,6 +28,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IValidatorFactory, ValidatorFactory>();
+        services.AddScoped<IValidationServiceManager, ValidationServiceManager>();
 
         #region Config Repository and Service
 

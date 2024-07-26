@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Post;
 using FluentValidation;
@@ -8,13 +9,10 @@ namespace WebAPI.Validation.PostValidation;
 
 public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IPostValidationService _postValidationService;
-
-    public UpdatePostValidator(IAccountValidationService accountValidationService, IPostValidationService postValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public UpdatePostValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _postValidationService = postValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -22,16 +20,16 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(postId => Guid.TryParse(postId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (postId, cancellation) =>
                         {
                             try
                             {
-                                return await _postValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.PostValidationService.IsExistedId(postId);
                             }
                             catch (Exception)
                             {
@@ -48,7 +46,30 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 
         // Validate CategoryId
         RuleFor(x => x.CategoryId)
-            .NotEqual(Guid.Empty).When(x => x.CategoryId.HasValue).WithMessage("CategoryId phải là một GUID hợp lệ.");
+            .NotEmpty().WithMessage("CategoryId phải là một GUID hợp lệ.");
+        When(x => !string.IsNullOrEmpty(x.CategoryId.ToString()), () =>
+        {
+            RuleFor(x => x.CategoryId)
+                .Must(categoryId => Guid.TryParse(categoryId.ToString(), out _))
+                .WithMessage("CategoryId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.CategoryId)
+                        .MustAsync(async (categoryId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CategoryId không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -66,7 +87,7 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

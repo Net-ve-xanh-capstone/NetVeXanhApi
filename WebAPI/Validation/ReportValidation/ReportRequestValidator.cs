@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Report;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.ReportValidation;
 
 public class ReportRequestValidator : AbstractValidator<ReportRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public ReportRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ReportRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Title
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title không được trống.")
@@ -38,7 +38,7 @@ public class ReportRequestValidator : AbstractValidator<ReportRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

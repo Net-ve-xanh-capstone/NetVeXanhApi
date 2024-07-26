@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Resources;
 using FluentValidation;
@@ -7,13 +8,10 @@ namespace WebAPI.Validation.ResourceValidation;
 
 public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdateRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IResourceValidationService _resourceValidationService;
-
-    public ResourcesUpdateRequestValidator(IAccountValidationService accountValidationService, IResourceValidationService resourceValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ResourcesUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _resourceValidationService = resourceValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -21,16 +19,16 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(resourceId => Guid.TryParse(resourceId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (resourceId, cancellation) =>
                         {
                             try
                             {
-                                return await _resourceValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.ResourceValidationService.IsExistedId(resourceId);
                             }
                             catch (Exception)
                             {
@@ -62,7 +60,7 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

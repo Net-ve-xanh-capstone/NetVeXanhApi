@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Painting;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.PaintingValidation;
 
 public class CompetitorCreatePaintingRequestValidator : AbstractValidator<CompetitorCreatePaintingRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public CompetitorCreatePaintingRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public CompetitorCreatePaintingRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate AccountId
         RuleFor(x => x.AccountId)
         .NotEmpty().WithMessage("AccountId không được để trống.");
@@ -28,7 +28,7 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -41,8 +41,9 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
         });
 
         // Validate Image
-        RuleFor(x => x.Image)
-            .NotEmpty().WithMessage("Hình ảnh là bắt buộc.");
+        RuleFor(c => c.Image)
+            .NotEmpty().WithMessage("Tranh không được để trống.")
+            .Must(BeAValidUrl).WithMessage("Tranh là một URL hợp lệ.");
 
         // Validate Name
         RuleFor(x => x.Name)
@@ -56,8 +57,34 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
 
         // Validate RoundTopicId
         RuleFor(x => x.RoundTopicId)
-            .NotEmpty().WithMessage("RoundTopicId là bắt buộc.")
-            .NotEqual(Guid.Empty).WithMessage("RoundTopicId phải là một GUID hợp lệ.");
+            .NotEmpty().WithMessage("RoundTopicId là bắt buộc.");
+        When(x => !string.IsNullOrEmpty(x.RoundTopicId.ToString()), () =>
+        {
+            RuleFor(x => x.RoundTopicId)
+                .Must(roundtopicId => Guid.TryParse(roundtopicId.ToString(), out _))
+                .WithMessage("RoundTopicId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.RoundTopicId)
+                        .MustAsync(async (roundtopicId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("RoundTopicId không tồn tại.");
+                });
+        });
     }
-
+    private bool BeAValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+    }
 }

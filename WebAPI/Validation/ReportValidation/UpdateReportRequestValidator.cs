@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Report;
 using FluentValidation;
@@ -7,13 +8,10 @@ namespace WebAPI.Validation.ReportValidation;
 
 public class UpdateReportRequestValidator : AbstractValidator<UpdateReportRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IReportValidationService _reportValidationService;
-
-    public UpdateReportRequestValidator(IAccountValidationService accountValidationService, IReportValidationService reportValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public UpdateReportRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _reportValidationService = reportValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -21,16 +19,16 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(reportId => Guid.TryParse(reportId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (reportId, cancellation) =>
                         {
                             try
                             {
-                                return await _reportValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.ReportValidationService.IsExistedId(reportId);
                             }
                             catch (Exception)
                             {
@@ -67,7 +65,7 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

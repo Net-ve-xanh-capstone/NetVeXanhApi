@@ -1,19 +1,20 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Award;
+using Domain.Enums;
 using FluentValidation;
 
 namespace WebAPI.Validation.AwardValidation;
 
 public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly IAwardValidationService _awardValidationService;
-
-    public UpdateAwardRequestValidator(IAccountValidationService accountValidationService, IAwardValidationService awardValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public UpdateAwardRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _awardValidationService = awardValidationService;
+        _validationServiceManager = validationServiceManager;
+
+
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -30,7 +31,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         {
                             try
                             {
-                                return await _awardValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.AwardValidationService.IsExistedId(topicId);
                             }
                             catch (Exception)
                             {
@@ -43,8 +44,8 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
         });
 
         RuleFor(x => x.Rank)
-            .NotEmpty().WithMessage("Rank không được để trống.")
-            .Length(1, 50).WithMessage("Rank phải có độ dài từ 1 đến 50 ký tự.");
+            .IsEnumName(typeof(RankAward), caseSensitive: true)
+            .WithMessage("Rank không đúng định dạng.");
 
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(1).WithMessage("Quantity phải lớn hơn hoặc bằng 1.");
@@ -56,10 +57,32 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
         RuleFor(x => x.Cash)
             .GreaterThanOrEqualTo(0).WithMessage("Cash phải lớn hơn hoặc bằng 0.");
 
-        //Chưa valid
+        //Level Id
         RuleFor(x => x.EducationalLevelId)
-            .NotEmpty().WithMessage("EducationalLevelId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("EducationalLevelId không hợp lệ.");
+            .NotEmpty().WithMessage("EducationalLevelId không được để trống.");
+        When(x => !string.IsNullOrEmpty(x.EducationalLevelId.ToString()), () =>
+        {
+            RuleFor(x => x.EducationalLevelId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("EducationalLevelId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.EducationalLevelId)
+                        .MustAsync(async (levelId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("EducationalLevelId không tồn tại.");
+                });
+        });
 
 
 
@@ -80,7 +103,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -91,5 +114,6 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Collection;
 using FluentValidation;
@@ -7,13 +8,10 @@ namespace WebAPI.Validation.CollectionValidation;
 
 public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollectionRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly ICollectionValidationService _collectionValidationService;
-
-    public UpdateCollectionRequestValidator(IAccountValidationService accountValidationService, ICollectionValidationService collectionValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public UpdateCollectionRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _collectionValidationService = collectionValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -21,16 +19,16 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(collectionId => Guid.TryParse(collectionId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (collectionId, cancellation) =>
                         {
                             try
                             {
-                                return await _collectionValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.CollectionValidationService.IsExistedId(collectionId);
                             }
                             catch (Exception)
                             {
@@ -56,7 +54,7 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -67,5 +65,18 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+
+        RuleFor(c => c.Name)
+            .NotEmpty().WithMessage("Tên không được để trống.")
+            .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
+
+        RuleFor(c => c.Image)
+            .NotEmpty().WithMessage("Hình ảnh không được để trống.")
+            .Must(BeAValidUrl).WithMessage("Hình ảnh phải là một URL hợp lệ.");
+    }
+    private bool BeAValidUrl(string url)
+    {
+        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
+            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

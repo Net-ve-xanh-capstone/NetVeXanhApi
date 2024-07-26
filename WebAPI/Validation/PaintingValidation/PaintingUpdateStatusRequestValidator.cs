@@ -1,4 +1,5 @@
-﻿using Application.IService.IValidationService;
+﻿using Application;
+using Application.IService.IValidationService;
 using FluentValidation;
 using Infracstructures.SendModels.Painting;
 
@@ -6,11 +7,10 @@ namespace WebAPI.Validation.PaintingValidation;
 
 public class PaintingUpdateStatusRequestValidator : AbstractValidator<PaintingUpdateStatusRequest>
 {
-    private readonly IPaintingValidationService _paintingValidationService;
-
-    public PaintingUpdateStatusRequestValidator(IPaintingValidationService paintingValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public PaintingUpdateStatusRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _paintingValidationService = paintingValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -18,16 +18,16 @@ public class PaintingUpdateStatusRequestValidator : AbstractValidator<PaintingUp
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(paintingId => Guid.TryParse(paintingId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (paintingId, cancellation) =>
                         {
                             try
                             {
-                                return await _paintingValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
                             }
                             catch (Exception)
                             {

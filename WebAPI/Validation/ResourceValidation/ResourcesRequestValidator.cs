@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Resources;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.ResourceValidation;
 
 public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public ResourcesRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ResourcesRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
 
 
         // Validate Sponsorship
@@ -21,13 +21,57 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 
         // Validate SponsorId
         RuleFor(x => x.SponsorId)
-            .NotEmpty().WithMessage("SponsorId không được trống.")
-            .NotEqual(Guid.Empty).WithMessage("SponsorId phải là kiểu GUID.");
+            .NotEmpty().WithMessage("SponsorId không được trống.");
+        When(x => !string.IsNullOrEmpty(x.SponsorId.ToString()), () =>
+        {
+            RuleFor(x => x.SponsorId)
+                .Must(sponsorId => Guid.TryParse(sponsorId.ToString(), out _))
+                .WithMessage("SponsorId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.SponsorId)
+                        .MustAsync(async (sponsorId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.SponsorValidationService.IsExistedId(sponsorId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("SponsorId không tồn tại.");
+                });
+        });
 
         // Validate ContestId
         RuleFor(x => x.ContestId)
-            .NotEmpty().WithMessage("ContestId không được trống.")
-            .NotEqual(Guid.Empty).WithMessage("ContestId phải là kiểu GUID.");
+            .NotEmpty().WithMessage("ContestId không được trống.");
+        When(x => !string.IsNullOrEmpty(x.ContestId.ToString()), () =>
+        {
+            RuleFor(x => x.ContestId)
+                .Must(contestId => Guid.TryParse(contestId.ToString(), out _))
+                .WithMessage("ContestId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.ContestId)
+                        .MustAsync(async (contestId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("ContestId không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -45,7 +89,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Collection;
 using FluentValidation;
@@ -7,11 +8,11 @@ namespace WebAPI.Validation.CollectionValidation;
 
 public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public CollectionRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public CollectionRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
+
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
@@ -35,7 +36,7 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

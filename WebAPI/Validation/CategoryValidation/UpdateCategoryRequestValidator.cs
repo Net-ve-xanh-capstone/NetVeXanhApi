@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Category;
 using FluentValidation;
@@ -7,13 +8,10 @@ namespace WebAPI.Validation.CategoryValidation;
 
 public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-    private readonly ICategoryValidationService _categoryValidationService;
-
-    public UpdateCategoryRequestValidator(IAccountValidationService accountValidationService, ICategoryValidationService categoryValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public UpdateCategoryRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
-        _categoryValidationService = categoryValidationService;
+        _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
         .NotEmpty().WithMessage("Id không được để trống.");
@@ -21,16 +19,16 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
             RuleFor(x => x.Id)
-                .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                .Must(categoryId => Guid.TryParse(categoryId.ToString(), out _))
                 .WithMessage("Id phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
                     RuleFor(x => x.Id)
-                        .MustAsync(async (topicId, cancellation) =>
+                        .MustAsync(async (categoryId, cancellation) =>
                         {
                             try
                             {
-                                return await _categoryValidationService.IsExistedId(topicId);
+                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
                             }
                             catch (Exception)
                             {
@@ -62,7 +60,7 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {
@@ -73,9 +71,5 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
-
-        RuleFor(c => c.Name)
-            .NotEmpty().WithMessage("Tên không được để trống.")
-            .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
     }
 }

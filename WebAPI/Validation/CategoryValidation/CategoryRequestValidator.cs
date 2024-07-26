@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Category;
 using FluentValidation;
@@ -7,11 +8,10 @@ namespace WebAPI.Validation.CategoryValidation;
 
 public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public CategoryRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public CategoryRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
 
         //CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -29,7 +29,7 @@ public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

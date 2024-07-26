@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application;
+using Application.IService;
 using Application.IService.IValidationService;
 using Application.SendModels.Post;
 using FluentValidation;
@@ -8,11 +9,11 @@ namespace WebAPI.Validation.PostValidation;
 
 public class PostRequestValidator : AbstractValidator<PostRequest>
 {
-    private readonly IAccountValidationService _accountValidationService;
-
-    public PostRequestValidator(IAccountValidationService accountValidationService)
+    private readonly IValidationServiceManager _validationServiceManager;
+    public PostRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        _accountValidationService = accountValidationService;
+        _validationServiceManager = validationServiceManager;
+
         // Validate Url
         RuleFor(x => x.Url)
             .NotEmpty().WithMessage("Url là bắt buộc.")
@@ -30,8 +31,30 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
 
         // Validate CategoryId
         RuleFor(x => x.CategoryId)
-            .NotEmpty().WithMessage("CategoryId là bắt buộc.")
-            .NotEqual(Guid.Empty).WithMessage("CategoryId phải là một GUID hợp lệ.");
+            .NotEmpty().WithMessage("CategoryId là bắt buộc.");
+        When(x => !string.IsNullOrEmpty(x.CategoryId.ToString()), () =>
+        {
+            RuleFor(x => x.CategoryId)
+                .Must(categoryId => Guid.TryParse(categoryId.ToString(), out _))
+                .WithMessage("CategoryId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.CategoryId)
+                        .MustAsync(async (categoryId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CategoryId không tồn tại.");
+                });
+        });
 
         // Validate Images
         RuleFor(x => x.Images)
@@ -56,7 +79,7 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
                         {
                             try
                             {
-                                return await _accountValidationService.IsExistedId(userId);
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                             }
                             catch (Exception)
                             {

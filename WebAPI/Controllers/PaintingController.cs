@@ -226,6 +226,36 @@ public class PaintingController : Controller
     }
 
     #endregion
+    
+    #region Update Painting
+
+    [HttpPut("satffupdate")]
+    public async Task<IActionResult> UpdatePaintingstaffpermisson(UpdatePaintingRequest updatePaintingViewModel)
+    {
+        try
+        {
+            var result = await _paintingService.UpdatePaintingStaffPermisson(updatePaintingViewModel);
+            if (result == null) return NotFound();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Result = result,
+                Message = "Update Successfully"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Delete Painting
 
@@ -256,23 +286,6 @@ public class PaintingController : Controller
     }
 
     #endregion
-
-    /*#region Submitted Painting
-
-    [HttpPost("submit")]
-    public async Task<IActionResult> SubmittedPainting(Guid id)
-    {
-        var result = await _paintingService.SubmitPainting(id);
-        if (result == null) return NotFound();
-        return Ok(new BaseResponseModel
-        {
-            Status = Ok().StatusCode,
-            Result = result,
-            Message = "Delete Successfully"
-        });
-    }
-
-    #endregion*/
 
     #region Review Decision of Painting
 
@@ -586,6 +599,35 @@ public class PaintingController : Controller
                     List = new List<Painting>(),
                     TotalPage = 0
                 },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get Painting By Account Contest
+    [HttpGet("getpaintingbyaccountcontest")]
+    public async Task<IActionResult> GetPaintingByAccountContest([FromQuery] Guid contestId, [FromQuery] Guid accountId)
+    {
+        try
+        {
+            var result = await _paintingService.GetPaintingByAccountContest(contestId, accountId);
+            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Painting Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
                 Errors = ex
             });
         }

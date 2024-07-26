@@ -11,21 +11,21 @@ namespace Application.Services.CommonService
     public class MailService : IMailService
     {
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _env;
+        private readonly string _templateDirectory;
 
-        public MailService(IConfiguration configuration, IWebHostEnvironment env)
+        public MailService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _env = env;
+            _templateDirectory = Path.Combine(AppContext.BaseDirectory, configuration["EmailTemplateDirectory"]);
         }
 
         public string GetEmailTemplate(string templateName)
         {
-            var templatePath = Path.Combine(_env.ContentRootPath, "EmailTemplates", templateName);
+            var templatePath = Path.Combine(_templateDirectory, templateName);
             return File.ReadAllText(templatePath);
         }
-        
-    
+
+
         public async Task SendEmail(MailModel request)
         {
             var emailHost = _configuration["Email:EmailHost"];
@@ -46,7 +46,7 @@ namespace Application.Services.CommonService
             {
                 Subject = request.Subject,
                 Body = request.Body,
-                IsBodyHtml = true 
+                IsBodyHtml = true
             };
 
             await smtpClient.SendMailAsync(message);
@@ -56,7 +56,7 @@ namespace Application.Services.CommonService
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
             template = template.Replace($"[Tên người dùng]", account.FullName);
-            
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
@@ -70,15 +70,15 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
+
         public async Task SendAccountInformation(Account account)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
-            
+
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
             template = template.Replace($"[Mật khẩu]", account.Password);
             template = template.Replace($"[Tên tài khoản]", account.Username);
-            
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
@@ -92,13 +92,13 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
+
         public async Task NotificationForFinalRound(Account account, Round round)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
-            
+
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
-            
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
@@ -112,13 +112,13 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
+
         public async Task PassPreliminaryRound(Account account)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
-            
+
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
-            
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
@@ -132,16 +132,16 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
+
         public async Task ResetPassword(Account account)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
-            
+
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
             template = template.Replace($"[Mật khẩu]", account.Password);
             template = template.Replace($"[Tên tài khoản]", account.Username);
-            
-            
+
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
@@ -155,21 +155,21 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
+
         public async Task UnBanAccount(Account account)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
-            
+
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
             template = template.Replace($"[Mật khẩu]", account.Password);
             template = template.Replace($"[Tên tài khoản]", account.Username);
 
-            
+
             var supportmail = _configuration["NetVeXanh:SupportMail"];
             var supportphone = _configuration["NetVeXanh:SupportPhone"];
             template = template.Replace($"[email hỗ trợ]", supportmail);
             template = template.Replace($"[số điện thoại hỗ trợ]", supportphone);
-            
+
             var body = template;
 
             MailModel mail = new MailModel();
@@ -178,6 +178,5 @@ namespace Application.Services.CommonService
             mail.Body = body;
             await SendEmail(mail);
         }
-        
     }
 }

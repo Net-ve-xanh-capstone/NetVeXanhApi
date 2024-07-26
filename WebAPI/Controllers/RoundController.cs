@@ -278,7 +278,7 @@ public class RoundController : Controller
 
     #endregion
 
-    #region Get List Round By Contest Id
+    #region Get List Round
 
     [HttpGet("roundsforstaff")]
     public async Task<IActionResult> GetListRoundsForStaff()

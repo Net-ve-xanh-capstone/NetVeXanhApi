@@ -138,7 +138,7 @@ public class PaintingService : IPaintingService
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
                 
-                //await _mailService.SendAccountInformation(competitor);
+                await _mailService.SendAccountInformation(competitor);
                 return result;
             }
 
@@ -217,6 +217,19 @@ public class PaintingService : IPaintingService
 
 
         if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Khong duoc sua");
+
+        _mapper.Map(updatePainting, painting);
+
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
+    #endregion
+    
+    #region Update Painting
+
+    public async Task<bool> UpdatePaintingStaffPermisson(UpdatePaintingRequest updatePainting)
+    {
+        var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
         _mapper.Map(updatePainting, painting);
 
@@ -390,6 +403,8 @@ public class PaintingService : IPaintingService
     }
 
     #endregion
+
+
 
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)

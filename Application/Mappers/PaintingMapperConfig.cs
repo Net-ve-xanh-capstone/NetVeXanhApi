@@ -21,16 +21,23 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Painting, PaintingViewModel>()
+            .ForPath(dest => dest.RoundId, opt => opt.MapFrom(src => src.RoundTopic.RoundId))
+            .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
+            .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src => src.Account.Birthday))
+            .ForPath(dest => dest.Address, opt => opt.MapFrom(src => src.Account.Address))
+            .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))
             .ForPath(dest => dest.ContestName,
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name));
-        ;
 
         CreateMap<PaintingViewModel, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
+            .ForPath(dest => dest.RoundTopic.Topic.Id, opt => opt.MapFrom(src => src.TopicId))
             .ForPath(dest => dest.RoundTopic.Topic.Name, opt => opt.MapFrom(src => src.TopicName))
             .ForPath(dest => dest.RoundTopic.Round.Name, opt => opt.MapFrom(src => src.RoundName))
             .ForPath(dest => dest.RoundTopic.Round.EducationalLevel.Level, opt => opt.MapFrom(src => src.Level))
@@ -50,5 +57,12 @@ public partial class MapperConfigs : Profile
             });
 
         CreateMap<Painting, PaintingInCollectionViewModel>();
+
+        CreateMap<Painting, PaintingInCollection2ViewModel>()
+            .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
+            .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
+            .ForPath(dest => dest.ContestName,
+                opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name));
     }
 }

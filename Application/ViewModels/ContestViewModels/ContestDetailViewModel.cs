@@ -11,6 +11,7 @@ public class ContestDetailViewModel
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public string Content { get; set; }
+    public string Status { get; set; }
     public string Logo { get; set; }
     public string Description { get; set; }
 

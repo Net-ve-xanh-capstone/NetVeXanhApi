@@ -1,4 +1,5 @@
-﻿using Application.BaseModels;
+﻿using System.Reflection.Emit;
+using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.EducationalLevel;
@@ -41,7 +42,7 @@ public class EducationalLevelService : IEducationalLevelService
         var a = await _unitOfWork.ContestRepo.GetStartEndTimeByContestId(EducationalLevel.ContestId);
 
         var newEducationalLevel = _mapper.Map<EducationalLevel>(EducationalLevel);
-        newEducationalLevel.Status = EducationalLevelStatus.Active.ToString();
+        newEducationalLevel.Status = EducationalLevelStatus.NotStarted.ToString();
         await _unitOfWork.EducationalLevelRepo.AddAsync(newEducationalLevel);
         var check = await _unitOfWork.SaveChangesAsync() > 0;
         if (check == false) throw new Exception("Tạo EducationalLevl Thất Bại");
@@ -55,7 +56,7 @@ public class EducationalLevelService : IEducationalLevelService
         round.Name = "Vòng Sơ Khảo";
         round.CreatedBy = EducationalLevel.CurrentUserId;
         round.EducationalLevelId = newEducationalLevel.Id;
-        round.Status = RoundStatus.Active.ToString();
+        round.Status = RoundStatus.NotStarted.ToString();
         round.CreatedTime = _currentTime.GetCurrentTime();
         round.StartTime = a.Value.StartTime;
         round.EndTime = a.Value.EndTime;
@@ -68,7 +69,7 @@ public class EducationalLevelService : IEducationalLevelService
         round2.Name = "Vòng Chung Kết";
         round2.CreatedBy = EducationalLevel.CurrentUserId;
         round2.EducationalLevelId = newEducationalLevel.Id;
-        round2.Status = RoundStatus.Active.ToString();
+        round2.Status = RoundStatus.NotStarted.ToString();
         round2.CreatedTime = _currentTime.GetCurrentTime();
         round2.StartTime = a.Value.StartTime;
         round2.EndTime = a.Value.EndTime;
@@ -81,6 +82,119 @@ public class EducationalLevelService : IEducationalLevelService
 
         //check
         if (check == false) throw new Exception("Tạo Round Thất Bại");
+
+        #endregion
+
+        #region Tạo Award
+
+        //List level
+        var listAward = new List<Award>();
+
+        //Create 1st prize Level 1
+        var award1 = new Award();
+        award1.Rank = "FirstPrize";
+        award1.CreatedBy = EducationalLevel.CurrentUserId;
+        award1.CreatedTime = _currentTime.GetCurrentTime();
+        award1.Quantity = 1;
+        award1.Status = ContestStatus.NotStarted.ToString();
+        award1.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award1);
+
+        //Create 2nd prize  Level 1
+        var award2 = new Award();
+        award2.Rank = "SecondPrize";
+        award2.CreatedBy = EducationalLevel.CurrentUserId;
+        award2.CreatedTime = _currentTime.GetCurrentTime();
+        award2.Quantity = 2;
+        award2.Status = ContestStatus.NotStarted.ToString();
+        award2.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award2);
+
+        //Create 3rd prize Level 1
+        var award3 = new Award();
+        award3.Rank = "ThirdPrize";
+        award3.CreatedBy = EducationalLevel.CurrentUserId;
+        award3.CreatedTime = _currentTime.GetCurrentTime();
+        award3.Quantity = 3;
+        award3.Status = ContestStatus.NotStarted.ToString();
+        award3.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award3);
+
+        //Create 4th prize Level 1
+        var award4 = new Award();
+        award4.Rank = "ConsolationPrize";
+        award4.CreatedBy = EducationalLevel.CurrentUserId;
+        award4.CreatedTime = _currentTime.GetCurrentTime();
+        award4.Quantity = 4;
+        award4.Status = ContestStatus.NotStarted.ToString();
+        award4.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award4);
+
+        //Create Passed Level 1
+        var award9 = new Award();
+        award9.Rank = "Preliminary";
+        award9.CreatedBy = EducationalLevel.CurrentUserId;
+        award9.CreatedTime = _currentTime.GetCurrentTime();
+        award9.Quantity = 5;
+        award9.Status = ContestStatus.NotStarted.ToString();
+        award9.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award9);
+
+        //Create 1st prize Level 2
+        var award5 = new Award();
+        award5.Rank = "FirstPrize";
+        award5.CreatedBy = EducationalLevel.CurrentUserId;
+        award5.CreatedTime = _currentTime.GetCurrentTime();
+        award5.Quantity = 1;
+        award5.Status = ContestStatus.NotStarted.ToString();
+        award5.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award5);
+
+        //Create 2nd prize  Level 2
+        var award6 = new Award();
+        award6.Rank = "SecondPrize";
+        award6.CreatedBy = EducationalLevel.CurrentUserId;
+        award6.CreatedTime = _currentTime.GetCurrentTime();
+        award6.Quantity = 2;
+        award6.Status = ContestStatus.NotStarted.ToString();
+        award6.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award6);
+
+        //Create 3rd prize Level 2
+        var award7 = new Award();
+        award7.Rank = "ThirdPrize";
+        award7.CreatedBy = EducationalLevel.CurrentUserId;
+        award7.CreatedTime = _currentTime.GetCurrentTime();
+        award7.Quantity = 3;
+        award7.Status = ContestStatus.NotStarted.ToString();
+        award7.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award7);
+
+        //Create 4th prize Level 2
+        var award8 = new Award();
+        award8.Rank = "ConsolationPrize";
+        award8.CreatedBy = EducationalLevel.CurrentUserId;
+        award8.CreatedTime = _currentTime.GetCurrentTime();
+        award8.Quantity = 4;
+        award8.Status = ContestStatus.NotStarted.ToString();
+        award8.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award8);
+
+        //Create Passed Level 2
+        var award10 = new Award();
+        award10.Rank = "Preliminary";
+        award10.CreatedBy = EducationalLevel.CurrentUserId;
+        award10.CreatedTime = _currentTime.GetCurrentTime();
+        award10.Quantity = 5;
+        award10.Status = ContestStatus.NotStarted.ToString();
+        award10.EducationalLevelId = newEducationalLevel.Id;
+        listAward.Add(award10);
+
+        await _unitOfWork.AwardRepo.AddRangeAsync(listAward);
+        check = await _unitOfWork.SaveChangesAsync() > 0;
+
+        //check
+        if (check == false) throw new Exception("Tạo Award Thất Bại");
 
         #endregion
 
@@ -170,14 +284,14 @@ public class EducationalLevelService : IEducationalLevelService
         if (level == null) throw new Exception("Khong tim thay EducationalLevel");
         foreach (var round in level.Round)
         {
-            round.Status = RoundStatus.Inactive.ToString();
+            round.Status = RoundStatus.Delete.ToString();
             foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
         }
 
         //award
         foreach (var award in level.Award) award.Status = AwardStatus.Inactive.ToString();
 
-        level.Status = EducationalLevelStatus.Inactive.ToString();
+        level.Status = EducationalLevelStatus.Delete.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

@@ -48,6 +48,34 @@ public class RoundTopicController : ControllerBase
 
     #endregion
     
+    #region Get List
+
+    [HttpGet("getallroundtopic")]
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            var result = await _roundTopicService.GetAll();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Topic Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new List<Topic>(),
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
     
     #region Get List
 

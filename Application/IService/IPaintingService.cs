@@ -10,6 +10,7 @@ namespace Application.IService;
 public interface IPaintingService
 {
     Task<bool> UpdatePainting(UpdatePaintingRequest updatePainting);
+    Task<bool> UpdatePaintingStaffPermisson(UpdatePaintingRequest updatePainting);
 
     Task<(List<PaintingViewModel>, int)> GetListPainting(ListModels listPaintingModel);
     Task<PaintingViewModel?> GetPaintingByCode(string code);
@@ -38,6 +39,7 @@ public interface IPaintingService
 
     #endregion
     Task<bool> IsExistedId(Guid id);
+    Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
 
     Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
     Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);

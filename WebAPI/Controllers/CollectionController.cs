@@ -166,12 +166,12 @@ public class CollectionController : Controller
     #region Get Painting By Collection
 
     [HttpGet("Painting/{id}")]
-    public async Task<IActionResult> GetPaintingByCollection([FromRoute] Guid collectionId,
+    public async Task<IActionResult> GetPaintingByCollection([FromRoute] Guid id,
         [FromQuery] ListModels listPaintingmodel)
     {
         try
         {
-            var (list, totalPage) = await _collectionService.GetPaintingByCollection(listPaintingmodel, collectionId);
+            var (list, totalPage) = await _collectionService.GetPaintingByCollection(listPaintingmodel, id);
             if (totalPage < listPaintingmodel.PageNumber)
                 return NotFound(new BaseResponseModel
                 {

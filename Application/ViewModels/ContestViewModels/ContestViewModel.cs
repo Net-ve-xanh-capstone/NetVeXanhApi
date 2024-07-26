@@ -9,6 +9,7 @@ public class ContestViewModel
     public DateTime? UpdatedTime { get; set; }
     public string Name { get; set; }
     public DateTime StartTime { get; set; }
+    public string Status { get; set; }
     public DateTime EndTime { get; set; }
     public string Content { get; set; }
     public string Logo { get; set; }

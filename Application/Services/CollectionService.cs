@@ -10,6 +10,7 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation.Results;
 using Infracstructures;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -41,8 +42,20 @@ public class CollectionService : ICollectionService
         var collection = _mapper.Map<Collection>(addCollectionViewModel);
         collection.Status = CollectionStatus.Active.ToString();
         await _unitOfWork.CollectionRepo.AddAsync(collection);
-
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        await _unitOfWork.SaveChangesAsync();
+        //add Painting
+        var listPaintingCollection = new List<PaintingCollection>();
+        foreach (var paintingId in addCollectionViewModel.listPaintingId)
+        {
+            listPaintingCollection.Add(new PaintingCollection
+            {
+                PaintingId = paintingId,
+                CollectionId = collection.Id
+            });
+        }
+        await _unitOfWork.PaintingCollectionRepo.AddRangeAsync(listPaintingCollection);
+        return await _unitOfWork.SaveChangesAsync() >0;
+        
     }
 
     #endregion
@@ -93,12 +106,12 @@ public class CollectionService : ICollectionService
 
     #region Get Painting By Collection
 
-    public async Task<(List<PaintingViewModel>, int)> GetPaintingByCollection(ListModels listPaintingModel,
+    public async Task<(List<PaintingInCollection2ViewModel>, int)> GetPaintingByCollection(ListModels listPaintingModel,
         Guid collectionId)
     {
         var listPainting = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
         if (listPainting.Count == 0) throw new Exception("Khong co Painting nao trong Collection");
-        var result = _mapper.Map<List<PaintingViewModel>>(listPainting);
+        var result = _mapper.Map<List<PaintingInCollection2ViewModel>>(listPainting);
 
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listPaintingModel.PageSize);

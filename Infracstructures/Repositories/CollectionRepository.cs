@@ -26,8 +26,20 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
     public virtual async Task<List<Painting>> GetPaintingByCollectionAsync(Guid collectionId)
     {
         return await DbSet.Where(x => x.Id == collectionId)
-            .SelectMany(x =>
-                x.PaintingCollection.Select(x => x.Painting).Where(x => x.Status != PaintingStatus.Delete.ToString()))
+            .Include(x => x.PaintingCollection)
+                .ThenInclude(pc => pc.Painting)
+                .ThenInclude(p => p.RoundTopic)
+                .ThenInclude(rt => rt.Topic)
+            .Include(x => x.PaintingCollection)
+                .ThenInclude(pc => pc.Painting)
+                .ThenInclude(p => p.RoundTopic)
+                .ThenInclude(rt => rt.Round)
+                .ThenInclude(r => r.EducationalLevel)
+                .ThenInclude(l => l.Contest)
+            .Include(x => x.PaintingCollection)
+                .ThenInclude(pc => pc.Painting)
+                .ThenInclude(p => p.Account)
+            .SelectMany(x =>x.PaintingCollection.Select(x => x.Painting).Where(x => x.Status != PaintingStatus.Delete.ToString()))
             .ToListAsync();
     }
 

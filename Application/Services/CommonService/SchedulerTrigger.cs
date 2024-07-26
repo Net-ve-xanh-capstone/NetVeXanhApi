@@ -39,14 +39,16 @@ public class SchedulerTrigger : ISchedulerTrigger
         var end = await _unitOfWork.ContestRepo.EndContest();
         if (end.Any())
         {
-            end.ToList().ForEach(src => src.Status = ContestStatus.Inactive.ToString());
+            end.ToList().ForEach(src => src.Status = ContestStatus.Complete.ToString());
+            end.ToList().ForEach(src => src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.Complete.ToString()));
             _unitOfWork.ContestRepo.UpdateRange(end);
         }
 
         var start = await _unitOfWork.ContestRepo.StartContest();
         if (start.Any())
         {
-            start.ToList().ForEach(src => src.Status = ContestStatus.Active.ToString());
+            start.ToList().ForEach(src => src.Status = ContestStatus.InProcess.ToString());
+            end.ToList().ForEach(src => src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.InProcess.ToString()));
             _unitOfWork.ContestRepo.UpdateRange(start);
         }
     }
@@ -56,13 +58,13 @@ public class SchedulerTrigger : ISchedulerTrigger
         var end = await _unitOfWork.RoundRepo.EndRound();
         if (end.Any())
         {
-            end.ToList().ForEach(src => src.Status = RoundStatus.Inactive.ToString());
+            end.ToList().ForEach(src => src.Status = RoundStatus.Complete.ToString());
             _unitOfWork.RoundRepo.UpdateRange(end);
         }
         var start = await _unitOfWork.RoundRepo.StartRound();
         if (start.Any())
         {
-            start.ToList().ForEach(src => src.Status = RoundStatus.Active.ToString());
+            start.ToList().ForEach(src => src.Status = RoundStatus.InProcess.ToString());
             _unitOfWork.RoundRepo.UpdateRange(start);
         }
     }

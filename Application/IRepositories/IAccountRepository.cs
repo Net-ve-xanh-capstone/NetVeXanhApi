@@ -11,6 +11,7 @@ public interface IAccountRepository : IGenericRepository<Account>
     Task<bool> CheckDuplicateUsername(string username);
     Task<bool> AccountNumberExists(int number);
     Task<Account?> GetByIdActiveAsync(Guid id);
+    Task<Account?> GetCompetitorByIdAsync(Guid id);
 
     Task<List<Account>> GetAccountByListAccountId(List<Guid> listAccountId);
 

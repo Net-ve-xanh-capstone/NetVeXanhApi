@@ -24,20 +24,6 @@ public class TopicController : Controller
     {
         try
         {
-            var validationResult = await _topicService.ValidateTopicRequest(topicRequest);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
-
             var result = await _topicService.CreateTopic(topicRequest);
             return Ok(new BaseResponseModel
             {

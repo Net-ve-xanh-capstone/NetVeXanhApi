@@ -13,7 +13,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public override async Task<List<Contest>> GetAllAsync()
     {
-        return await DbSet.Where(x => x.Status != ContestStatus.Inactive.ToString())
+        return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
             .Include(x => x.Account)
             .ToListAsync();
     }
@@ -30,7 +30,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .Include(x => x.EducationalLevel)
             .ThenInclude(x => x.Award)
             .Include(x => x.Account)
-            .FirstOrDefaultAsync(x => x.Id == id && x.Status != ContestStatus.Inactive.ToString());
+            .FirstOrDefaultAsync(x => x.Id == id && x.Status != ContestStatus.Delete.ToString());
         ;
     }
 
@@ -39,14 +39,14 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         var contest = await DbSet
             .Include(x => x.Resources.Where(x => x.Status != ResourcesStatus.Inactive.ToString()))
             .ThenInclude(x => x.Sponsor)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Inactive.ToString()))
-            .ThenInclude(x => x.Round.Where(x => x.Status != RoundStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(x => x.Round.Where(x => x.Status != RoundStatus.Delete.ToString()))
             .ThenInclude(x => x.RoundTopic)
             .ThenInclude(x => x.Topic)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
             .ThenInclude(x => x.Award.Where(x => x.Status != AwardStatus.Inactive.ToString()))
             .Include(x => x.Account)
-            .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Inactive.ToString());
+            .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
         if (contest != null)
             // Lọc các RoundTopic có Topic.Status == "Active"
             foreach (var educationalLevel in contest.EducationalLevel)
@@ -61,15 +61,15 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return await DbSet
             .Include(x => x.Resources.Where(x => x.Status != ResourcesStatus.Inactive.ToString()))
             .ThenInclude(x => x.Sponsor)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
             .ThenInclude(x => x.Round)
             .ThenInclude(x => x.RoundTopic)
             .ThenInclude(x => x.Topic)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
             .ThenInclude(x => x.Award)
             .Include(x => x.Account)
             .OrderBy(x => x.CreatedTime)
-            .FirstOrDefaultAsync(x => x.Status != ContestStatus.Inactive.ToString());
+            .FirstOrDefaultAsync(x => x.Status != ContestStatus.Delete.ToString());
     }
 
     public async Task<List<int>> Get5RecentYearAsync()
@@ -81,8 +81,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<(DateTime StartTime, DateTime EndTime)?> GetStartEndTimeByContestId(Guid contestId)
     {
         var round = await DbSet
-            .Where(c => c.Status != ContestStatus.Inactive.ToString())
-            .Include(c => c.EducationalLevel.Where(l => l.Status != EducationalLevelStatus.Inactive.ToString()))
+            .Where(c => c.Status != ContestStatus.Delete.ToString())
+            .Include(c => c.EducationalLevel.Where(l => l.Status != EducationalLevelStatus.Delete.ToString()))
             .ThenInclude(l => l.Round)
             .SelectMany(c => c.EducationalLevel)
             .SelectMany(l => l.Round)
@@ -109,16 +109,16 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public Task<bool> CheckContestExist(DateTime startTime)
     {
         return DbSet.AnyAsync(src =>
-            src.StartTime.Year == startTime.Year && src.Status == ContestStatus.Active.ToString());
+            src.StartTime.Year == startTime.Year && src.Status != ContestStatus.Delete.ToString());
     }
 
     public async Task<List<Contest>> EndContest()
     {
-        return await DbSet.Where(src => src.EndTime <= DateTime.Now && src.Status == ContestStatus.Active.ToString()).ToListAsync();
+        return await DbSet.Include(src => src.EducationalLevel).Where(src => src.EndTime <= DateTime.Now && src.Status == ContestStatus.InProcess.ToString()).ToListAsync();
     }
 
     public async Task<List<Contest>> StartContest()
     {
-        return await DbSet.Where(src => src.StartTime >= DateTime.Now && src.Status == ContestStatus.Active.ToString()).ToListAsync();
+        return await DbSet.Include(src => src.EducationalLevel).Where(src => src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
 }

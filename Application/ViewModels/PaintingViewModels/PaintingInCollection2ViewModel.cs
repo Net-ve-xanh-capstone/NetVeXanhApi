@@ -17,5 +17,6 @@ namespace Application.ViewModels.PaintingViewModels
         public string ContestName { get; set; }
         public string Code { get; set; }
         public string OwnerName { get; set; }
+        public string OwnerRole { get; set; }
     }
 }

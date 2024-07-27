@@ -134,6 +134,13 @@ public class AccountService : IAccountService
         return _mapper.Map<AccountViewModel>(account);
     }
 
+    public async Task<AccountViewModel?> GetCompetitorById(Guid id)
+    {
+        var account = await _unitOfWork.AccountRepo.GetCompetitorByIdAsync(id);
+        if (account == null) throw new Exception("Không tìm thấy Account");
+        return _mapper.Map<AccountViewModel>(account);
+    }
+
     public async Task<AccountViewModel?> GetAccountByCode(string code)
     {
         var account = await _unitOfWork.AccountRepo.GetAccountByCodeAsync(code);

@@ -45,9 +45,6 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         //CategoryId
         builder.Property(u => u.CategoryId);
 
-        //Content
-        builder.Property(u => u.Content);
-
 
         //Relation
         builder.HasOne(u => u.Category).WithMany(u => u.Post).HasForeignKey(u => u.CategoryId)

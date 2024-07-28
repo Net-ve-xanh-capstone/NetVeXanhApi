@@ -253,12 +253,12 @@ public class CollectionController : Controller
     #region Get Collection By AccountId
 
     [HttpGet("getcollectionbyaccountid/{id}")]
-    public async Task<IActionResult> GetCollectionByAccountId([FromRoute] Guid accountId,
+    public async Task<IActionResult> GetCollectionByAccountId([FromRoute] Guid id,
         [FromQuery] ListModels listPaintingmodel)
     {
         try
         {
-            var (list, totalPage) = await _collectionService.GetCollectionByAccountId(listPaintingmodel, accountId);
+            var (list, totalPage) = await _collectionService.GetCollectionByAccountId(listPaintingmodel, id);
             if (totalPage < listPaintingmodel.PageNumber)
                 return NotFound(new BaseResponseModel
                 {

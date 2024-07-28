@@ -1,8 +1,10 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Image;
+using Application.SendModels.Topic;
 using AutoMapper;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Infracstructures.ViewModels.ImageViewModels;
 
@@ -13,11 +15,13 @@ public class ImageService : IImageService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public ImageService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ImageService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -78,4 +82,11 @@ public class ImageService : IImageService
     {
         return await _unitOfWork.ImageRepo.IsExistIdAsync(id);
     }
+    #region Validate
+    public async Task<ValidationResult> ValidateImageRequest(ImageRequest image)
+    {
+        return await _validatorFactory.ImageRequestValidator.ValidateAsync(image);
+    }
+
+    #endregion
 }

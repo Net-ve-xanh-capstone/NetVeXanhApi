@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
@@ -44,7 +44,7 @@ public class AuthenticationService : IAuthenticationService
             if (check is true)
             {
                 response.Success = true;
-                response.Message = "Login Success";
+                response.Message = "Đăng nhập thành công";
                 response.JwtToken =
                     _authentication.GenerateToken(account);
                 response.RefreshToken = new RefreshToken();
@@ -59,12 +59,12 @@ public class AuthenticationService : IAuthenticationService
             }
 
             response.Success = false;
-            response.Message = "Invalid Password";
+            response.Message = "Sai mật khẩu";
             return response;
         }
 
         response.Success = false;
-        response.Message = "Username Not Exist";
+        response.Message = "Tên đăng nhập không đúng";
         return response;
     }
 
@@ -77,28 +77,28 @@ public class AuthenticationService : IAuthenticationService
         var response = new RegisterResponse();
         if (!Enum.IsDefined(typeof(Role), createAccount.Role))
         {
-            response.Message = "Role is not Exist!";
+            response.Message = "!";
             response.Success = false;
             return response;
         }
 
         if (await _unitOfWork.AccountRepo.CheckDuplicateEmail(createAccount.Email))
         {
-            response.Message = "Email is Exist !";
+            response.Message = "Email đã có tài khoản sử dụng!";
             response.Success = false;
             return response;
         }
 
         if (await _unitOfWork.AccountRepo.CheckDuplicatePhone(createAccount.Phone))
         {
-            response.Message = "Phone is Exist !";
+            response.Message = "Số điện thoại đã có tài khoản sử dụng!";
             response.Success = false;
             return response;
         }
 
         if (await _unitOfWork.AccountRepo.CheckDuplicateUsername(createAccount.Username))
         {
-            response.Message = "UserName is Exist !";
+            response.Message = "Tên đăng nhập đã có tài khoản sử dụng!";
             response.Success = false;
             return response;
         }

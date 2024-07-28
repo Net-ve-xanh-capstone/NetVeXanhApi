@@ -3,10 +3,13 @@ using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Painting;
+using Application.SendModels.Topic;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 using Infracstructures.SendModels.Painting;
 
@@ -18,15 +21,17 @@ public class PaintingService : IPaintingService
     private readonly IMapper _mapper;
     private readonly INotificationService _notificationService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
 
     public PaintingService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService,
-        IMailService mailService)
+        IMailService mailService, IValidatorFactory validatorFactory)
     {
         _mailService = mailService;
         _notificationService = notificationService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Draft Painting Preliminary Round
@@ -407,7 +412,7 @@ public class PaintingService : IPaintingService
         return await _unitOfWork.PaintingRepo.IsExistIdAsync(id);
     }
 
-    #region Get Painting By Code
+    #region Get Painting By account contest 
 
     public async Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid accountId)
     {
@@ -415,6 +420,32 @@ public class PaintingService : IPaintingService
         if (painting == null) throw new Exception("Khong tim thay Painting");
         return _mapper.Map<PaintingViewModel>(painting);
     }
+    #endregion
 
+    #region Validate
+    public async Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting)
+    {
+        return await _validatorFactory.CompetitorCreatePaintingRequestValidator.ValidateAsync(painting);
+    }
+    public async Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting)
+    {
+        return await _validatorFactory.FilterPaintingRequestValidator.ValidateAsync(filterPainting);
+    }
+    public async Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting)
+    {
+        return await _validatorFactory.PaintingUpdateStatusRequestValidator.ValidateAsync(painting);
+    }
+    public async Task<ValidationResult> ValidateRatingRequest(RatingRequest painting)
+    {
+        return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
+    }
+    public async Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting)
+    {
+        return await _validatorFactory.StaffCreatePaintingRequestValidator.ValidateAsync(painting);
+    }
+    public async Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting)
+    {
+        return await _validatorFactory.UpdatePaintingRequestValidator.ValidateAsync(painting);
+    }
     #endregion
 }

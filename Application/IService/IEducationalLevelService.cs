@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.EducationalLevel;
 using Application.ViewModels.EducationalLevelViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -15,4 +17,8 @@ public interface IEducationalLevelService
     Task<bool> DeleteEducationalLevel(Guid id);
 
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidateLevelRequest(EducationalLevelRequest level);
+
+    Task<ValidationResult> ValidateLevelUpdateRequest(EducationalLevelUpdateRequest levelUpdate);
 }

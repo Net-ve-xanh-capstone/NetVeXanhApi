@@ -1,10 +1,12 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Post;
+using Application.SendModels.Topic;
 using Application.ViewModels.PostViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 
 namespace Application.Services;
@@ -15,12 +17,14 @@ public class PostService : IPostService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public PostService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService)
+    public PostService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IValidatorFactory validatorFactory)
     {
         _imageService = imageService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -190,4 +194,16 @@ public class PostService : IPostService
     {
         return await _unitOfWork.PostRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidatePostRequest(PostRequest post)
+    {
+        return await _validatorFactory.PostRequestValidator.ValidateAsync(post);
+    }
+
+    public async Task<ValidationResult> ValidatePostUpdateRequest(PostUpdateRequest postUpdate)
+    {
+        return await _validatorFactory.UpdatePostRequestValidator.ValidateAsync(postUpdate);
+    }
+    #endregion
 }

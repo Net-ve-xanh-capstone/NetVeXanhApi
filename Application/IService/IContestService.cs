@@ -1,5 +1,7 @@
 ﻿using Application.SendModels.Contest;
 using Application.ViewModels.ContestViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -19,4 +21,7 @@ public interface IContestService
     Task<ContestDetailViewModel> GetNearestContest();
 
     Task<bool> IsExistedId(Guid id);
+    Task<ValidationResult> ValidateContestRequest(ContestRequest contest);
+
+    Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate);
 }

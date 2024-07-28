@@ -2,10 +2,13 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Report;
+using Application.SendModels.Topic;
 using Application.ViewModels.ReportViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -17,13 +20,15 @@ public class ReportService : IReportService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public ReportService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime, IConfiguration configuration)
+    public ReportService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime, IConfiguration configuration, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
+        _validatorFactory = validatorFactory;
     }
 
     #region Add Report
@@ -122,4 +127,16 @@ public class ReportService : IReportService
     {
         return await _unitOfWork.ReportRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidateReportRequest(ReportRequest report)
+    {
+        return await _validatorFactory.ReportRequestValidator.ValidateAsync(report);
+    }
+
+    public async Task<ValidationResult> ValidateReportUpdateRequest(UpdateReportRequest reportUpdate)
+    {
+        return await _validatorFactory.UpdateReportRequestValidator.ValidateAsync(reportUpdate);
+    }
+    #endregion
 }

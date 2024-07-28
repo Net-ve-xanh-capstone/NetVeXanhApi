@@ -1,11 +1,13 @@
 ﻿using Application.IRepositories;
 using Application.IService;
 using Application.IService.ICommonService;
+using Application.IService.IValidationService;
 using Application.IValidators;
 using Application.Jobs;
 using Application.Mappers;
 using Application.Services;
 using Application.Services.CommonService;
+using Application.Services.ValidationService;
 using Infracstructures;
 using Infracstructures.Repositories;
 using Infracstructures.ScheduleTrigger;
@@ -25,6 +27,8 @@ public static class DependencyInjection
     public static IServiceCollection AddInfractstructure(this IServiceCollection services, IConfiguration config)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IValidatorFactory, ValidatorFactory>();
+        services.AddScoped<IValidationServiceManager, ValidationServiceManager>();
 
         #region Config Repository and Service
 
@@ -110,6 +114,27 @@ public static class DependencyInjection
         services.AddTransient<IRoundTopicRepository, RoundTopicRepository>();
         services.AddTransient<IRoundTopicService, RoundTopicService>();
 
+
+        //Validation Service
+        services.AddScoped<IAccountValidationService, AccountValidationService>();
+        services.AddScoped<IAwardScheduleValidationService, AwardScheduleValidationService>();
+        services.AddScoped<IAwardValidationService, AwardValidationService>();
+        services.AddScoped<ICategoryValidationService, CategoryValidationService>();
+        services.AddScoped<ICollectionValidationService, CollectionValidationService>();
+        services.AddScoped<IContestValidationService, ContestValidationService>();
+        services.AddScoped<IEducationalLevelValidationService, EducationalLevelValidationService>();
+        services.AddScoped<IImageValidationService, ImageValidationService>();
+        services.AddScoped<INotificationValidationService, NotificationValidationService>();
+        services.AddScoped<IPaintingCollectionValidationService, PaintingCollectionValidationService>();
+        services.AddScoped<IPaintingValidationService, PaintingValidationService>();
+        services.AddScoped<IPostValidationService, PostValidationService>();
+        services.AddScoped<IReportValidationService, ReportValidationService>();
+        services.AddScoped<IResourceValidationService, ResourceValidationService>();
+        services.AddScoped<IRoundTopicValidationService, RoundTopicValidationService>();
+        services.AddScoped<IRoundValidationService, RoundValidationService>();
+        services.AddScoped<IScheduleValidationService, ScheduleValidationService>();
+        services.AddScoped<ISponsorValidationService, SponsorValidationService>();
+        services.AddScoped<ITopicValidationService, TopicValidationService>();
         #endregion
 
         #region Config validators

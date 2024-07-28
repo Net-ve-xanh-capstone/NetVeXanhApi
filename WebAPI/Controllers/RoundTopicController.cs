@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.RoundTopic;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -111,6 +113,19 @@ public class RoundTopicController : ControllerBase
     {
         try
         {
+            var validationResult = await _roundTopicService.ValidateRoundTopicRequest(roundTopicRequest);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _roundTopicService.AddTopicToRound(roundTopicRequest);
             return Ok(new BaseResponseModel
             {
@@ -140,6 +155,19 @@ public class RoundTopicController : ControllerBase
     {
         try
         {
+            var validationResult = await _roundTopicService.ValidateRoundTopicDeleteRequest(roundTopicDeleteRequest);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _roundTopicService.DeleteTopicInRound(roundTopicDeleteRequest);
             return Ok(new BaseResponseModel
             {

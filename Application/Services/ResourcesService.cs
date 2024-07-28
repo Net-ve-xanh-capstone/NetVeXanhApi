@@ -1,10 +1,13 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Resources;
+using Application.SendModels.Topic;
 using Application.ViewModels.ResourcesViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 
 namespace Application.Services;
@@ -14,11 +17,13 @@ public class ResourcesService : IResourcesService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public ResourcesService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ResourcesService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -88,4 +93,16 @@ public class ResourcesService : IResourcesService
     {
         return await _unitOfWork.ResourcesRepo.IsExistIdAsync(id);
     }
+
+    #region Validate
+    public async Task<ValidationResult> ValidateResourceRequest(ResourcesRequest resource)
+    {
+        return await _validatorFactory.ResourcesRequestValidator.ValidateAsync(resource);
+    }
+
+    public async Task<ValidationResult> ValidateResourceUpdateRequest(ResourcesUpdateRequest resourceUpdate)
+    {
+        return await _validatorFactory.ResourcesUpdateRequestValidator.ValidateAsync(resourceUpdate);
+    }
+    #endregion
 }

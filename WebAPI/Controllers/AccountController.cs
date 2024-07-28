@@ -2,6 +2,7 @@
 using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.AccountSendModels;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -384,11 +385,24 @@ public class AccountController : ControllerBase
     #region Update Account
 
     [HttpPut]
-    public async Task<IActionResult> UpdateAccount(AccountUpdateRequest update)
+    public async Task<IActionResult> UpdateAccount(AccountUpdateRequest updateAccount)
     {
         try
         {
-            var result = await _accountService.UpdateAccount(update);
+            var validationResult = await _accountService.ValidateAccountUpdateRequest(updateAccount);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
+            var result = await _accountService.UpdateAccount(updateAccount);
             if (result == null) return NotFound(new { Success = false, Message = "Account not found" });
             return Ok(new BaseResponseModel
             {

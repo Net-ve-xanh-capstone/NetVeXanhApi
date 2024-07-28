@@ -9,12 +9,8 @@ public class ImageRequestValidator : AbstractValidator<ImageRequest>
     {
         // Validate Url
         RuleFor(x => x.Url)
-            .NotEmpty().WithMessage("Url is required.")
+            .NotEmpty().WithMessage("Url không được để trống.")
             .Must(BeAValidUrl).WithMessage("Url must be a valid URL and use HTTP or HTTPS.");
-
-        // Validate Description (optional)
-        RuleFor(x => x.Description)
-            .MaximumLength(250).WithMessage("Description must be less than 250 characters.");
     }
 
     private bool BeAValidUrl(string url)

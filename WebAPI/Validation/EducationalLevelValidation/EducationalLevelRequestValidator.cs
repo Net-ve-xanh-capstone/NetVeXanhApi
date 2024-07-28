@@ -1,25 +1,53 @@
-﻿using Application.SendModels.EducationalLevel;
+﻿using Application;
+using Application.IService;
+using Application.IService.IValidationService;
+using Application.SendModels.EducationalLevel;
 using FluentValidation;
 
 namespace WebAPI.Validation.EducationalLevelValidation;
 
 public class EducationalLevelRequestValidator : AbstractValidator<EducationalLevelRequest>
 {
-    public EducationalLevelRequestValidator()
+    private readonly IValidationServiceManager _validationServiceManager;
+    public EducationalLevelRequestValidator(IValidationServiceManager validationServiceManager)
     {
+        _validationServiceManager = validationServiceManager;
         // Validate Level
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level is required.")
-            .Length(1, 50).WithMessage("Level must be between 1 and 50 characters.");
+            .NotEmpty().WithMessage("Level không được trống.")
+            .Length(1, 50).WithMessage("Level phải có từ 1 tới 50 chữ.");
 
         // Validate ContestId
         RuleFor(x => x.ContestId)
-            .NotEmpty().WithMessage("ContestId is required.")
-            .NotEqual(Guid.Empty).WithMessage("ContestId must be a valid GUID.");
+            .NotEmpty().WithMessage("ContestId không được trống.")
+            .NotEqual(Guid.Empty).WithMessage("ContestId phải là kiểu GUID.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
+        {
+            RuleFor(x => x.CurrentUserId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.CurrentUserId)
+                        .MustAsync(async (userId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CurrentUserId không tồn tại.");
+                });
+        });
     }
 }

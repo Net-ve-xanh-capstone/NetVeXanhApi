@@ -1,12 +1,18 @@
-﻿using Application.SendModels.Contest;
+﻿using Application;
+using Application.IService;
+using Application.IService.IValidationService;
+using Application.SendModels.Contest;
 using FluentValidation;
 
 namespace WebAPI.Validation.ContestValidation;
 
 public class ContestRequestValidator : AbstractValidator<ContestRequest>
 {
-    public ContestRequestValidator()
+    private readonly IValidationServiceManager _validationServiceManager;
+    public ContestRequestValidator(IValidationServiceManager validationServiceManager)
     {
+        _validationServiceManager = validationServiceManager;
+
         RuleFor(e => e.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 100).WithMessage("Tên phải có độ dài từ 2 đến 100 ký tự.");
@@ -27,25 +33,46 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
         RuleFor(e => e.Logo)
             .Must(BeAValidUrl).WithMessage("Logo phải là một URL hợp lệ.");
 
-        RuleFor(e => e.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId không được để trống.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId không được là Guid.Empty.");
+        RuleFor(x => x.CurrentUserId)
+        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
+        {
+            RuleFor(x => x.CurrentUserId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.CurrentUserId)
+                        .MustAsync(async (userId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CurrentUserId không tồn tại.");
+                });
+        });
 
         RuleFor(e => e.Round1StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 1 không được để trống.")
             .LessThan(e => e.Round1EndTime).WithMessage("Thời gian bắt đầu vòng 1 phải trước thời gian kết thúc vòng 1.");
 
         RuleFor(e => e.Round1EndTime)
-            .NotEmpty().WithMessage("Thời gian kết thúc vòng 1 không được để trống.")
-            .GreaterThan(e => e.Round1StartTime).WithMessage("Thời gian kết thúc vòng 1 phải sau thời gian bắt đầu vòng 1.");
+            .NotEmpty().WithMessage("Thời gian kết thúc vòng 1 không được để trống.");
 
         RuleFor(e => e.Round2StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 2 không được để trống.")
             .LessThan(e => e.Round2EndTime).WithMessage("Thời gian bắt đầu vòng 2 phải trước thời gian kết thúc vòng 2.");
 
         RuleFor(e => e.Round2EndTime)
-            .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.")
-            .GreaterThan(e => e.Round2StartTime).WithMessage("Thời gian kết thúc vòng 2 phải sau thời gian bắt đầu vòng 2.");
+            .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.");
 
         RuleFor(e => e.Rank1)
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải nhất phải lớn hơn hoặc bằng 1.");

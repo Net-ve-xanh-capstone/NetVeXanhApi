@@ -2,10 +2,13 @@
 using Application.IService;
 using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
+using Application.SendModels.Topic;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 using Infracstructures;
 
 namespace Application.Services;
@@ -15,11 +18,13 @@ public class ScheduleService : IScheduleService
     private readonly IMapper _mapper;
 
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
-    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validatorFactory;
     }
 
     #region Get For Website
@@ -456,5 +461,15 @@ public class ScheduleService : IScheduleService
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
+    }
+
+    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule)
+    {
+        return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
+    }
+
+    public async Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate)
+    {
+        return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
     }
 }

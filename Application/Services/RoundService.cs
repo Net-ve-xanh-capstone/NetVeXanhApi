@@ -2,11 +2,13 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Round;
+using Application.SendModels.Topic;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -19,16 +21,18 @@ public class RoundService : IRoundService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public RoundService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
         IConfiguration configuration,
-        IClaimsService claimsService)
+        IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -150,4 +154,17 @@ public class RoundService : IRoundService
     {
         return await _unitOfWork.RoundRepo.IsExistIdAsync(id);
     }
+
+
+    #region Validate
+    public async Task<ValidationResult> ValidateRoundRequest(RoundRequest round)
+    {
+        return await _validatorFactory.RoundRequestValidator.ValidateAsync(round);
+    }
+
+    public async Task<ValidationResult> ValidateRoundUpdateRequest(RoundUpdateRequest roundUpdate)
+    {
+        return await _validatorFactory.RoundUpdateRequestValidator.ValidateAsync(roundUpdate);
+    }
+    #endregion
 }

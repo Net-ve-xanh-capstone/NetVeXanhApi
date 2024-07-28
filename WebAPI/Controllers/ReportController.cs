@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Report;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +26,19 @@ public class ReportController : ControllerBase
     {
         try
         {
+            var validationResult = await _reportService.ValidateReportRequest(report);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _reportService.AddReport(report);
             return Ok(new BaseResponseModel
             {
@@ -53,6 +68,19 @@ public class ReportController : ControllerBase
     {
         try
         {
+            var validationResult = await _reportService.ValidateReportUpdateRequest(updateReport);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _reportService.UpdateReport(updateReport);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel

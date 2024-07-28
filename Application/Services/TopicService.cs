@@ -20,17 +20,17 @@ public class TopicService : ITopicService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IValidator<TopicRequest> _validator;
+    private readonly IValidatorFactory _validatorFactory;
 
     public TopicService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration, IClaimsService claimsService, IValidator<TopicRequest> validator)
+        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
-        _validator = validator;
+        _validatorFactory = validatorFactory;
     }
 
     #region Create
@@ -114,9 +114,15 @@ public class TopicService : ITopicService
     #endregion
 
 
-    //Validate
+    #region Validate
     public async Task<ValidationResult> ValidateTopicRequest(TopicRequest topic)
     {
-        return await _validator.ValidateAsync(topic);
+        return await _validatorFactory.TopicRequestValidator.ValidateAsync(topic);
     }
+
+    public async Task<ValidationResult> ValidateTopicUpdateRequest(TopicUpdateRequest topicUpdate)
+    {
+        return await _validatorFactory.TopicUpdateRequestValidator.ValidateAsync(topicUpdate);
+    }
+    #endregion
 }

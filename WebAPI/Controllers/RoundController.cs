@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Round;
+using Application.SendModels.Topic;
+using Application.Services;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,18 +22,24 @@ public class RoundController : Controller
     #region Create Round
 
     [HttpPost]
-    public async Task<IActionResult> CreateRound(RoundRequest Round)
+    public async Task<IActionResult> CreateRound(RoundRequest round)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _roundService.ValidateRoundRequest(round);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _roundService.CreateRound(Round);
+            var result = await _roundService.CreateRound(round);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -123,6 +131,19 @@ public class RoundController : Controller
     {
         try
         {
+            var validationResult = await _roundService.ValidateRoundUpdateRequest(updateRound);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _roundService.UpdateRound(updateRound);
             if (result == null) return NotFound(new { Success = false, Message = "Round not found" });
             return Ok(new BaseResponseModel

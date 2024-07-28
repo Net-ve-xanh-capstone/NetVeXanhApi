@@ -1,20 +1,76 @@
-﻿using Application.SendModels.EducationalLevel;
+﻿using Application;
+using Application.IService;
+using Application.IService.IValidationService;
+using Application.SendModels.EducationalLevel;
 using FluentValidation;
 
 namespace WebAPI.Validation.EducationalLevelValidation;
 
 public class EducationalLevelUpdateRequestValidator : AbstractValidator<EducationalLevelUpdateRequest>
 {
-    public EducationalLevelUpdateRequestValidator()
+    private readonly IValidationServiceManager _validationServiceManager;
+    public EducationalLevelUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
-        // Validate ContestId
-        RuleFor(x => x.ContestId)
-            .NotEmpty().WithMessage("ContestId is required.")
-            .NotEqual(Guid.Empty).WithMessage("ContestId must be a valid GUID.");
+        _validationServiceManager = validationServiceManager;
+        // Validate Id
+        RuleFor(x => x.Id)
+        .NotEmpty().WithMessage("Id không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
+        {
+            RuleFor(x => x.Id)
+                .Must(levelId => Guid.TryParse(levelId.ToString(), out _))
+                .WithMessage("Id phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.Id)
+                        .MustAsync(async (levelId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("Id không tồn tại.");
+                });
+        });
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-            .NotEmpty().WithMessage("CurrentUserId is required.")
-            .NotEqual(Guid.Empty).WithMessage("CurrentUserId must be a valid GUID.");
+        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
+        {
+            RuleFor(x => x.CurrentUserId)
+                .Must(userId => Guid.TryParse(userId.ToString(), out _))
+                .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.CurrentUserId)
+                        .MustAsync(async (userId, cancellation) =>
+                        {
+                            try
+                            {
+                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
+                            }
+                            catch (Exception)
+                            {
+                                // Xử lý lỗi kiểm tra ID
+                                return false; // Giả sử ID không tồn tại khi có lỗi
+                            }
+                        })
+                        .WithMessage("CurrentUserId không tồn tại.");
+                });
+        });
+
+        // Validate Level
+        RuleFor(x => x.Level)
+            .NotEmpty().WithMessage("Level không được trống.")
+            .Length(1, 50).WithMessage("Level phải có từ 1 tới 50 chữ.");
     }
 }

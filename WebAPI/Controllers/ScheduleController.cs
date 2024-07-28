@@ -2,6 +2,9 @@
 using Application.IService;
 using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
+using Application.SendModels.Topic;
+using Application.Services;
+using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -21,18 +24,24 @@ public class ScheduleController : Controller
     #region Create Schedule For Preliminary Round
 
     [HttpPost("preliminary")]
-    public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest Schedule)
+    public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _scheduleService.CreateScheduleForPreliminaryRound(Schedule);
+            var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
@@ -63,18 +72,24 @@ public class ScheduleController : Controller
     #region Create Schedule For Preliminary Round
 
     [HttpPost("final")]
-    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest Schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest schedule)
     {
         try
         {
-            if (!ModelState.IsValid)
+            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            if (!validationResult.IsValid)
             {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
             }
-
-            var result = await _scheduleService.CreateScheduleForFinalRound(Schedule);
+            var result = await _scheduleService.CreateScheduleForFinalRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
@@ -208,6 +223,19 @@ public class ScheduleController : Controller
     {
         try
         {
+            var validationResult = await _scheduleService.ValidateScheduleUpdateRequest(updateSchedule);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }
             var result = await _scheduleService.UpdateSchedule(updateSchedule);
             if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
             return Ok(new BaseResponseModel

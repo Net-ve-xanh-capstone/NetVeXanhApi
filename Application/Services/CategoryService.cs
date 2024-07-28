@@ -2,10 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Category;
+using Application.SendModels.Topic;
 using Application.ViewModels.CategoryViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
@@ -18,15 +20,17 @@ public class CategoryService : ICategoryService
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public CategoryService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration, IClaimsService claimsService)
+        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
         _configuration = configuration;
         _claimsService = claimsService;
+        _validatorFactory = validatorFactory;
     }
 
     #region Add Category
@@ -173,4 +177,15 @@ public class CategoryService : ICategoryService
     {
         return await _unitOfWork.CategoryRepo.IsExistIdAsync(id);
     }
+    #region Validate
+    public async Task<ValidationResult> ValidateCategoryRequest(CategoryRequest category)
+    {
+        return await _validatorFactory.CategoryRequestValidator.ValidateAsync(category);
+    }
+
+    public async Task<ValidationResult> ValidateCategoryUpdateRequest(UpdateCategoryRequest categoryUpdate)
+    {
+        return await _validatorFactory.UpdateCategoryRequestValidator.ValidateAsync(categoryUpdate);
+    }
+    #endregion
 }

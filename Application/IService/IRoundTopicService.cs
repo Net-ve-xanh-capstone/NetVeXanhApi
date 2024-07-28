@@ -1,6 +1,7 @@
 ﻿using Application.SendModels.RoundTopic;
 using Application.ViewModels.TopicViewModels;
-using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -12,4 +13,7 @@ public interface IRoundTopicService
     Task<bool> DeleteTopicInRound(RoundTopicDeleteRequest roundTopicDeleteRequest);
     Task<List<RoundTopicViewModel>> GetListRoundTopicForStaff(Guid id);
     Task<bool> IsExistedId(Guid id);
+    Task<ValidationResult> ValidateRoundTopicRequest(RoundTopicRequest roundtopic);
+
+    Task<ValidationResult> ValidateRoundTopicDeleteRequest(RoundTopicDeleteRequest roundtopicDelete);
 }

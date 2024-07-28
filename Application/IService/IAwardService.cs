@@ -1,6 +1,8 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.IService;
 
@@ -13,4 +15,7 @@ public interface IAwardService
     Task<AwardViewModel> GetAwardById(Guid awardId);
 
     Task<bool> IsExistedId(Guid id);
+
+    Task<ValidationResult> ValidateAwardRequest(AwardRequest award);
+    Task<ValidationResult> ValidateTopicUpdateRequest(UpdateAwardRequest awardUpdate);
 }

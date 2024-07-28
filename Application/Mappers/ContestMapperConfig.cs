@@ -1,6 +1,7 @@
 ﻿using Application.SendModels.Contest;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -10,7 +11,13 @@ public partial class MapperConfigs : Profile
     partial void AddContestMapperConfig()
     {
         CreateMap<Contest, ContestViewModel>()
-            .ForMember(dest => dest.AccountFullName, opt => opt.MapFrom(src => src.Account.FullName));
+            .ForMember(dest => dest.AccountFullName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == ContestStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
+                src.Status == ContestStatus.InProcess.ToString() ? "Đang tiến hành" :
+                src.Status == ContestStatus.Complete.ToString() ? "Hoàn thành" :
+                src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
+            ));
         CreateMap<ContestViewModel, Contest>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.AccountFullName));
 

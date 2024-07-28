@@ -56,6 +56,14 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
+        
+        CreateMap<StaffUpdatePaintingRequest, Painting>()
+            .ForPath(x => x.Account.Birthday, x => x.MapFrom(x => x.Birthday))
+            .ForPath(x => x.Account.Phone, x => x.MapFrom(x => x.Phone))
+            .ForPath(x => x.Account.FullName, x => x.MapFrom(x => x.FullName))
+            .ForPath(x => x.Account.Address, x => x.MapFrom(x => x.Address))
+            .ForPath(x => x.Account.Email, x => x.MapFrom(x => x.Email))
+            .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
 
         CreateMap<Painting, PaintingInCollectionViewModel>();
 

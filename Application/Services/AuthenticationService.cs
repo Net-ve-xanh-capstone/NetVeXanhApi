@@ -116,12 +116,12 @@ public class AuthenticationService : IAuthenticationService
 
         if (check is false)
         {
-            response.Message = "Create Fail !";
+            response.Message = "Tạo thất bại!";
             response.Success = true;
             return response;
         }
 
-        response.Message = "Create Success !";
+        response.Message = "Tạo thành công";
         response.Success = true;
 
         var mail = new MailModel();

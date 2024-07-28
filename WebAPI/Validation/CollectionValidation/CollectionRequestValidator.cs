@@ -17,9 +17,9 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
             .NotEmpty().WithMessage("Tên không được để trống.")
             .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
 
-        RuleFor(c => c.Image)
+        /*RuleFor(c => c.Image)
             .NotEmpty().WithMessage("Hình ảnh không được để trống.")
-            .Must(BeAValidUrl).WithMessage("Hình ảnh phải là một URL hợp lệ.");
+            .Must(BeAValidUrl).WithMessage("Hình ảnh phải là một URL hợp lệ.");*/
 
         RuleFor(x => x.CurrentUserId)
         .NotEmpty().WithMessage("CurrentUserId không được để trống.");

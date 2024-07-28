@@ -43,7 +43,7 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
             .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự.");
 
         RuleFor(user => user.Phone)
-            .Must(phone => string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
             .WithMessage("Số điện thoại không hợp lệ.");
     }
 

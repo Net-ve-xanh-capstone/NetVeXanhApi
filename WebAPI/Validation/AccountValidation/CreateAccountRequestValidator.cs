@@ -1,4 +1,5 @@
-﻿using Application.SendModels.Authentication;
+﻿using System.Text.RegularExpressions;
+using Application.SendModels.Authentication;
 using FluentValidation;
 
 namespace WebAPI.Validation.AccountValidation
@@ -25,8 +26,9 @@ namespace WebAPI.Validation.AccountValidation
                 .NotEmpty().WithMessage("Mật khẩu không được để trống.")
                 .MinimumLength(6).WithMessage("Mật khẩu phải có ít nhất 6 ký tự.");
 
-            RuleFor(x => x.Phone)
-                .Matches(@"^0\d{9,10}$").When(x => !string.IsNullOrEmpty(x.Phone)).WithMessage("Số điện thoại không hợp lệ.");
+            RuleFor(user => user.Phone)
+                .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+                .WithMessage("Số điện thoại không hợp lệ.");
 
             RuleFor(x => x.Birthday)
                 .LessThan(DateTime.Now).WithMessage("Ngày sinh phải là ngày trong quá khứ.");

@@ -30,8 +30,8 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
         RuleFor(e => e.Content)
             .NotEmpty().WithMessage("Nội dung không được để trống.");
 
-        RuleFor(e => e.Logo)
-            .Must(BeAValidUrl).WithMessage("Logo phải là một URL hợp lệ.");
+        /*RuleFor(e => e.Logo)
+            .Must(BeAValidUrl).WithMessage("Logo phải là một URL hợp lệ.");*/
 
         RuleFor(x => x.CurrentUserId)
         .NotEmpty().WithMessage("CurrentUserId không được để trống.");

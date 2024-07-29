@@ -230,11 +230,11 @@ public class PaintingController : Controller
     #region Update Painting
 
     [HttpPut("satffupdate")]
-    public async Task<IActionResult> UpdatePaintingstaffpermisson(UpdatePaintingRequest updatePaintingViewModel)
+    public async Task<IActionResult> UpdatePaintingstaffpermisson(StaffUpdatePaintingRequest updatePaintingViewModel)
     {
         try
         {
-            var result = await _paintingService.UpdatePaintingStaffPermisson(updatePaintingViewModel);
+            var result = await _paintingService.UpdatePaintingStaffPermission(updatePaintingViewModel);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
             {

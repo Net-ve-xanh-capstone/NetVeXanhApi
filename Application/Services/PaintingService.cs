@@ -227,7 +227,7 @@ public class PaintingService : IPaintingService
     
     #region Update Painting
 
-    public async Task<bool> UpdatePaintingStaffPermisson(UpdatePaintingRequest updatePainting)
+    public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 

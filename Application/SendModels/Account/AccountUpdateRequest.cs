@@ -8,4 +8,5 @@ public class AccountUpdateRequest
     public string Address { get; set; }
     public string Phone { get; set; }
     public string? Avatar { get; set; }
+    public bool Gender { get; set; } 
 }

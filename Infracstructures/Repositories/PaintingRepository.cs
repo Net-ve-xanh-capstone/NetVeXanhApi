@@ -67,9 +67,13 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
     public async Task<List<Painting>> ListByAccountIdAsync(Guid accountId)
     {
         return await DbSet.Where(x => x.AccountId == accountId && x.Status != PaintingStatus.Delete.ToString())
-            .Include(x => x.Account)
             .Include(x => x.RoundTopic)
             .ThenInclude(x => x.Topic)
+            .Include(x => x.RoundTopic)
+            .ThenInclude(x => x.Round)
+            .ThenInclude(x => x.EducationalLevel)
+            .ThenInclude(x => x.Contest)
+            .Include(x => x.Account)
             .ToListAsync();
     }
 

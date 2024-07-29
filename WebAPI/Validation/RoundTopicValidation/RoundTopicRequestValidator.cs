@@ -57,7 +57,7 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
                             {
                                 try
                                 {
-                                    return await _validationServiceManager.PaintingValidationService.IsExistedId(topicId);
+                                    return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
                                 }
                                 catch (Exception)
                                 {

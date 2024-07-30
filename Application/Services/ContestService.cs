@@ -40,8 +40,8 @@ public class ContestService : IContestService
 
         var contest = _mapper.Map<Contest>(addContestViewModel);
 
-        /*if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime))
-            throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");*/
+        if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime))
+            throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
 
         contest.Status = ContestStatus.NotStarted.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();

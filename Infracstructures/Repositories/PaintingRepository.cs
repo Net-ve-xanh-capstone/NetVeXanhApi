@@ -1,4 +1,5 @@
-﻿using Application.IRepositories;
+﻿using System;
+using Application.IRepositories;
 using Application.SendModels.Painting;
 using Domain.Enums;
 using Domain.Models;
@@ -158,5 +159,12 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
                                     .Where(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id  == contestId && x.AccountId == accountId)
                                     .FirstOrDefaultAsync();
         return paintings;
+    }
+
+    public async Task<int> PaintingCountByContest(Guid contestId)
+    {
+        return await DbSet
+            .Where(p => p.RoundTopic.Round.EducationalLevel.Contest.Id == contestId && p.Status != PaintingStatus.Delete.ToString())
+            .CountAsync();
     }
 }

@@ -65,7 +65,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         return await DbSet.FirstOrDefaultAsync(a => a.Code == code && a.Status == AccountStatus.Active.ToString());
     }
-    
+
     public async Task<int> CreateNumberOfAccountCode(string roleCode)
     {
         var listAccount = await DbSet.ToListAsync();
@@ -96,5 +96,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
 
         return maxNumber + 1;
     }
+    #region Validate
+    public async Task<bool> IsExistCompetitor(Guid id)
+    {
+        return await DbSet.AnyAsync(x => x.Id == id && x.Role == Role.Competitor.ToString());
+    }
 
+    public async Task<bool> IsExistStaff(Guid id)
+    {
+        return await DbSet.AnyAsync(x => x.Id == id && x.Role == Role.Staff.ToString());
+    }
+    #endregion
 }

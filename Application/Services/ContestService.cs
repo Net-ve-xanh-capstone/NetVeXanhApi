@@ -40,230 +40,220 @@ public class ContestService : IContestService
 
         var contest = _mapper.Map<Contest>(addContestViewModel);
 
-        if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime)) throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
-        
+        /*if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime))
+            throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");*/
+
         contest.Status = ContestStatus.NotStarted.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();
-        await _unitOfWork.ContestRepo.AddAsync(contest);
-        var check = await _unitOfWork.SaveChangesAsync() > 0;
 
-        //check
-        if (check == false) throw new Exception("Tạo Contest Thất Bại");
-
-        #endregion
-
-
-        #region Tạo Level
-
-        //List level
+        // Create levels
         var listLevel = new List<EducationalLevel>();
 
-        //Create Level Mầm Non
-        var level = new EducationalLevel();
-        level.Level = "Bảng A";
-        level.CreatedBy = addContestViewModel.CurrentUserId;
-        level.ContestId = contest.Id;
-        level.Status = EducationalLevelStatus.NotStarted.ToString();
-        level.CreatedTime = _currentTime.GetCurrentTime();
-        level.Description = "Mầm Non";
+        var level = new EducationalLevel
+        {
+            Level = "Bảng A",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            Contest = contest,
+            Status = EducationalLevelStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            Description = "Mầm Non"
+        };
         listLevel.Add(level);
 
-        //Create Level Cấp 1
-        var level2 = new EducationalLevel();
-        level2.Level = "Bảng B";
-        level2.CreatedBy = addContestViewModel.CurrentUserId;
-        level2.ContestId = contest.Id;
-        level2.Status = EducationalLevelStatus.NotStarted.ToString();
-        level2.CreatedTime = _currentTime.GetCurrentTime();
-        level2.Description = "Tiểu Học";
+        var level2 = new EducationalLevel
+        {
+            Level = "Bảng B",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            Contest = contest,
+            Status = EducationalLevelStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            Description = "Tiểu Học"
+        };
         listLevel.Add(level2);
-        await _unitOfWork.EducationalLevelRepo.AddRangeAsync(listLevel);
-        check = await _unitOfWork.SaveChangesAsync() > 0;
 
+        // Add levels to contest
+        contest.EducationalLevel = listLevel;
 
-        //check
-        if (check == false) throw new Exception("Tạo Level Thất Bại");
-
-        #endregion
-
-
-        #region Tạo Round
-
-        //List level
+        // Create rounds
         var listRound = new List<Round>();
-        // Create Round 1 Level 1
-        var round = new Round();
-        round.Name = "Vòng Sơ Khảo";
-        round.CreatedBy = addContestViewModel.CurrentUserId;
-        round.EducationalLevelId = level.Id;
-        round.Status = RoundStatus.NotStarted.ToString();
-        round.CreatedTime = _currentTime.GetCurrentTime();
-        round.StartTime = addContestViewModel.Round1StartTime;
-        round.EndTime = addContestViewModel.Round1EndTime;
-        round.Description = "Không có mô tả";
-        round.Location = "Chưa có thông tin địa điểm";
+
+        var round = new Round
+        {
+            Name = "Vòng Sơ Khảo",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            EducationalLevel = level,
+            Status = RoundStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            StartTime = addContestViewModel.Round1StartTime,
+            EndTime = addContestViewModel.Round1EndTime,
+            Description = "Không có mô tả",
+            Location = "Chưa có thông tin địa điểm"
+        };
         listRound.Add(round);
 
-        // Create Round 2 Level 1
-        var round2 = new Round();
-        round2.Name = "Vòng Chung Kết";
-        round2.CreatedBy = addContestViewModel.CurrentUserId;
-        round2.EducationalLevelId = level.Id;
-        round2.Status = RoundStatus.NotStarted.ToString();
-        round2.CreatedTime = _currentTime.GetCurrentTime();
-        round2.StartTime = addContestViewModel.Round2StartTime;
-        round2.EndTime = addContestViewModel.Round2EndTime;
-        round2.Description = "Không có mô tả";
-        round2.Location = "Chưa có thông tin địa điểm";
+        var round2 = new Round
+        {
+            Name = "Vòng Chung Kết",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            EducationalLevel = level,
+            Status = RoundStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            StartTime = addContestViewModel.Round2StartTime,
+            EndTime = addContestViewModel.Round2EndTime,
+            Description = "Không có mô tả",
+            Location = "Chưa có thông tin địa điểm"
+        };
         listRound.Add(round2);
 
-        // Create Round 1 Level 2
-        var round3 = new Round();
-        round3.Name = "Vòng Sơ Khảo";
-        round3.CreatedBy = addContestViewModel.CurrentUserId;
-        round3.EducationalLevelId = level2.Id;
-        round3.Status = RoundStatus.NotStarted.ToString();
-        round3.CreatedTime = _currentTime.GetCurrentTime();
-        round3.StartTime = addContestViewModel.Round1StartTime;
-        round3.EndTime = addContestViewModel.Round1EndTime;
-        round3.Description = "Không có mô tả";
-        round3.Location = "Chưa có thông tin địa điểm";
+        var round3 = new Round
+        {
+            Name = "Vòng Sơ Khảo",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            EducationalLevel = level2,
+            Status = RoundStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            StartTime = addContestViewModel.Round1StartTime,
+            EndTime = addContestViewModel.Round1EndTime,
+            Description = "Không có mô tả",
+            Location = "Chưa có thông tin địa điểm"
+        };
         listRound.Add(round3);
 
-        // Create Round 2 Level 2
-        var round4 = new Round();
-        round4.Name = "Vòng Chung Kết";
-        round4.CreatedBy = addContestViewModel.CurrentUserId;
-        round4.EducationalLevelId = level2.Id;
-        round4.Status = RoundStatus.NotStarted.ToString();
-        round4.CreatedTime = _currentTime.GetCurrentTime();
-        round4.StartTime = addContestViewModel.Round2StartTime;
-        round4.EndTime = addContestViewModel.Round2EndTime;
-        round4.Description = "Không có mô tả";
-        round4.Location = "Chưa có thông tin địa điểm";
+        var round4 = new Round
+        {
+            Name = "Vòng Chung Kết",
+            CreatedBy = addContestViewModel.CurrentUserId,
+            EducationalLevel = level2,
+            Status = RoundStatus.NotStarted.ToString(),
+            CreatedTime = _currentTime.GetCurrentTime(),
+            StartTime = addContestViewModel.Round2StartTime,
+            EndTime = addContestViewModel.Round2EndTime,
+            Description = "Không có mô tả",
+            Location = "Chưa có thông tin địa điểm"
+        };
         listRound.Add(round4);
-        await _unitOfWork.RoundRepo.AddRangeAsync(listRound);
-        check = await _unitOfWork.SaveChangesAsync() > 0;
 
-        //check
-        if (check == false) throw new Exception("Tạo Round Thất Bại");
+        // Add rounds to levels
+        level.Round = listRound.Where(r => r.EducationalLevel == level).ToList();
+        level2.Round = listRound.Where(r => r.EducationalLevel == level2).ToList();
 
-        #endregion
-
-
-        #region Tạo Award
-
-        //List level
+        // Create awards
         var listAward = new List<Award>();
 
-        //Create 1st prize Level 1
-        var award1 = new Award();
-        award1.Rank = "FirstPrize";
-        award1.CreatedBy = addContestViewModel.CurrentUserId;
-        award1.CreatedTime = _currentTime.GetCurrentTime();
-        award1.Quantity = addContestViewModel.Rank1;
-        award1.Status = ContestStatus.NotStarted.ToString();
-        award1.EducationalLevelId = level.Id;
-        listAward.Add(award1);
+        // Create awards for Level 1
+        var awardsLevel1 = new List<Award>
+{
+    new Award
+    {
+        Rank = "FirstPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank1,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level
+    },
+    new Award
+    {
+        Rank = "SecondPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank2,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level
+    },
+    new Award
+    {
+        Rank = "ThirdPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank3,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level
+    },
+    new Award
+    {
+        Rank = "ConsolationPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank4,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level
+    },
+    new Award
+    {
+        Rank = "Preliminary",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.PassRound1,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level
+    }
+};
 
-        //Create 2nd prize  Level 1
-        var award2 = new Award();
-        award2.Rank = "SecondPrize";
-        award2.CreatedBy = addContestViewModel.CurrentUserId;
-        award2.CreatedTime = _currentTime.GetCurrentTime();
-        award2.Quantity = addContestViewModel.Rank2;
-        award2.Status = ContestStatus.NotStarted.ToString();
-        award2.EducationalLevelId = level.Id;
-        listAward.Add(award2);
+        listAward.AddRange(awardsLevel1);
 
-        //Create 3rd prize Level 1
-        var award3 = new Award();
-        award3.Rank = "ThirdPrize";
-        award3.CreatedBy = addContestViewModel.CurrentUserId;
-        award3.CreatedTime = _currentTime.GetCurrentTime();
-        award3.Quantity = addContestViewModel.Rank3;
-        award3.Status = ContestStatus.NotStarted.ToString();
-        award3.EducationalLevelId = level.Id;
-        listAward.Add(award3);
+        // Create awards for Level 2
+        var awardsLevel2 = new List<Award>
+{
+    new Award
+    {
+        Rank = "FirstPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank1,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level2
+    },
+    new Award
+    {
+        Rank = "SecondPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank2,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level2
+    },
+    new Award
+    {
+        Rank = "ThirdPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank3,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level2
+    },
+    new Award
+    {
+        Rank = "ConsolationPrize",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.Rank4,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level2
+    },
+    new Award
+    {
+        Rank = "Preliminary",
+        CreatedBy = addContestViewModel.CurrentUserId,
+        CreatedTime = _currentTime.GetCurrentTime(),
+        Quantity = addContestViewModel.PassRound1,
+        Status = ContestStatus.NotStarted.ToString(),
+        EducationalLevel = level2
+    }
+};
 
-        //Create 4th prize Level 1
-        var award4 = new Award();
-        award4.Rank = "ConsolationPrize";
-        award4.CreatedBy = addContestViewModel.CurrentUserId;
-        award4.CreatedTime = _currentTime.GetCurrentTime();
-        award4.Quantity = addContestViewModel.Rank4;
-        award4.Status = ContestStatus.NotStarted.ToString();
-        award4.EducationalLevelId = level.Id;
-        listAward.Add(award4);
+        listAward.AddRange(awardsLevel2);
 
-        //Create Passed Level 1
-        var award9 = new Award();
-        award9.Rank = "Preliminary";
-        award9.CreatedBy = addContestViewModel.CurrentUserId;
-        award9.CreatedTime = _currentTime.GetCurrentTime();
-        award9.Quantity = addContestViewModel.PassRound1;
-        award9.Status = ContestStatus.NotStarted.ToString();
-        award9.EducationalLevelId = level.Id;
-        listAward.Add(award9);
+        // Add awards to levels
+        level.Award = listAward.Where(a => a.EducationalLevel == level).ToList();
+        level2.Award = listAward.Where(a => a.EducationalLevel == level2).ToList();
 
-        //Create 1st prize Level 2
-        var award5 = new Award();
-        award5.Rank = "FirstPrize";
-        award5.CreatedBy = addContestViewModel.CurrentUserId;
-        award5.CreatedTime = _currentTime.GetCurrentTime();
-        award5.Quantity = addContestViewModel.Rank1;
-        award5.Status = ContestStatus.NotStarted.ToString();
-        award5.EducationalLevelId = level2.Id;
-        listAward.Add(award5);
-
-        //Create 2nd prize  Level 2
-        var award6 = new Award();
-        award6.Rank = "SecondPrize";
-        award6.CreatedBy = addContestViewModel.CurrentUserId;
-        award6.CreatedTime = _currentTime.GetCurrentTime();
-        award6.Quantity = addContestViewModel.Rank2;
-        award6.Status = ContestStatus.NotStarted.ToString();
-        award6.EducationalLevelId = level2.Id;
-        listAward.Add(award6);
-
-        //Create 3rd prize Level 2
-        var award7 = new Award();
-        award7.Rank = "ThirdPrize";
-        award7.CreatedBy = addContestViewModel.CurrentUserId;
-        award7.CreatedTime = _currentTime.GetCurrentTime();
-        award7.Quantity = addContestViewModel.Rank3;
-        award7.Status = ContestStatus.NotStarted.ToString();
-        award7.EducationalLevelId = level2.Id;
-        listAward.Add(award7);
-
-        //Create 4th prize Level 2
-        var award8 = new Award();
-        award8.Rank = "ConsolationPrize";
-        award8.CreatedBy = addContestViewModel.CurrentUserId;
-        award8.CreatedTime = _currentTime.GetCurrentTime();
-        award8.Quantity = addContestViewModel.Rank4;
-        award8.Status = ContestStatus.NotStarted.ToString();
-        award8.EducationalLevelId = level2.Id;
-        listAward.Add(award8);
-
-        //Create Passed Level 2
-        var award10 = new Award();
-        award10.Rank = "Preliminary";
-        award10.CreatedBy = addContestViewModel.CurrentUserId;
-        award10.CreatedTime = _currentTime.GetCurrentTime();
-        award10.Quantity = addContestViewModel.PassRound1;
-        award10.Status = ContestStatus.NotStarted.ToString();
-        award10.EducationalLevelId = level.Id;
-        listAward.Add(award10);
-
-        await _unitOfWork.AwardRepo.AddRangeAsync(listAward);
-        check = await _unitOfWork.SaveChangesAsync() > 0;
-        //check
-        if (check == false) throw new Exception("Tạo Level Thất Bại");
+        // Add contest with levels, rounds, and awards
+        await _unitOfWork.ContestRepo.AddAsync(contest);
 
         #endregion
 
-        return check;
+        return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
     #endregion

@@ -13,7 +13,9 @@ public class ContestViewModel
     public DateTime EndTime { get; set; }
     public string Content { get; set; }
     public string Logo { get; set; }
+    public int PaintingCount { get; set; }
 
+    public int CompetitorCount { get; set; }
     public Guid? StaffId { get; set; }
     public string AccountFullName { get; set; }
 

@@ -20,6 +20,7 @@ public interface IAccountRepository : IGenericRepository<Account>
 
     Task<int> CreateNumberOfAccountCode(string roleCode);
 
+    Task<int> CompetitorCountByContest(Guid contestId);
 
     Task<bool> IsExistCompetitor(Guid id);
 

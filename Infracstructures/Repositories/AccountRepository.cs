@@ -96,6 +96,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
 
         return maxNumber + 1;
     }
+
+    public async Task<int> CompetitorCountByContest(Guid contestId)
+    {
+        return await DbSet
+            .Where(p => p.Painting.Any(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId ))
+            .Distinct()
+            .CountAsync();
+    }
+
     #region Validate
     public async Task<bool> IsExistCompetitor(Guid id)
     {

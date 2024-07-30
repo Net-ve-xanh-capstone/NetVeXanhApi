@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.IRepositories;
 
@@ -18,4 +19,9 @@ public interface IAccountRepository : IGenericRepository<Account>
     Task<Account?> GetAccountByCodeAsync(string code);
 
     Task<int> CreateNumberOfAccountCode(string roleCode);
+
+
+    Task<bool> IsExistCompetitor(Guid id);
+
+    Task<bool> IsExistStaff(Guid id);
 }

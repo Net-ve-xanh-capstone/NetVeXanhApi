@@ -315,8 +315,9 @@ public class ContestService : IContestService
     {
         var contest = await _unitOfWork.ContestRepo.GetAllContestInformationAsync(contestId);
         if (contest == null) throw new Exception("Khong tim thay Contest");
-
-        return _mapper.Map<ContestDetailViewModel>(contest);
+        var result = _mapper.Map<ContestDetailViewModel>(contest);
+        result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
+        return result;
     }
 
     #endregion

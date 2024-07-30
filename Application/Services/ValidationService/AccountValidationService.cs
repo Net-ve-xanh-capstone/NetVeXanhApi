@@ -23,5 +23,15 @@ namespace Application.Services.ValidationService
         {
             return await _unitOfWork.AccountRepo.IsExistIdAsync(id);
         }
+
+        public async Task<bool> IsExistedCompetitor(Guid id)
+        {
+            return await _unitOfWork.AccountRepo.IsExistCompetitor(id);
+        }
+
+        public async Task<bool> IsExistStaff(Guid id)
+        {
+            return await _unitOfWork.AccountRepo.IsExistStaff(id);
+        }
     }
 }

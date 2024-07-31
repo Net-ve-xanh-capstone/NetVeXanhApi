@@ -12,5 +12,8 @@ namespace Application.IService.IValidationService
         Task<bool> IsExistedCompetitor(Guid id);
 
         Task<bool> IsExistStaff(Guid id);
+        Task<bool> IsExistPhone(string phone);
+        Task<bool> IsExistEmail(string email);
+        Task<bool> IsExistUsername(string username);
     }
 }

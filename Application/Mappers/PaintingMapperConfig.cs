@@ -2,6 +2,7 @@
 using Application.ViewModels.CollectionViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -71,8 +72,17 @@ public partial class MapperConfigs : Profile
         CreateMap<Painting, PaintingInCollection2ViewModel>()
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForPath(dest => dest.OwnerRole, opt => opt.MapFrom(src => src.Account.Role))
+            .ForPath(dest => dest.OwnerImage , opt => opt.MapFrom(src => src.Account.Avatar))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
-            .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name));
+            .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
+                src.Award == null ? "Không có giải" :
+                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" : 
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+            ));
     }
 }

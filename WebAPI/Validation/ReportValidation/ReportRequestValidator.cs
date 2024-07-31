@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Report;
 using FluentValidation;
 
@@ -14,13 +12,11 @@ public class ReportRequestValidator : AbstractValidator<ReportRequest>
         _validationServiceManager = validationServiceManager;
         // Validate Title
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Title không được trống.")
-            .MaximumLength(100).WithMessage("Title phải ít hơn 100 chữ.");
+            .NotEmpty().WithMessage("Title không được trống.");
 
         // Validate Description
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Description không được trống.")
-            .MaximumLength(500).WithMessage("Description phải ít hơn 500 chữ.");
+            .NotEmpty().WithMessage("Description không được trống.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -36,15 +32,7 @@ public class ReportRequestValidator : AbstractValidator<ReportRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

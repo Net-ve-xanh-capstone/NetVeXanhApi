@@ -1,0 +1,82 @@
+﻿@startuml
+
+@startuml Authentication System
+
+interface IAuthenticationService {
+  +AuthenticateAsync(username: string, password: string): Task<AccountResponse>
+  +GenerateJwtToken(account: Account): string
+}
+
+class AuthenticationService {
+  -_accountRepository: IAccountRepository
+  -_configuration: IConfiguration
+  +AuthenticateAsync(username: string, password: string): Task<AccountResponse>
+  +GenerateJwtToken(account: Account): string
+  -VerifyPassword(password: string, hashedPassword: string): bool
+}
+
+interface IAccountRepository {
+  +GetByUsernameAsync(username: string): Task<Account>
+  +GetByIdAsync(id: Guid): Task<Account>
+  +CreateAsync(account: Account): Task
+  +UpdateAsync(account: Account): Task
+  +DeleteAsync(id: Guid): Task
+}
+
+class AccountRepository {
+  -_context: DbContext
+  +GetByUsernameAsync(username: string): Task<Account>
+  +GetByIdAsync(id: Guid): Task<Account>
+  +CreateAsync(account: Account): Task
+  +UpdateAsync(account: Account): Task
+  +DeleteAsync(id: Guid): Task
+}
+
+class Account {
+  +Id: Guid
+  +Birthday: DateTime?
+  +Username: string
+  +FullName: string
+  +Email: string
+  +Role: string
+  +Address: string
+  +Password: string
+  +Phone: string
+  +Code: string
+  +Avatar: string
+  +Gender: bool
+  +RefreshToken: string
+  +GuardianId: Guid?
+  +Guardian: Account
+  +SubAccounts: ICollection<Account>
+}
+
+class AccountResponse {
+  +Id: Guid
+  +Username: string
+  +FullName: string
+  +Email: string
+  +Role: string
+  +Token: string
+}
+
+class AuthController {
+  -_authenticationService: IAuthenticationService
+  +Login(request: LoginRequest): Task<IActionResult>
+}
+
+class LoginRequest {
+  +Username: string
+  +Password: string
+}
+
+IAuthenticationService <|.. AuthenticationService
+IAccountRepository <|.. AccountRepository
+AuthenticationService --> IAccountRepository
+AuthenticationService --> AccountResponse
+AuthController --> IAuthenticationService
+AuthController --> LoginRequest
+AccountResponse --> Account
+
+@enduml
+@enduml

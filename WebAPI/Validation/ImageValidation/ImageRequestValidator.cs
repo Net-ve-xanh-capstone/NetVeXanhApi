@@ -10,7 +10,7 @@ public class ImageRequestValidator : AbstractValidator<ImageRequest>
         // Validate Url
         RuleFor(x => x.Url)
             .NotEmpty().WithMessage("Url không được để trống.")
-            .Must(BeAValidUrl).WithMessage("Url must be a valid URL and use HTTP or HTTPS.");
+            .Must(BeAValidUrl).WithMessage("URL phải là một URL hợp lệ và sử dụng HTTP hoặc HTTPS.");
     }
 
     private bool BeAValidUrl(string url)

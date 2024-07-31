@@ -23,15 +23,7 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
                     RuleFor(x => x.RoundId)
                         .MustAsync(async (roundId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.RoundValidationService.IsExistedId(roundId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.RoundValidationService.IsExistedId(roundId);
                         })
                         .WithMessage("RoundId không tồn tại.");
                 });
@@ -55,15 +47,7 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
                         topic.RuleFor(p => p)
                             .MustAsync(async (topicId, cancellation) =>
                             {
-                                try
-                                {
-                                    return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
-                                }
-                                catch (Exception)
-                                {
-                                    // Xử lý lỗi kiểm tra ID
-                                    return false; // Giả sử ID không tồn tại khi có lỗi
-                                }
+                                return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
                             })
                             .WithMessage("Có chủ đề không tồn tại.");
                     });

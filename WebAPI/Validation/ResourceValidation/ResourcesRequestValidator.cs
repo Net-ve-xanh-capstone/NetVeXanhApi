@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Resources;
 using FluentValidation;
 
@@ -32,15 +30,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
                     RuleFor(x => x.SponsorId)
                         .MustAsync(async (sponsorId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.SponsorValidationService.IsExistedId(sponsorId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.SponsorValidationService.IsExistedId(sponsorId);
                         })
                         .WithMessage("SponsorId không tồn tại.");
                 });
@@ -59,15 +49,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
                     RuleFor(x => x.ContestId)
                         .MustAsync(async (contestId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
                         })
                         .WithMessage("ContestId không tồn tại.");
                 });
@@ -87,15 +69,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

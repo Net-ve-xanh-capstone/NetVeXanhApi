@@ -14,7 +14,7 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -26,15 +26,7 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
                     RuleFor(x => x.Id)
                         .MustAsync(async (levelId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -42,7 +34,7 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -54,15 +46,7 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
@@ -70,7 +54,6 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
 
         // Validate Level
         RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level không được trống.")
-            .Length(1, 50).WithMessage("Level phải có từ 1 tới 50 chữ.");
+            .NotEmpty().WithMessage("Level không được trống.");
     }
 }

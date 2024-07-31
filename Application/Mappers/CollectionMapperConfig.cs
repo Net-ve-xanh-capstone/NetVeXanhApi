@@ -12,7 +12,10 @@ public partial class MapperConfigs : Profile
         CreateMap<Collection, CollectionRequest>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForMember(x => x.AccountId, x => x.MapFrom(x => x.CurrentUserId));
-        CreateMap<Collection, CollectionViewModel>().ReverseMap();
+
+        CreateMap<Collection, CollectionViewModel>()
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.PaintingCollection.Select(pc => pc.Painting.Image)));
+
         CreateMap<Collection, UpdateCollectionRequest>().ReverseMap()
             .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForAllMembers(opt =>
@@ -28,5 +31,8 @@ public partial class MapperConfigs : Profile
         CreateMap<Collection, CollectionPaintingViewModel>()
             .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
             .ForMember(dest => dest.PaintingCollection, opt => opt.MapFrom(src => src.PaintingCollection));
+
+        CreateMap<Collection, GetPaintingInCollection>()
+            .ForMember(dest => dest.Painting, opt => opt.MapFrom(src => src.PaintingCollection.Select(pc => pc.Painting)));
     }
 }

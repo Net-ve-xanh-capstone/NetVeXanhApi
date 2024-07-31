@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Report;
 using FluentValidation;
 
@@ -26,24 +24,15 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
                     RuleFor(x => x.Id)
                         .MustAsync(async (reportId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.ReportValidationService.IsExistedId(reportId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.ReportValidationService.IsExistedId(reportId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
         });
-        
+
 
         // Validate Title
-        RuleFor(x => x.Title)
-            .MaximumLength(100).WithMessage("Title phải ít hơn 100 chữ.");
+        RuleFor(x => x.Title);
 
         // Validate Description
         RuleFor(x => x.Description)

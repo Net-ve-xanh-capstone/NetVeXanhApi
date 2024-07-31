@@ -96,6 +96,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
 
         return maxNumber + 1;
     }
+
+    public async Task<int> CompetitorCountByContest(Guid contestId)
+    {
+        return await DbSet
+            .Where(p => p.Painting.Any(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId ))
+            .Distinct()
+            .CountAsync();
+    }
+
     #region Validate
     public async Task<bool> IsExistCompetitor(Guid id)
     {
@@ -105,6 +114,21 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     public async Task<bool> IsExistStaff(Guid id)
     {
         return await DbSet.AnyAsync(x => x.Id == id && x.Role == Role.Staff.ToString());
+    }
+
+
+
+    public async Task<bool> IsExistPhone(string phone)
+    {
+        return await DbSet.AnyAsync(x => x.Phone == phone);
+    }
+    public async Task<bool> IsExistEmail(string email)
+    {
+        return await DbSet.AnyAsync(x => x.Email == email);
+    }
+    public async Task<bool> IsExistUsername(string username)
+    {
+        return await DbSet.AnyAsync(x => x.Username == username);
     }
     #endregion
 }

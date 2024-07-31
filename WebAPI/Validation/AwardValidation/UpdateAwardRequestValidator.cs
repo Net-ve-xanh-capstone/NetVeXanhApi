@@ -29,15 +29,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                     RuleFor(x => x.Id)
                         .MustAsync(async (topicId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AwardValidationService.IsExistedId(topicId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AwardValidationService.IsExistedId(topicId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -45,7 +37,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
 
         RuleFor(x => x.Rank)
             .IsEnumName(typeof(RankAward), caseSensitive: true)
-            .WithMessage("Rank không đúng định dạng.");
+            .WithMessage("Giải không đúng định dạng.");
 
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(1).WithMessage("Quantity phải lớn hơn hoặc bằng 1.");
@@ -89,7 +81,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
 
         //CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -101,19 +93,11 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
-        
+
     }
 }

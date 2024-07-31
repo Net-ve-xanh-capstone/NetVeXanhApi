@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Resources;
 using FluentValidation;
 
@@ -14,7 +12,7 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -26,15 +24,7 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
                     RuleFor(x => x.Id)
                         .MustAsync(async (resourceId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.ResourceValidationService.IsExistedId(resourceId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.ResourceValidationService.IsExistedId(resourceId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -42,11 +32,11 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
 
         // Validate Sponsorship
         RuleFor(x => x.Sponsorship)
-            .MaximumLength(200).WithMessage("Sponsorship phải có ít hơn 200 chữ.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -58,15 +48,7 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

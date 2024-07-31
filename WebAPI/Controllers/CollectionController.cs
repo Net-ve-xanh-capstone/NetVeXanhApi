@@ -171,22 +171,12 @@ public class CollectionController : Controller
     {
         try
         {
-            var (list, totalPage) = await _collectionService.GetPaintingByCollection(listPaintingmodel, id);
-            if (totalPage < listPaintingmodel.PageNumber)
-                return NotFound(new BaseResponseModel
-                {
-                    Status = NotFound().StatusCode,
-                    Message = "Over number page"
-                });
+            var result = await _collectionService.GetPaintingByCollection(listPaintingmodel, id);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Get Painting Success",
-                Result = new
-                {
-                    List = list,
-                    TotalPage = totalPage
-                }
+                Result = result
             });
         }
         catch (Exception ex)
@@ -195,11 +185,7 @@ public class CollectionController : Controller
             {
                 Status = Ok().StatusCode,
                 Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Collection>(),
-                    TotalPage = 0
-                },
+                Result = new List<Collection>(),
                 Errors = ex
             });
         }

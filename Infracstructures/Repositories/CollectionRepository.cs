@@ -1,4 +1,5 @@
 ﻿using Application.IRepositories;
+using Application.ViewModels.CollectionViewModels;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,20 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
 
     public override async Task<List<Collection>> GetAllAsync()
     {
-        return await DbSet.Where(x => x.Status == CollectionStatus.Active.ToString())
-            .Include(x => x.Account)
-            .ToListAsync();
+        var collections = await DbSet.Where(x => x.Status == CollectionStatus.Active.ToString())
+        .Include(x => x.Account)
+        .Include(x => x.PaintingCollection)
+            .ThenInclude(pc => pc.Painting)
+        .ToListAsync();
+
+        foreach (var collection in collections)
+        {
+            collection.PaintingCollection = collection.PaintingCollection
+                .Take(3)
+                .ToList();
+        }
+
+        return collections;
     }
 
     public override async Task<Collection?> GetByIdAsync(Guid id)
@@ -23,7 +35,7 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == CollectionStatus.Active.ToString());
     }
 
-    public virtual async Task<List<Painting>> GetPaintingByCollectionAsync(Guid collectionId)
+    public virtual async Task<Collection?> GetPaintingByCollectionAsync(Guid collectionId)
     {
         return await DbSet.Where(x => x.Id == collectionId)
             .Include(x => x.PaintingCollection)
@@ -39,8 +51,10 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
             .Include(x => x.PaintingCollection)
                 .ThenInclude(pc => pc.Painting)
                 .ThenInclude(p => p.Account)
-            .SelectMany(x =>x.PaintingCollection.Select(x => x.Painting).Where(x => x.Status != PaintingStatus.Delete.ToString()))
-            .ToListAsync();
+            .Include(x => x.PaintingCollection)
+                .ThenInclude(pc => pc.Painting)
+                .ThenInclude(a=>a.Award)
+            .FirstOrDefaultAsync();
     }
 
     public virtual async Task<List<Collection>> GetCollectionByAccountIdAsync(Guid accountId)

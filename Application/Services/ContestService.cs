@@ -317,6 +317,7 @@ public class ContestService : IContestService
         if (contest == null) throw new Exception("Khong tim thay Contest");
         var result = _mapper.Map<ContestDetailViewModel>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
+        result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
         return result;
     }
 
@@ -338,7 +339,13 @@ public class ContestService : IContestService
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
-        return _mapper.Map<List<ContestViewModel>>(contest);
+        var result = _mapper.Map<List<ContestViewModel>>(contest);
+        foreach( var item in result)
+        {
+            item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
+            item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
+        }
+        return result;
     }
 
     #endregion

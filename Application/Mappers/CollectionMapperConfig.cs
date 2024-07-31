@@ -12,8 +12,10 @@ public partial class MapperConfigs : Profile
         CreateMap<Collection, CollectionRequest>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForMember(x => x.AccountId, x => x.MapFrom(x => x.CurrentUserId));
+
         CreateMap<Collection, CollectionViewModel>()
-            .ForMember(x => x.Image, x => x.MapFrom(x => x.PaintingCollection));
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.PaintingCollection.Select(pc => pc.Painting.Image)));
+
         CreateMap<Collection, UpdateCollectionRequest>().ReverseMap()
             .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForAllMembers(opt =>

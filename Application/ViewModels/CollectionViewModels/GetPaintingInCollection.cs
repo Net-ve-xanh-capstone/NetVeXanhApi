@@ -12,7 +12,6 @@ namespace Application.ViewModels.CollectionViewModels
         public string? Name { get; set; }
         public string? Description { get; set; }
         public List<PaintingInCollection2ViewModel> Painting { get; set; }
-
     }
 
     public class PaintingInCollection2ViewModel

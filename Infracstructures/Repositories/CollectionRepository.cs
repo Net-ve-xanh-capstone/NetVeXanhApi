@@ -1,4 +1,5 @@
 ﻿using Application.IRepositories;
+using Application.ViewModels.CollectionViewModels;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,20 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
 
     public override async Task<List<Collection>> GetAllAsync()
     {
-        return await DbSet.Where(x => x.Status == CollectionStatus.Active.ToString())
-            .Include(x => x.Account)
-            .ToListAsync();
+        var collections = await DbSet.Where(x => x.Status == CollectionStatus.Active.ToString())
+        .Include(x => x.Account)
+        .Include(x => x.PaintingCollection)
+            .ThenInclude(pc => pc.Painting)
+        .ToListAsync();
+
+        foreach (var collection in collections)
+        {
+            collection.PaintingCollection = collection.PaintingCollection
+                .Take(3)
+                .ToList();
+        }
+
+        return collections;
     }
 
     public override async Task<Collection?> GetByIdAsync(Guid id)

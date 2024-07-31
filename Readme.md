@@ -1,25 +1,15 @@
-# Sửa DB:
-- Allow null cho code painting
-- 
-- Edit và Delete Round sẽ áp dụng co tất cả 
-- 
-# Validate:
-- Validate delete mà id k có trong db
-- Add validate của staff create painting final round
-- Validate các id có trong db
-- Validate Painting không trùng trong 1 cuộc thi
-- Bắt validate add RoundTOpic ( Add Trùng)
-- Bắt validate add PaintingCollection (Add Trùng)
-- Chưa bắt validate date contest
-- Tên topic khônng trùng nhau
-- Validate tuổi khi đăng ký vào contest
-
-# Sửa: 
-- Add painting vào schedule cho giám khảo chấm
-- Sửa response
-- Đổi path Get Paintg By Collection(Controller)
-
-
-
- :white_check_mark:
-
+Status Round, Contest, educationalLevel 
+- NotStarted,   // Chưa bắt đầu
+- InProcess,    // Đang tiến hành
+- Complete,     // Hoàn thành
+- Delete        // Đã xóa
+Status Painting 
+- Draft, //The submission has been started but not yet submitted. The participant is still working on it.
+- Submitted, //The submission has been completed and officially submitted for review.
+- Delete, //The submission has delete by the competitor
+- Accepted, //The submission has been accepted by the staff.
+- Rejected, //The submission has been rejected by the staff.
+- Pass, //The painting is pass
+- NotPass, //The painting is not pass
+- FinalRound
+- HasPrizes

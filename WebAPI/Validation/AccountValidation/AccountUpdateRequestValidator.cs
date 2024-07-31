@@ -38,12 +38,12 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
             .NotEmpty().WithMessage("Tên đầy đủ không được để trống.")
             .Length(2, 100).WithMessage("Tên đầy đủ phải có độ dài từ 2 đến 100 ký tự.");
 
-        RuleFor(user => user.Address)
+        /*RuleFor(user => user.Address)
             .NotEmpty().WithMessage("Địa chỉ không được để trống.")
-            .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự.");
+            .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự.");*/
 
         RuleFor(user => user.Phone)
-            .Must(phone => string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
             .WithMessage("Số điện thoại không hợp lệ.");
     }
 

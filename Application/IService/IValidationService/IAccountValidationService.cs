@@ -9,5 +9,8 @@ namespace Application.IService.IValidationService
     public interface IAccountValidationService
     {
         Task<bool> IsExistedId(Guid id);
+        Task<bool> IsExistedCompetitor(Guid id);
+
+        Task<bool> IsExistStaff(Guid id);
     }
 }

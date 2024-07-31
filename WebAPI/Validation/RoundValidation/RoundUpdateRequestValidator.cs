@@ -30,7 +30,7 @@ public class RoundUpdateRequestValidator : AbstractValidator<RoundUpdateRequest>
                         {
                             try
                             {
-                                return await _validationServiceManager.ResourceValidationService.IsExistedId(roundId);
+                                return await _validationServiceManager.RoundValidationService.IsExistedId(roundId);
                             }
                             catch (Exception)
                             {

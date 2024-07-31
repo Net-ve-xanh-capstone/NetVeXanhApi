@@ -30,7 +30,7 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
 
         // Validate Phone
         RuleFor(user => user.Phone)
-            .Must(phone => string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
             .WithMessage("Số điện thoại không hợp lệ.");
 
         // Validate Birthday

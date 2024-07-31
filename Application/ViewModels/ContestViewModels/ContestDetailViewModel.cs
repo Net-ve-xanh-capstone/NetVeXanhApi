@@ -14,6 +14,8 @@ public class ContestDetailViewModel
     public string Status { get; set; }
     public string Logo { get; set; }
     public string Description { get; set; }
+    public int PaintingCount { get; set; }
+    public int CompetitorCount {  get; set; }
 
     public AccountInContestViewModel Account { get; set; }
     public List<ResourceInContestViewModel> Resource { get; set; }

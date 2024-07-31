@@ -219,7 +219,6 @@ public class PaintingService : IPaintingService
         if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Khong duoc sua");
 
         _mapper.Map(updatePainting, painting);
-
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -232,6 +231,7 @@ public class PaintingService : IPaintingService
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
         _mapper.Map(updatePainting, painting);
+        
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

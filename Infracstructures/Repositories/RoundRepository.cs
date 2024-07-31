@@ -62,7 +62,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     public virtual async Task<bool> CheckSubmitValidDate(Guid? roundId)
     {
         var temp = await DbSet.FirstOrDefaultAsync(src => src.Id == roundId);
-        bool check = DateTime.Now <= temp.EndTime && DateTime.Now >= temp.StartTime && temp.Status == RoundStatus.InProcess.ToString();
+        bool check = temp.Status == RoundStatus.InProcess.ToString();
         return check;
     }
     

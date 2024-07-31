@@ -11,17 +11,12 @@ namespace Application.ViewModels.CollectionViewModels
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
-        public List<GetPaintingInCollectionPaintingCollectionViewModel> PaintingCollection { get; set; }
+        public List<PaintingInCollection2ViewModel> Painting { get; set; }
 
-    }
-    public class GetPaintingInCollectionPaintingCollectionViewModel
-    {
-        public PaintingInCollection2ViewModel Painting { get; set; }
     }
 
     public class PaintingInCollection2ViewModel
     {
-        public Guid Id { get; set; }
         public string Image { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

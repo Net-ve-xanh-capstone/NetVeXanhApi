@@ -74,7 +74,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<List<int>> Get5RecentYearAsync()
     {
-        var result = DbSet.Select(x => x.CreatedTime.Year).Take(5).ToListAsync();
+        var result = DbSet.Where(x =>  x.Status == ContestStatus.Complete.ToString()).Select(x => x.StartTime.Year).Take(5).ToListAsync();
         return await result;
     }
 

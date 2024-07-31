@@ -24,4 +24,5 @@ public interface IScheduleService
     Task<bool> IsExistedId(Guid id);
     Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
+    Task<(byte[], string)> GetListCompetitorPass(Guid roundId);
 }

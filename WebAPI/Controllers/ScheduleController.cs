@@ -513,4 +513,17 @@ public class ScheduleController : Controller
     }
 
     #endregion
+
+    #region Get List Accoutn Pass
+
+    [HttpGet("export-round-results")]
+    public async Task<IActionResult> ExportRound1Results(Guid roundId)
+    {
+        var result = await  _scheduleService.GetListCompetitorPass(roundId);
+        var list = result.Item1;
+        var name = $"{result.Item2}.xlsx";
+        return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
+    }
+
+    #endregion
 }

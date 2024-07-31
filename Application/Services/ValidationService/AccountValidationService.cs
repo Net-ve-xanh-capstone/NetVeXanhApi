@@ -33,5 +33,23 @@ namespace Application.Services.ValidationService
         {
             return await _unitOfWork.AccountRepo.IsExistStaff(id);
         }
+
+
+
+        //Check Phone Exist
+        public async Task<bool> IsExistPhone(string phone)
+        {
+            return await _unitOfWork.AccountRepo.IsExistPhone(phone);
+        }
+        //Check Email Exist
+        public async Task<bool> IsExistEmail(string email)
+        {
+            return await _unitOfWork.AccountRepo.IsExistEmail(email);
+        }
+        //Check Username Exist
+        public async Task<bool> IsExistUsername(string username)
+        {
+            return await _unitOfWork.AccountRepo.IsExistUsername(username);
+        }
     }
 }

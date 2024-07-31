@@ -115,5 +115,20 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         return await DbSet.AnyAsync(x => x.Id == id && x.Role == Role.Staff.ToString());
     }
+
+
+
+    public async Task<bool> IsExistPhone(string phone)
+    {
+        return await DbSet.AnyAsync(x => x.Phone == phone);
+    }
+    public async Task<bool> IsExistEmail(string email)
+    {
+        return await DbSet.AnyAsync(x => x.Email == email);
+    }
+    public async Task<bool> IsExistUsername(string username)
+    {
+        return await DbSet.AnyAsync(x => x.Username == username);
+    }
     #endregion
 }

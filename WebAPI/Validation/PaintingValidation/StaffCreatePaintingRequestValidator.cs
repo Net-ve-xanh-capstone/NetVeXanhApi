@@ -19,9 +19,23 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
             .MaximumLength(100).WithMessage("Họ tên phải ít hơn 100 ký tự.");
 
         // Validate Email
-        RuleFor(x => x.Email)
+        RuleFor(user => user.Email)
             .NotEmpty().WithMessage("Email là bắt buộc.")
-            .EmailAddress().WithMessage("Email phải là một địa chỉ email hợp lệ.");
+            .EmailAddress().WithMessage("Email phải là một địa chỉ email hợp lệ.")
+            .MustAsync(async (email, cancellation) =>
+            {
+                try
+                {
+                    // Kiểm tra số điện thoại có tồn tại không
+                    return !await _validationServiceManager.AccountValidationService.IsExistPhone(email);
+                }
+                catch (Exception)
+                {
+                    // Xử lý lỗi kiểm tra số điện thoại
+                    return false; // Giả sử số điện thoại đã tồn tại khi có lỗi
+                }
+            })
+        .WithMessage("Email đã được sử dụng.");
 
         // Validate Address
         RuleFor(x => x.Address)
@@ -31,12 +45,25 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
         // Validate Phone
         RuleFor(user => user.Phone)
             .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
-            .WithMessage("Số điện thoại không hợp lệ.");
+            .MustAsync(async (phone, cancellation) =>
+            {
+                try
+                {
+                    // Kiểm tra số điện thoại có tồn tại không
+                    return !await _validationServiceManager.AccountValidationService.IsExistPhone(phone);
+                }
+                catch (Exception)
+                {
+                    // Xử lý lỗi kiểm tra số điện thoại
+                    return false; // Giả sử số điện thoại đã tồn tại khi có lỗi
+                }
+            })
+        .WithMessage("Số điện thoại đã được sử dụng.");
 
         // Validate Birthday
-        RuleFor(x => x.Birthday)
-            .NotEmpty().WithMessage("Ngày sinh là bắt buộc.")
-            .LessThan(DateTime.Today).WithMessage("Ngày sinh phải là một ngày trong quá khứ.");
+        RuleFor(user => user.Birthday)
+            .NotEmpty().WithMessage("Ngày sinh không được để trống.")
+            .Must(BeAValidAge).WithMessage("Ngày sinh không hợp lệ.");
 
         // Validate Image
         RuleFor(x => x.Image)
@@ -106,6 +133,13 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
+
+    }
+    private bool BeAValidAge(DateTime birthday)
+    {
+        var age = DateTime.Today.Year - birthday.Year;
+        if (birthday.Date > DateTime.Today.AddYears(-age)) age--;
+        return age >= 0 && age <= 120; // Giới hạn tuổi từ 0 đến 120
     }
 
 }

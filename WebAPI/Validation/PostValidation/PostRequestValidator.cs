@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Post;
 using FluentValidation;
 using WebAPI.Validation.ImageValidation;
@@ -21,13 +19,11 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
 
         // Validate Title
         RuleFor(x => x.Title)
-            .NotEmpty().WithMessage("Tiêu đề là bắt buộc.")
-            .MaximumLength(100).WithMessage("Tiêu đề phải ít hơn 100 ký tự.");
+            .NotEmpty().WithMessage("Tiêu đề là bắt buộc.");
 
         // Validate Description
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Mô tả là bắt buộc.")
-            .MaximumLength(500).WithMessage("Mô tả phải ít hơn 500 ký tự.");
+            .NotEmpty().WithMessage("Mô tả là bắt buộc.");
 
         // Validate CategoryId
         RuleFor(x => x.CategoryId)
@@ -42,15 +38,7 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
                     RuleFor(x => x.CategoryId)
                         .MustAsync(async (categoryId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
                         })
                         .WithMessage("CategoryId không tồn tại.");
                 });
@@ -77,15 +65,7 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

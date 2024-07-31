@@ -20,5 +20,10 @@ namespace Application.Services.ValidationService
         {
             return await _unitOfWork.PaintingCollectionRepo.IsExistIdAsync(id);
         }
+
+        public async Task<bool> IsPaintingInCollection(Guid paintingId, Guid collectionId)
+        {
+            return await _unitOfWork.PaintingCollectionRepo.IsPaintingInCollectionAsync(paintingId, collectionId);
+        }
     }
 }

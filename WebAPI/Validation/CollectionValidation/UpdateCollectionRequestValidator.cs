@@ -14,7 +14,7 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -26,21 +26,14 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
                     RuleFor(x => x.Id)
                         .MustAsync(async (collectionId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.CollectionValidationService.IsExistedId(collectionId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.CollectionValidationService.IsExistedId(collectionId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
         });
+
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -52,23 +45,14 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
                                 return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
 
         RuleFor(c => c.Name)
-            .NotEmpty().WithMessage("Tên không được để trống.")
-            .Length(2, 50).WithMessage("Tên phải có độ dài từ 2 đến 50 ký tự.");
+            .NotEmpty().WithMessage("Tên không được để trống.");
 
         RuleFor(c => c.Image)
             .NotEmpty().WithMessage("Hình ảnh không được để trống.")

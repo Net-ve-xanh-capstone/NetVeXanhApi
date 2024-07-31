@@ -13,10 +13,10 @@ public class TopicRequestValidator : AbstractValidator<TopicRequest>
     {
         _validationServiceManager = validationServiceManager;
         RuleFor(x => x.Name)
-            .Length(2, 50).WithMessage("Name phải có từ 2 tới 50 ký tự.");
+            .NotEmpty().WithMessage("Tên không được để trống.");
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -28,15 +28,7 @@ public class TopicRequestValidator : AbstractValidator<TopicRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

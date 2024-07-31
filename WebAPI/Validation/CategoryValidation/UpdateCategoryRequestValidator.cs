@@ -14,7 +14,7 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -58,15 +58,7 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Post;
 using FluentValidation;
 using WebAPI.Validation.ImageValidation;
@@ -27,15 +25,7 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                     RuleFor(x => x.Id)
                         .MustAsync(async (postId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.PostValidationService.IsExistedId(postId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.PostValidationService.IsExistedId(postId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -57,15 +47,7 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                     RuleFor(x => x.CategoryId)
                         .MustAsync(async (categoryId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
                         })
                         .WithMessage("CategoryId không tồn tại.");
                 });
@@ -85,15 +67,7 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

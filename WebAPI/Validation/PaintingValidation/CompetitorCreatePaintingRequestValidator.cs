@@ -26,15 +26,7 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                     RuleFor(x => x.AccountId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("AccountId không tồn tại.");
                 });
@@ -68,15 +60,7 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                     RuleFor(x => x.RoundTopicId)
                         .MustAsync(async (roundtopicId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
                         })
                         .WithMessage("RoundTopicId không tồn tại.");
                 });

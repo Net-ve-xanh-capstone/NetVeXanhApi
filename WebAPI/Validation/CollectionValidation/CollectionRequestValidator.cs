@@ -34,18 +34,33 @@ public class CollectionRequestValidator : AbstractValidator<CollectionRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
+        });
+
+        RuleFor(x => x.listPaintingId)
+            .NotNull().WithMessage("Danh sách tranh không được để trống.")
+            .Must(paintings => paintings != null && paintings.Any()).WithMessage("Danh sách tranh phải chứa ít nhất một mục.");
+
+        When(x => x.listPaintingId != null && x.listPaintingId.Any(), () =>
+        {
+            RuleForEach(x => x.listPaintingId).ChildRules(topic =>
+            {
+                topic.RuleFor(p => p)
+                    .NotEmpty().WithMessage("Chủ đề không được trống.")
+                    .Must(paintingId => Guid.TryParse(paintingId.ToString(), out _)).WithMessage("Mỗi GUID của chủ đề phải là một GUID hợp lệ.")
+                    .DependentRules(() =>
+                    {
+                        topic.RuleFor(p => p)
+                            .MustAsync(async (paintingId, cancellation) =>
+                            {
+                                return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
+                            })
+                            .WithMessage("Có chủ đề không tồn tại.");
+                    });
+            });
         });
     }
     private bool BeAValidUrl(string url)

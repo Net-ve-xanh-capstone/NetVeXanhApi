@@ -1,8 +1,5 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Painting;
-using Domain.Models;
 using FluentValidation;
 
 namespace WebAPI.Validation.PaintingValidation;
@@ -15,7 +12,7 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -27,15 +24,7 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
                     RuleFor(x => x.Id)
                         .MustAsync(async (paintingId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -55,22 +44,14 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
                     RuleFor(x => x.RoundTopicId)
                         .MustAsync(async (roundtopicId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId.Value);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId.Value);
                         })
                         .WithMessage("RoundTopicId không tồn tại.");
                 });
         });
 
 
-        
+
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using Application;
+﻿using System.Text.RegularExpressions;
+using Application;
 using Application.IService;
 using Application.IService.IValidationService;
 using Application.Services.ValidationService;
@@ -27,39 +28,28 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                     RuleFor(x => x.Id)
                         .MustAsync(async (topicId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.SponsorValidationService.IsExistedId(topicId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.SponsorValidationService.IsExistedId(topicId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
         });
 
         RuleFor(org => org.Name)
-           .NotEmpty().WithMessage("Tên tổ chức không được để trống")
-           .Length(3, 100).WithMessage("Tên tổ chức phải có độ dài từ 3 đến 100 ký tự");
+           .NotEmpty().WithMessage("Tên tổ chức không được để trống");
 
         RuleFor(org => org.Address)
-            .NotEmpty().WithMessage("Địa chỉ không được để trống")
-            .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự");
+            .NotEmpty().WithMessage("Địa chỉ không được để trống");
 
         RuleFor(org => org.Delegate)
-            .NotEmpty().WithMessage("Người đại diện không được để trống")
-            .Length(3, 100).WithMessage("Tên người đại diện phải có độ dài từ 3 đến 100 ký tự");
+            .NotEmpty().WithMessage("Người đại diện không được để trống");
 
         RuleFor(org => org.Logo)
             .NotEmpty().WithMessage("Logo không được để trống.")
             .Must(BeAValidUrl).WithMessage("Logo không là một URL hợp lệ.");
 
-        RuleFor(org => org.PhoneNumber)
-            .NotEmpty().WithMessage("Số điện thoại không được để trống")
-            .Matches(@"^\+?\d{10,15}$").WithMessage("Số điện thoại không hợp lệ");
+        RuleFor(user => user.PhoneNumber)
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .WithMessage("Số điện thoại không hợp lệ.");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
@@ -75,15 +65,7 @@ public class SponsorUpdateRequestValidator : AbstractValidator<SponsorUpdateRequ
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

@@ -16,9 +16,24 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
         RuleFor(review => review.Description)
             .MaximumLength(500).WithMessage("Mô tả không được vượt quá 500 ký tự");
 
-        RuleFor(review => review.RoundId)
-            .NotEmpty().WithMessage("RoundId không được để trống")
-            .NotEqual(Guid.Empty).WithMessage("RoundId không hợp lệ");
+        RuleFor(x => x.RoundId)
+        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+
+        When(x => !string.IsNullOrEmpty(x.RoundId.ToString()), () =>
+        {
+            RuleFor(x => x.RoundId)
+                .Must(roundId => Guid.TryParse(roundId.ToString(), out _))
+                .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
+                .DependentRules(() =>
+                {
+                    RuleFor(x => x.RoundId)
+                        .MustAsync(async (roundId, cancellation) =>
+                        {
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(roundId);
+                        })
+                        .WithMessage("CurrentUserId không tồn tại.");
+                });
+        });
 
         RuleFor(review => review.EndDate)
             .GreaterThan(DateTime.Now).WithMessage("Ngày kết thúc phải lớn hơn ngày hiện tại");
@@ -41,15 +56,7 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

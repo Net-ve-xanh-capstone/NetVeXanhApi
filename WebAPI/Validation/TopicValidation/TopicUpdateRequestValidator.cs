@@ -15,10 +15,10 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         RuleFor(x => x.Name)
-            .Length(2, 50).WithMessage("Name phải có từ 2 tới 50 ký tự.");
+            .NotEmpty().WithMessage("Tên không được để trống."); ;
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -30,15 +30,7 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
                     RuleFor(x => x.Id)
                         .MustAsync(async (topicId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.TopicValidationService.IsExistedId(topicId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -58,15 +50,7 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

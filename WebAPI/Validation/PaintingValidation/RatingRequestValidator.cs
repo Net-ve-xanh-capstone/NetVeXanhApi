@@ -1,7 +1,5 @@
 ﻿using Application;
-using Application.IService.IValidationService;
 using Application.SendModels.Painting;
-using Application.Services.ValidationService;
 using FluentValidation;
 
 namespace WebAPI.Validation.PaintingValidation;
@@ -27,15 +25,7 @@ public class RatingRequestValidator : AbstractValidator<RatingRequest>
                     RuleFor(x => x.ScheduleId)
                         .MustAsync(async (scheduleId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.ScheduleValidationService.IsExistedId(scheduleId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                            return await _validationServiceManager.ScheduleValidationService.IsExistedId(scheduleId);
                         })
                         .WithMessage("ScheduleId không tồn tại.");
                 });
@@ -59,15 +49,7 @@ public class RatingRequestValidator : AbstractValidator<RatingRequest>
                         painting.RuleFor(p => p)
                             .MustAsync(async (paintingId, cancellation) =>
                             {
-                                try
-                                {
-                                    return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
-                                }
-                                catch (Exception)
-                                {
-                                    // Xử lý lỗi kiểm tra ID
-                                    return false; // Giả sử ID không tồn tại khi có lỗi
-                                }
+                                return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
                             })
                             .WithMessage("Tranh với GUID không tồn tại.");
                     });

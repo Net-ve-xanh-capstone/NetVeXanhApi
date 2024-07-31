@@ -15,7 +15,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -27,15 +27,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
                     RuleFor(x => x.Id)
                         .MustAsync(async (contestId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                             return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -43,7 +35,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
 
         //Current Id
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -55,15 +47,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                            try
-                            {
-                                return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
+                             return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });

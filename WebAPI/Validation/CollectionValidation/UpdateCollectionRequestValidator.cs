@@ -53,10 +53,6 @@ public class UpdateCollectionRequestValidator : AbstractValidator<UpdateCollecti
 
         RuleFor(c => c.Name)
             .NotEmpty().WithMessage("Tên không được để trống.");
-
-        RuleFor(c => c.Image)
-            .NotEmpty().WithMessage("Hình ảnh không được để trống.")
-            .Must(BeAValidUrl).WithMessage("Hình ảnh phải là một URL hợp lệ.");
     }
     private bool BeAValidUrl(string url)
     {

@@ -23,7 +23,7 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == CollectionStatus.Active.ToString());
     }
 
-    public virtual async Task<List<Painting>> GetPaintingByCollectionAsync(Guid collectionId)
+    public virtual async Task<Collection?> GetPaintingByCollectionAsync(Guid collectionId)
     {
         return await DbSet.Where(x => x.Id == collectionId)
             .Include(x => x.PaintingCollection)
@@ -39,8 +39,10 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
             .Include(x => x.PaintingCollection)
                 .ThenInclude(pc => pc.Painting)
                 .ThenInclude(p => p.Account)
-            .SelectMany(x =>x.PaintingCollection.Select(x => x.Painting).Where(x => x.Status != PaintingStatus.Delete.ToString()))
-            .ToListAsync();
+            .Include(x => x.PaintingCollection)
+                .ThenInclude(pc => pc.Painting)
+                .ThenInclude(a=>a.Award)
+            .FirstOrDefaultAsync();
     }
 
     public virtual async Task<List<Collection>> GetCollectionByAccountIdAsync(Guid accountId)

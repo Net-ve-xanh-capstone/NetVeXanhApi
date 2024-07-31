@@ -3,9 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.ViewModels.PaintingViewModels;
 
-namespace Application.ViewModels.PaintingViewModels
+namespace Application.ViewModels.CollectionViewModels
 {
+    public class GetPaintingInCollection
+    {
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public List<GetPaintingInCollectionPaintingCollectionViewModel> PaintingCollection { get; set; }
+
+    }
+    public class GetPaintingInCollectionPaintingCollectionViewModel
+    {
+        public PaintingInCollection2ViewModel Painting { get; set; }
+    }
+
     public class PaintingInCollection2ViewModel
     {
         public Guid Id { get; set; }
@@ -18,5 +31,7 @@ namespace Application.ViewModels.PaintingViewModels
         public string Code { get; set; }
         public string OwnerName { get; set; }
         public string OwnerRole { get; set; }
+        public string OwnerImage { get; set; }
+        public string Rank { get; set; }
     }
 }

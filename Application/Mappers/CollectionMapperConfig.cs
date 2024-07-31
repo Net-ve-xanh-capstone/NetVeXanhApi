@@ -28,5 +28,8 @@ public partial class MapperConfigs : Profile
         CreateMap<Collection, CollectionPaintingViewModel>()
             .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
             .ForMember(dest => dest.PaintingCollection, opt => opt.MapFrom(src => src.PaintingCollection));
+
+        CreateMap<Collection, GetPaintingInCollection>()
+            .ForMember(dest => dest.PaintingCollection, opt => opt.MapFrom(src => src.PaintingCollection)); 
     }
 }

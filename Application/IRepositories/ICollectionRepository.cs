@@ -4,7 +4,7 @@ namespace Application.IRepositories;
 
 public interface ICollectionRepository : IGenericRepository<Collection>
 {
-    Task<List<Painting>> GetPaintingByCollectionAsync(Guid collectionId);
+    Task<Collection?> GetPaintingByCollectionAsync(Guid collectionId);
     Task<List<Collection>> GetCollectionByAccountIdAsync(Guid accountId);
     Task<List<Collection>> GetCollectionsWithStaffAccountsAsync();
 }

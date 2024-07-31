@@ -106,20 +106,13 @@ public class CollectionService : ICollectionService
 
     #region Get Painting By Collection
 
-    public async Task<(List<PaintingInCollection2ViewModel>, int)> GetPaintingByCollection(ListModels listPaintingModel,
+    public async Task<GetPaintingInCollection> GetPaintingByCollection(ListModels listPaintingModel,
         Guid collectionId)
     {
-        var listPainting = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
-        if (listPainting.Count == 0) throw new Exception("Khong co Painting nao trong Collection");
-        var result = _mapper.Map<List<PaintingInCollection2ViewModel>>(listPainting);
-
-
-        var totalPages = (int)Math.Ceiling((double)result.Count / listPaintingModel.PageSize);
-        int? itemsToSkip = (listPaintingModel.PageNumber - 1) * listPaintingModel.PageSize;
-        result = result.Skip((int)itemsToSkip)
-            .Take(listPaintingModel.PageSize)
-            .ToList();
-        return (result, totalPages);
+        var collection = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
+        if (collection == null) throw new Exception("Khong co Painting nao trong Collection");
+        
+        return _mapper.Map<GetPaintingInCollection>(collection);
     }
 
     #endregion

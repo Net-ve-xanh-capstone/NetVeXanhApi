@@ -1,4 +1,6 @@
 ﻿using Application.IRepositories;
+using Application.ViewModels.AccountViewModels;
+using Application.ViewModels.ContestViewModels;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -72,10 +74,18 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .FirstOrDefaultAsync(x => x.Status != ContestStatus.Delete.ToString());
     }
 
-    public async Task<List<int>> Get5RecentYearAsync()
+    public async Task<List<ContestNameYearViewModel>> Get5RecentYearAsync()
     {
-        var result = DbSet.Select(x => x.CreatedTime.Year).Take(5).ToListAsync();
-        return await result;
+        var result = await DbSet
+            .Select(x => new ContestNameYearViewModel
+            {
+                ContestId = x.Id,
+                Year = x.Name.Length >= 4 ? x.Name.Substring(x.Name.Length - 4) : x.Name
+            })
+            .Take(5)
+            .ToListAsync();
+
+        return result;
     }
 
     public async Task<(DateTime StartTime, DateTime EndTime)?> GetStartEndTimeByContestId(Guid contestId)
@@ -120,5 +130,47 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<List<Contest>> StartContest()
     {
         return await DbSet.Include(src => src.EducationalLevel).Where(src => src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
+    }
+
+    public async Task<List<Guid>> GetCollectionsWithStaffAccountsAsync()
+    {
+        var paintingIds = await DbSet
+        .Include(c => c.EducationalLevel)
+            .ThenInclude(el => el.Award) // Include Awards for each EducationalLevel
+            .ThenInclude(a => a.Painting) // Include Paintings for each Award
+        .SelectMany(c => c.EducationalLevel
+            .SelectMany(el => el.Award
+                .SelectMany(a => a.Painting
+                    .Select(p => p.Id))))
+        .ToListAsync();
+
+        return paintingIds;
+    }
+
+    public async Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync()
+    {
+        var mostRecentContest = await DbSet
+            .OrderByDescending(c => c.CreatedTime)
+            .FirstOrDefaultAsync();
+
+        if (mostRecentContest == null)
+        {
+            return new List<AccountAwardViewModel>(); // Hoặc xử lý trường hợp không có cuộc thi nào.
+        }
+
+        var accounts = await DbSet
+            .Where(c => c.Id == mostRecentContest.Id)
+            .SelectMany(c => c.EducationalLevel)
+            .SelectMany(l => l.Award)
+            .SelectMany(a => a.Painting)
+            .Select(p => new AccountAwardViewModel
+            {
+                FullName = p.Account.FullName,
+                Rank = p.Award.Rank
+            })
+            .Distinct() // Loại bỏ các đối tượng trùng lặp nếu cần
+            .ToListAsync();
+
+        return accounts;
     }
 }

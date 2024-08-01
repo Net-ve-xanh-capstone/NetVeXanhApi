@@ -351,6 +351,18 @@ public class ContestService : IContestService
     }
 
     #endregion
+    #region get contest for filter painting
+
+    public async Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting()
+    {
+        var contest = await _unitOfWork.ContestRepo.GetAllAsync();
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        var result = _mapper.Map<List<FilterPaintingContestViewModel>>(contest);
+
+        return result;
+    }
+
+    #endregion
 
     #region Get Account Award Information
 

@@ -18,6 +18,7 @@ public interface IContestService
     Task<List<ContestNameYearViewModel>> Get5RecentYear();
 
     Task<List<ContestViewModel?>> GetAllContest();
+    Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting();
 
     Task<ContestDetailViewModel> GetNearestContest();
 

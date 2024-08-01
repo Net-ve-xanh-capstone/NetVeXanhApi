@@ -345,7 +345,7 @@ public class PaintingService : IPaintingService
         ListModels listPaintingModel)
     {
         var listPainting = await _unitOfWork.PaintingRepo.FilterPaintingAsync(filterPainting);
-        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        if (listPainting.Count == 0) throw new Exception("Không có Painting nào!");
         var result = _mapper.Map<List<PaintingViewModel>>(listPainting);
 
         #region pagination

@@ -38,6 +38,7 @@ public interface IPaintingService
     public Task<bool> StaffSubmitPaintingForFinalRound(StaffCreatePaintingFinalRoundRequest request);
 
     #endregion
+    Task<PaintingTrackingViewModel> PaintingTracking(Guid id);
     Task<bool> IsExistedId(Guid id);
     Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
 

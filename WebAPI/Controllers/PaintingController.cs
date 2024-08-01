@@ -433,6 +433,36 @@ public class PaintingController : Controller
 
     #endregion
 
+    #region Tracking Painting By Id
+
+    [HttpGet("tracking/{id}")]
+    public async Task<IActionResult> PaintingTracking([FromRoute] Guid id)
+    {
+        try
+        {
+            var result = await _paintingService.PaintingTracking(id);
+            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Painting Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
     #region Get All Painting
 
     [HttpGet("list")]

@@ -311,6 +311,17 @@ public class PaintingService : IPaintingService
 
     #endregion
 
+    #region Get Painting By Id
+
+    public async Task<PaintingTrackingViewModel> PaintingTracking(Guid id)
+    {
+        var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
+        if (painting == null) throw new Exception("Khong tim thay Painting");
+        return _mapper.Map<PaintingTrackingViewModel>(painting);
+    }
+
+    #endregion
+
     #region List 16 Wining Painting
 
     public async Task<List<PaintingViewModel>> List16WiningPainting()

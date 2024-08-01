@@ -106,7 +106,14 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
 
     public async Task<List<Painting>> FilterPaintingAsync(FilterPaintingRequest filterPainting)
     {
-        var query = DbSet.AsQueryable();
+        var query = DbSet
+            .Include(x => x.RoundTopic)
+            .ThenInclude(x => x.Round)
+            .ThenInclude(x => x.EducationalLevel)
+            .ThenInclude(x => x.Contest)
+            .Include(x => x.RoundTopic)
+            .ThenInclude(x => x.Topic)
+            .Include(x => x.Account).AsQueryable();
 
         if (!string.IsNullOrEmpty(filterPainting.Code))
         {

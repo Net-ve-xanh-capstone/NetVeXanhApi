@@ -36,6 +36,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))
             .ForPath(dest => dest.ContestName,opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
+            .ForPath(dest => dest.ContestId, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
         

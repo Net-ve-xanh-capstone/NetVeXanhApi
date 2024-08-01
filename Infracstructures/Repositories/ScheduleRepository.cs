@@ -27,11 +27,18 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
 
     public async Task<List<Schedule>> GetByExaminerId(Guid id)
     {
-        return await DbSet.Include(s => s.Round).Where(s => s.ExaminerId == id).ToListAsync();
+        return await DbSet.Include(s => s.Round).Where(s => s.ExaminerId == id).OrderByDescending(s => s.CreatedTime).ToListAsync();
     }
 
     public async Task<List<Schedule>> SchedulerTrigger()
     {
         return await DbSet.Include(src => src.Account).Include(src => src.AwardSchedule).Include(src => src.Painting).Where(src => src.EndDate <= DateTime.Now && src.Status == ScheduleStatus.Rating.ToString()).ToListAsync();
     }
+
+    public async Task<List<Painting>> GetListByRoundId(Guid roundId)
+    {
+        return await DbSet.Include(src => src.Painting).ThenInclude(src => src.Award).Include(src => src.Painting).ThenInclude(src => src.Account)
+            .Where(src => src.RoundId == roundId && src.Status == ScheduleStatus.Done.ToString()).SelectMany(src => src.Painting).Where(src => src.Status == PaintingStatus.Pass.ToString()).ToListAsync();
+    }
+    
 }

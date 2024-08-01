@@ -28,7 +28,7 @@ public class ScheduleController : Controller
     {
         try
         {
-            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -40,7 +40,7 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }
+            }*/
             var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -69,14 +69,14 @@ public class ScheduleController : Controller
 
     #endregion
 
-    #region Create Schedule For Preliminary Round
+    #region Create Schedule For Final Round
 
     [HttpPost("final")]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest schedule)
     {
         try
         {
-            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -88,7 +88,7 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }
+            }*/
             var result = await _scheduleService.CreateScheduleForFinalRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -507,6 +507,49 @@ public class ScheduleController : Controller
                 Status = BadRequest().StatusCode,
                 Message = ex.Message,
                 Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get List Accoutn Pass
+
+    [HttpGet("export-round-results")]
+    public async Task<IActionResult> ExportRound1Results(Guid roundId)
+    {
+        var result = await  _scheduleService.GetListCompetitorPass(roundId);
+        var list = result.Item1;
+        var name = $"{result.Item2}.xlsx";
+        return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
+    }
+
+    #endregion
+    
+    #region Get Schedule for examiner by examiner Id
+
+    [HttpGet("/finalround/{id}")]
+    public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
+    {
+        try
+        {
+            var result = await _scheduleService.GetListCompetitorFinalRound(id);
+            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Schedule Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
                 Errors = ex
             });
         }

@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using FluentValidation.Results;
 
@@ -24,4 +25,6 @@ public interface IScheduleService
     Task<bool> IsExistedId(Guid id);
     Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
+    Task<(byte[], string)> GetListCompetitorPass(Guid roundId);
+    public Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId);
 }

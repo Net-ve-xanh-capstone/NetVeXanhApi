@@ -71,12 +71,12 @@ namespace Application.Services.CommonService
             await SendEmail(mail);
         }
 
-        public async Task SendAccountInformation(Account account)
+        public async Task SendAccountInformation(Account account, string password)
         {
             var template = GetEmailTemplate("SendAccountForCompetitor.html");
 
             template = template.Replace($"[Tên Thí Sinh]", account.FullName);
-            template = template.Replace($"[Mật khẩu]", account.Password);
+            template = template.Replace($"[Mật khẩu]", password);
             template = template.Replace($"[Tên tài khoản]", account.Username);
 
             var supportmail = _configuration["NetVeXanh:SupportMail"];

@@ -135,6 +135,7 @@ public static class DependencyInjection
         services.AddScoped<IScheduleValidationService, ScheduleValidationService>();
         services.AddScoped<ISponsorValidationService, SponsorValidationService>();
         services.AddScoped<ITopicValidationService, TopicValidationService>();
+        services.AddScoped<IExcelService, ExcelService>();
         #endregion
 
         #region Config validators

@@ -1,8 +1,10 @@
 ﻿using Application.BaseModels;
 using Application.IService;
+using Application.IService.ICommonService;
 using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
 using Application.SendModels.Topic;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
 using Domain.Enums;
@@ -16,12 +18,13 @@ namespace Application.Services;
 public class ScheduleService : IScheduleService
 {
     private readonly IMapper _mapper;
-
+    private readonly IExcelService _excelService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
-    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory)
+    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory, IExcelService excelService)
     {
+        _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validatorFactory = validatorFactory;
@@ -195,6 +198,7 @@ public class ScheduleService : IScheduleService
                         newAwardSchedule.ScheduleId = newSchedule.Id;
                         newAwardSchedule.AwardId = award[j].Id;
                         newAwardSchedule.Quantity = listQuantity[j];
+                        newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
                         listQuantity[j] = 0;
                         listAwardSchedule.Add(newAwardSchedule);
                     }
@@ -202,7 +206,7 @@ public class ScheduleService : IScheduleService
                     {
                         newAwardSchedule.ScheduleId = newSchedule.Id;
                         newAwardSchedule.AwardId = award[j].Id;
-
+                        newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
                         //In this case, this is the last loop
                         if (i == schedule.ListExaminer.Count - 1)
                         {
@@ -278,15 +282,22 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)
     {
+        //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
         if (schedules.Painting.Any(p => p.Status != PaintingStatus.Accepted.ToString())) return false;
-
+        
         if (ratingPainting.Paintings.Except(schedules.Painting.Select(p => p.Id)).ToList().Any())
             throw new Exception("Have ID not Exist In schedule");
+        
+        //Get painting have status is FinalRound
         var listPass = schedules.Painting.Where(p => ratingPainting.Paintings.Contains(p.Id)).ToList();
         var listNotPass = schedules.Painting.Where(p => !ratingPainting.Paintings.Contains(p.Id)).ToList();
 
+        //Get Award from Award schedule
+        var awardSchedule = schedules.AwardSchedule.FirstOrDefault();
+        
         listPass.ForEach(p => p.Status = PaintingStatus.Pass.ToString());
+        listPass.ForEach(p => p.AwardId = awardSchedule!.AwardId);
         listNotPass.ForEach(p => p.Status = PaintingStatus.NotPass.ToString());
         schedules.Painting.ToList().ForEach(p => p.FinalDecisionTimestamp = DateTime.Now);
         schedules.AwardSchedule.First().Status = AwardScheduleStatus.Done.ToString();
@@ -305,7 +316,7 @@ public class ScheduleService : IScheduleService
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
-        if (schedules.Status == ScheduleStatus.Done.ToString()) throw new Exception("This schedules has Done");
+        if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("This schedules has Done");
 
         //Get painting have status is FinalRound
         var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
@@ -313,7 +324,7 @@ public class ScheduleService : IScheduleService
         var awardSchedule =
             schedules.AwardSchedule.FirstOrDefault(a => a.Award.Rank == RankAward.FirstPrize.ToString());
 
-        if (awardSchedule.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("This Prize has Done");
+        if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("This Prize has Done");
 
         //Check Have any id from request don't exist in schedule
         if (ratingPainting.Paintings.Except(listPainting.Select(p => p.Id)).ToList().Any())
@@ -344,7 +355,7 @@ public class ScheduleService : IScheduleService
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
-        if (schedules.Status == ScheduleStatus.Done.ToString()) throw new Exception("This schedules has Done");
+        if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("This schedules has Done");
 
         //Get painting have status is FinalRound
         var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
@@ -352,7 +363,7 @@ public class ScheduleService : IScheduleService
         var awardSchedule =
             schedules.AwardSchedule.FirstOrDefault(a => a.Award.Rank == RankAward.SecondPrize.ToString());
 
-        if (awardSchedule.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("This Prize has Done");
+        if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("This Prize has Done");
 
         //Check Have any id from request don't exist in schedule
         if (ratingPainting.Paintings.Except(listPainting.Select(p => p.Id)).ToList().Any())
@@ -471,5 +482,39 @@ public class ScheduleService : IScheduleService
     public async Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate)
     {
         return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
+    }
+
+    public async Task<(byte[], string)> GetListCompetitorPass(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
+        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(roundId);
+        string name = $"";
+        if (round!.Name == "Vòng Chung Kết")
+        {
+            name = "FinalRound";
+        }
+        else
+        {
+            name = $"PreliminaryRound";
+        }
+
+        if (round!.EducationalLevel.Description == "Mầm Non")
+        {
+            name = name + "_A";
+        }
+        else
+        {
+            name = name + "_B";
+        }
+        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorViewModel>>(list), name);
+        return (result, name);
+    }
+    
+    public async Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId)
+    {
+        var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
+        var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
+        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
+        return _mapper.Map<List<CompetitorViewModel>>(list);
     }
 }

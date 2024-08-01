@@ -1,4 +1,5 @@
 ﻿using Application.SendModels.Painting;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.CollectionViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
@@ -35,6 +36,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))
             .ForPath(dest => dest.ContestName,opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
+            .ForPath(dest => dest.ContestId, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
         
@@ -72,7 +74,6 @@ public partial class MapperConfigs : Profile
         CreateMap<Painting, PaintingInCollection2ViewModel>()
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForPath(dest => dest.OwnerRole, opt => opt.MapFrom(src => src.Account.Role))
-            .ForPath(dest => dest.OwnerImage , opt => opt.MapFrom(src => src.Account.Avatar))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
@@ -84,5 +85,17 @@ public partial class MapperConfigs : Profile
                 src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" : 
                 src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
             ));
+        CreateMap<Painting, CompetitorViewModel>()
+            .ForPath(dest => dest.Id, opt => opt.MapFrom(src =>  src.Account.Id))
+            .ForPath(dest => dest.Prize, opt => opt.MapFrom(src =>  src.Award.Rank))
+            .ForPath(dest => dest.Phone, opt => opt.MapFrom(src =>  src.Account.Phone))
+            .ForPath(dest => dest.Code, opt => opt.MapFrom(src =>  src.Account.Code))
+            .ForPath(dest => dest.Address, opt => opt.MapFrom(src =>  src.Account.Address))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src =>  src.Account.Email))
+            .ForPath(dest => dest.FullName, opt => opt.MapFrom(src =>  src.Account.FullName))
+            .ForPath(dest => dest.Age, opt => opt.MapFrom(src =>  CalculateAge(src.Account.Birthday!.Value)))
+            .ForPath(dest => dest.Gender, opt => opt.MapFrom(src => 
+                src.Account.Gender! == true ? "Nữ" :
+                src.Account.Gender! == false ? "Nam" : null));
     }
 }

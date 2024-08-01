@@ -14,7 +14,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     public override async Task<Round?> GetByIdAsync(Guid id)
     {
         return await DbSet.Include(src => src.Schedule)
-            .Include(r => r.EducationalLevel)
+            .Include(r => r.EducationalLevel).ThenInclude( e => e.Round)
             .FirstOrDefaultAsync(src => src.Id == id && src.Status != RoundStatus.Delete.ToString());
     }
 
@@ -55,7 +55,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     
     public async Task<List<Round>> GetRoundsOfThisYear()
     {
-        var list = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Contest).Include(src => src.Schedule).Where(src => src.EducationalLevel.Contest.StartTime.Year == DateTime.Today.Year && src.EducationalLevel.Contest.Status != ContestStatus.Delete.ToString()  && src.Status != RoundStatus.Delete.ToString()).ToListAsync();
+        var list = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Contest).Include(src => src.Schedule).Where(src => src.EducationalLevel.Contest.StartTime.Year == DateTime.Today.Year && src.EducationalLevel.Contest.Status != ContestStatus.Delete.ToString()  && src.Status == RoundStatus.InProcess.ToString()).ToListAsync();
         return list;
     }
 

@@ -1,4 +1,5 @@
-﻿using Application.BaseModels;
+﻿using System.Security.Cryptography;
+using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
@@ -18,15 +19,17 @@ namespace Application.Services;
 public class PaintingService : IPaintingService
 {
     private readonly IMailService _mailService;
+    private readonly IAuthentication _authentication;
     private readonly IMapper _mapper;
     private readonly INotificationService _notificationService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
 
-    public PaintingService(IUnitOfWork unitOfWork, IMapper mapper, INotificationService notificationService,
+    public PaintingService(IUnitOfWork unitOfWork, IAuthentication authentication, IMapper mapper, INotificationService notificationService,
         IMailService mailService, IValidatorFactory validatorFactory)
     {
+        _authentication = authentication;
         _mailService = mailService;
         _notificationService = notificationService;
         _unitOfWork = unitOfWork;
@@ -122,6 +125,9 @@ public class PaintingService : IPaintingService
             {
                 // map account
                 var competitor = _mapper.Map<Account>(request);
+                Random rnd = new Random();
+                var password = rnd.Next(1000000, 9999999).ToString();
+                competitor.Password = _authentication.Hash(password);
                 //map painting
                 var painting = _mapper.Map<Painting>(request);
                 painting.AccountId = competitor.Id;
@@ -134,11 +140,12 @@ public class PaintingService : IPaintingService
                 await _unitOfWork.SaveChangesAsync();
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
+                competitor.Username = competitor.Code;
                 
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
                 
-                await _mailService.SendAccountInformation(competitor);
+                await _mailService.SendAccountInformation(competitor, password);
                 return result;
             }
 

@@ -4,8 +4,7 @@ public class FilterPaintingRequest
 {
     public string? Code { get; set; }
     public string? TopicName { get; set; }
-    public DateTime? StartDate { get; set; }
-    public DateTime? EndDate { get; set; }
+    public string? ContestId {  get; set; }
     public string? Level { get; set; }
     public string? RoundName { get; set; }
 

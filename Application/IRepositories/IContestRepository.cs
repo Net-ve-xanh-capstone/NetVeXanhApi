@@ -1,11 +1,13 @@
-﻿using Domain.Models;
+﻿using Application.ViewModels.AccountViewModels;
+using Application.ViewModels.ContestViewModels;
+using Domain.Models;
 
 namespace Application.IRepositories;
 
 public interface IContestRepository : IGenericRepository<Contest>
 {
     Task<Contest?> GetAllContestInformationAsync(Guid contestId);
-    Task<List<int>> Get5RecentYearAsync();
+    Task<List<ContestNameYearViewModel>> Get5RecentYearAsync();
     Task<(DateTime StartTime, DateTime EndTime)?> GetStartEndTimeByContestId(Guid contestId);
 
     Task<Contest?> GetNearestContestInformationAsync();
@@ -18,4 +20,6 @@ public interface IContestRepository : IGenericRepository<Contest>
     
     public Task<List<Contest>> EndContest();
     public Task<List<Contest>> StartContest();
+    Task<List<Guid>> GetCollectionsWithStaffAccountsAsync();
+    Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync();
 }

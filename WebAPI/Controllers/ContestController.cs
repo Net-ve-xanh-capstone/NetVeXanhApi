@@ -199,7 +199,7 @@ public class ContestController : Controller
     {
         try
         {
-            var result = await _contestService.Get5RecentYear();
+            var result = await _contestService.GetAccountWithAwardPainting();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -221,6 +221,34 @@ public class ContestController : Controller
 
     #endregion
 
+    #region Get 5 recent contest year
+
+    [HttpGet("getaccountwithawardpainting")]
+    public async Task<IActionResult> GetAccountWithAwardPainting()
+    {
+        try
+        {
+            var result = await _contestService.GetAccountWithAwardPainting();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Get Nearest Contest
 

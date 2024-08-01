@@ -25,7 +25,7 @@ public partial class MapperConfigs : Profile
         CreateMap<AccountUpdateRequest, Account>().ReverseMap();
         CreateMap<Account, AccountViewModel>().ReverseMap();
 
-
+        CreateMap<Account, AccountAwardViewModel>();
         CreateMap<Account, AccountInPainting>();
 
         CreateMap<Account, AccountInContestViewModel>();

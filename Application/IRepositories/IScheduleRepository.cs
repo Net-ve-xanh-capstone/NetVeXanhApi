@@ -8,5 +8,4 @@ public interface IScheduleRepository : IGenericRepository<Schedule>
 
     public Task<List<Schedule>> SchedulerTrigger();
     public Task<List<Painting>> GetListByRoundId(Guid roundId);
-
 }

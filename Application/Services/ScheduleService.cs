@@ -198,6 +198,7 @@ public class ScheduleService : IScheduleService
                         newAwardSchedule.ScheduleId = newSchedule.Id;
                         newAwardSchedule.AwardId = award[j].Id;
                         newAwardSchedule.Quantity = listQuantity[j];
+                        newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
                         listQuantity[j] = 0;
                         listAwardSchedule.Add(newAwardSchedule);
                     }
@@ -205,7 +206,7 @@ public class ScheduleService : IScheduleService
                     {
                         newAwardSchedule.ScheduleId = newSchedule.Id;
                         newAwardSchedule.AwardId = award[j].Id;
-
+                        newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
                         //In this case, this is the last loop
                         if (i == schedule.ListExaminer.Count - 1)
                         {
@@ -507,5 +508,13 @@ public class ScheduleService : IScheduleService
         }
         var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorViewModel>>(list), name);
         return (result, name);
+    }
+    
+    public async Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId)
+    {
+        var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
+        var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
+        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
+        return _mapper.Map<List<CompetitorViewModel>>(list);
     }
 }

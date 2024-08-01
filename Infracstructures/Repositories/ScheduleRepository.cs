@@ -40,4 +40,5 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
         return await DbSet.Include(src => src.Painting).ThenInclude(src => src.Award).Include(src => src.Painting).ThenInclude(src => src.Account)
             .Where(src => src.RoundId == roundId && src.Status == ScheduleStatus.Done.ToString()).SelectMany(src => src.Painting).Where(src => src.Status == PaintingStatus.Pass.ToString()).ToListAsync();
     }
+    
 }

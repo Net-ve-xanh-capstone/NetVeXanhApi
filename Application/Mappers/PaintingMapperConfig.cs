@@ -85,6 +85,7 @@ public partial class MapperConfigs : Profile
                 src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
             ));
         CreateMap<Painting, CompetitorViewModel>()
+            .ForPath(dest => dest.Id, opt => opt.MapFrom(src =>  src.Account.Id))
             .ForPath(dest => dest.Prize, opt => opt.MapFrom(src =>  src.Award.Rank))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src =>  src.Account.Phone))
             .ForPath(dest => dest.Code, opt => opt.MapFrom(src =>  src.Account.Code))

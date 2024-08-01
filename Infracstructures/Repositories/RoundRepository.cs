@@ -14,7 +14,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     public override async Task<Round?> GetByIdAsync(Guid id)
     {
         return await DbSet.Include(src => src.Schedule)
-            .Include(r => r.EducationalLevel)
+            .Include(r => r.EducationalLevel).ThenInclude( e => e.Round)
             .FirstOrDefaultAsync(src => src.Id == id && src.Status != RoundStatus.Delete.ToString());
     }
 

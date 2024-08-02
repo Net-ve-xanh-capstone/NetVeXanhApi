@@ -6,6 +6,7 @@ using Application.Services;
 using Domain.Models;
 using Infracstructures.SendModels.Painting;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 
 namespace WebAPI.Controllers;
 
@@ -66,32 +67,35 @@ public class PaintingController : Controller
 
     #region Submit Painting For Preliminary Round
 
-    [HttpPost("submitepainting1stround")]
-    public async Task<IActionResult> SubmitPaintingForPreliminaryRound(
-        CompetitorCreatePaintingRequest paintingRequest)
+    [HttpPost("submitpainting1stround")]
+    public async Task<IActionResult> SubmitPaintingForPreliminaryRound(CompetitorCreatePaintingRequest paintingRequest)
     {
         try
         {
-            var validationResult = await _paintingService.ValidateCompetitorCreateRequest(paintingRequest);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _paintingService.SubmitPaintingForPreliminaryRound(paintingRequest);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new BaseFailedResponseModel
+            {
+                Status = NotFound().StatusCode,
+                Message = "Painting not found",
+                Result = false
+            });
+
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Submit Painting Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Validation failed",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -105,7 +109,6 @@ public class PaintingController : Controller
             });
         }
     }
-
     #endregion
 
     #region Staff Submit Painting For Preliminary Round

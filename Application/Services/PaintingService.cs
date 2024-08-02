@@ -66,6 +66,14 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> SubmitPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
     {
+        // Validate the request
+        var validationResult = await ValidateCompetitorCreateRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
         if (check)
@@ -89,7 +97,7 @@ public class PaintingService : IPaintingService
                 await _notificationService.CreateNotification(notification);
             }
 
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            return true;
         }
 
         throw new Exception("Khong trong thoi gian nop bai");

@@ -228,7 +228,7 @@ public class ContestController : Controller
     {
         try
         {
-            var result = await _contestService.GetAccountWithAwardPainting();
+            var result = await _contestService.Get5RecentYear();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

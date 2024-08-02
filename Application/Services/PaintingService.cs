@@ -48,6 +48,7 @@ public class PaintingService : IPaintingService
         {
             painting.Status = PaintingStatus.Draft.ToString();
             painting.Code = "";
+            painting.CreatedBy = request.AccountId;
             painting.RoundTopicId = request.RoundTopicId;
             await _unitOfWork.PaintingRepo.AddAsync(painting);
             await _unitOfWork.SaveChangesAsync();
@@ -65,6 +66,14 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> SubmitPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
     {
+        // Validate the request
+        var validationResult = await ValidateCompetitorCreateRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
         if (check)
@@ -72,6 +81,8 @@ public class PaintingService : IPaintingService
             var painting = _mapper.Map<Painting>(request);
             painting.Status = PaintingStatus.Submitted.ToString();
             painting.Code = ""; // Sửa Db thì xóa
+            painting.CreatedBy = request.AccountId;
+            painting.SubmittedTimestamp = DateTime.Now;
             painting.RoundTopicId = request.RoundTopicId;
             await _unitOfWork.PaintingRepo.AddAsync(painting);
             await _unitOfWork.SaveChangesAsync();
@@ -86,7 +97,7 @@ public class PaintingService : IPaintingService
                 await _notificationService.CreateNotification(notification);
             }
 
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            return true;
         }
 
         throw new Exception("Khong trong thoi gian nop bai");
@@ -130,8 +141,10 @@ public class PaintingService : IPaintingService
                 competitor.Password = _authentication.Hash(password);
                 //map painting
                 var painting = _mapper.Map<Painting>(request);
+                painting.CreatedBy = request.CurrentUserId;
                 painting.AccountId = competitor.Id;
                 painting.Code = ""; // Sửa Db thì xóa
+                painting.SubmittedTimestamp = DateTime.Now;
                 painting.Status = request.Status;
                 painting.RoundTopicId = roundTopic.Id;
                 competitor.Painting = new List<Painting>();
@@ -165,6 +178,8 @@ public class PaintingService : IPaintingService
         var painting = _mapper.Map<Painting>(request);
         painting.Status = PaintingStatus.FinalRound.ToString();
         painting.Code = ""; // Sửa Db thì xóa
+        painting.CreatedBy = request.CurrentUserId;
+        painting.SubmittedTimestamp = DateTime.Now;
         painting.RoundTopicId = request.RoundTopicId;
         await _unitOfWork.PaintingRepo.AddAsync(painting);
 
@@ -220,9 +235,9 @@ public class PaintingService : IPaintingService
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
-        if (painting == null) throw new Exception("Khong tim thay Painting");
-
-
+        if (painting == null) throw new Exception("Không tìm thấy Painting");
+        painting.UpdatedBy = updatePainting.CurrentUserId;
+        painting.UpdatedTime = DateTime.Now;
         if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Khong duoc sua");
 
         _mapper.Map(updatePainting, painting);
@@ -236,7 +251,9 @@ public class PaintingService : IPaintingService
     public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
-
+        if (painting == null) throw new Exception("Không tìm thấy Painting");
+        painting.UpdatedBy = updatePainting.CurrentUserId;
+        painting.UpdatedTime = DateTime.Now;
         _mapper.Map(updatePainting, painting);
         
 
@@ -307,6 +324,17 @@ public class PaintingService : IPaintingService
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
         if (painting == null) throw new Exception("Khong tim thay Painting");
         return _mapper.Map<PaintingViewModel>(painting);
+    }
+
+    #endregion
+
+    #region Get Painting By Id
+
+    public async Task<PaintingTrackingViewModel> PaintingTracking(Guid id)
+    {
+        var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
+        if (painting == null) throw new Exception("Khong tim thay Painting");
+        return _mapper.Map<PaintingTrackingViewModel>(painting);
     }
 
     #endregion

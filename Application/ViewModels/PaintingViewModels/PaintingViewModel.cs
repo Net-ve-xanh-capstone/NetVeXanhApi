@@ -23,6 +23,7 @@ public class PaintingViewModel
     public string Birthday { get; set; }
     public string Address { get; set; }
     public string Phone { get; set; }
+    public DateTime CreatedTime { get; set; }
     public Guid RoundId { get; set; }
     public Guid RoundTopicId { get; set; }
 

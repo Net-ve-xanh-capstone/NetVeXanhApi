@@ -39,7 +39,12 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.ContestId, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
-        
+        CreateMap<Painting, PaintingTrackingViewModel>()
+            .ForPath(dest => dest.SubmittedTime, opt => opt.MapFrom(src => src.SubmittedTimestamp))
+            .ForPath(dest => dest.ReviewedTime, opt => opt.MapFrom(src => src.ReviewedTimestamp))
+            .ForPath(dest => dest.FinalDecisionTime, opt => opt.MapFrom(src => src.FinalDecisionTimestamp))
+            .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName));
+
         CreateMap<PaintingViewModel, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
             .ForPath(dest => dest.RoundTopic.Topic.Id, opt => opt.MapFrom(src => src.TopicId))

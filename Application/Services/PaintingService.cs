@@ -41,6 +41,11 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
     {
+        var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
+        if (account!.Address == null)
+        {
+            throw new Exception("Vui Lòng Cập Nhật Thông Tin Cá Nhân Trước Khi Nộp Bài");
+        }
         var painting = _mapper.Map<Painting>(request);
         var rt = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(rt!.RoundId);
@@ -49,6 +54,7 @@ public class PaintingService : IPaintingService
             painting.Status = PaintingStatus.Draft.ToString();
             painting.Code = "";
             painting.RoundTopicId = request.RoundTopicId;
+            painting.CreatedBy = request.AccountId;
             await _unitOfWork.PaintingRepo.AddAsync(painting);
             await _unitOfWork.SaveChangesAsync();
             var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
@@ -73,6 +79,7 @@ public class PaintingService : IPaintingService
             painting.Status = PaintingStatus.Submitted.ToString();
             painting.Code = ""; // Sửa Db thì xóa
             painting.RoundTopicId = request.RoundTopicId;
+            painting.CreatedBy = request.AccountId;
             await _unitOfWork.PaintingRepo.AddAsync(painting);
             await _unitOfWork.SaveChangesAsync();
 
@@ -80,7 +87,7 @@ public class PaintingService : IPaintingService
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
                 var notification = new NotificationRequest();
-                notification.Message = "Bạn đã nột bài thông công";
+                notification.Message = "Bạn đã nột bài thành công";
                 notification.Title = "Nét Vẽ Xanh 2024";
                 notification.AccountId = request.AccountId;
                 await _notificationService.CreateNotification(notification);

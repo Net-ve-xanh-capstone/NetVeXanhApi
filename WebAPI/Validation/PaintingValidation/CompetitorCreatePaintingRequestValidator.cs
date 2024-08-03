@@ -31,6 +31,7 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                         .WithMessage("AccountId không tồn tại.");
                 });
         });
+        
 
         // Validate Image
         RuleFor(c => c.Image)

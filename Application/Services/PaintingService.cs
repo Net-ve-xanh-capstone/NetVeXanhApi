@@ -1,19 +1,14 @@
-﻿using System.Security.Cryptography;
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Painting;
-using Application.SendModels.Schedule;
-using Application.SendModels.Topic;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Infracstructures.SendModels.Painting;
 
 namespace Application.Services;
@@ -142,7 +137,7 @@ public class PaintingService : IPaintingService
             {
                 new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
             }
-            
+
             //Add DB
             if (request.Status == PaintingStatus.Submitted.ToString() ||
                 request.Status == PaintingStatus.Rejected.ToString() ||
@@ -168,10 +163,10 @@ public class PaintingService : IPaintingService
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
                 competitor.Username = competitor.Code;
-                
+
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
-                
+
                 await _mailService.SendAccountInformation(competitor, password);
                 return result;
             }
@@ -264,7 +259,7 @@ public class PaintingService : IPaintingService
     }
 
     #endregion
-    
+
     #region Update Painting
 
     public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
@@ -274,7 +269,7 @@ public class PaintingService : IPaintingService
         painting.UpdatedBy = updatePainting.CurrentUserId;
         painting.UpdatedTime = DateTime.Now;
         _mapper.Map(updatePainting, painting);
-        
+
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

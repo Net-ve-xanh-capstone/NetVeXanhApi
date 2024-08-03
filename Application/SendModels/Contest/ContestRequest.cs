@@ -1,4 +1,6 @@
-﻿namespace Application.SendModels.Contest;
+﻿using Domain;
+
+namespace Application.SendModels.Contest;
 
 public class ContestRequest
 {
@@ -6,7 +8,7 @@ public class ContestRequest
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public string Content { get; set; }
-    public string Logo { get; set; }
+    public string Logo { get; set; } = AppConstants.DefaultImageUrl;
     public Guid CurrentUserId { get; set; }
     public DateTime Round1StartTime { get; set; }
     public DateTime Round1EndTime { get; set; }

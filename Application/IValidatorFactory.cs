@@ -61,5 +61,7 @@ namespace Application
         IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
         IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
         IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
+        IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
+        IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
     }
 }

@@ -68,6 +68,10 @@ namespace Infracstructures
         public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
         public IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
 
+        public IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
+
+        public IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
+
         public ValidatorFactory(
             IValidator<TopicRequest> topicRequestValidator,
             IValidator<TopicUpdateRequest> topicUpdateRequestValidator,
@@ -106,7 +110,9 @@ namespace Infracstructures
             IValidator<SponsorRequest> sponsorRequestValidator,
             IValidator<SponsorUpdateRequest> sponsorUpdateRequestValidator,
             IValidator<RoundTopicDeleteRequest> roundTopicDeleteRequestValidator,
-            IValidator<FilterPaintingRequest> filterPaintingRequestValidator)
+            IValidator<FilterPaintingRequest> filterPaintingRequestValidator,
+            IValidator<StaffCreatePaintingFinalRoundRequest> staffCreatePaintingFinalRoundRequestValidator,
+            IValidator<StaffUpdatePaintingRequest> staffUpdatePaintingRequestValidator)
         {
             TopicRequestValidator = topicRequestValidator;
             TopicUpdateRequestValidator = topicUpdateRequestValidator;
@@ -146,6 +152,8 @@ namespace Infracstructures
             SponsorUpdateRequestValidator = sponsorUpdateRequestValidator;
             RoundTopicDeleteRequestValidator = roundTopicDeleteRequestValidator;
             FilterPaintingRequestValidator = filterPaintingRequestValidator;
+            StaffCreatePaintingFinalRoundRequestValidator = staffCreatePaintingFinalRoundRequestValidator;
+            staffUpdatePaintingRequestValidator = staffUpdatePaintingRequestValidator;
         }
     }
 

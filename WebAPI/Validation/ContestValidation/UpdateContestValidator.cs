@@ -64,9 +64,6 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
         RuleFor(e => e.EndTime)
             .NotEmpty().WithMessage("Thời gian kết thúc không được để trống.");
 
-        RuleFor(e => e.Description)
-            .MaximumLength(500).WithMessage("Mô tả không được quá 500 ký tự.");
-
         RuleFor(e => e.Content)
             .NotEmpty().WithMessage("Nội dung không được để trống.");
 

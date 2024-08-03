@@ -5,8 +5,10 @@ using Application.SendModels.Category;
 using Application.SendModels.Topic;
 using Application.ViewModels.CategoryViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +39,12 @@ public class CategoryService : ICategoryService
 
     public async Task<bool> AddCategory(CategoryRequest addCategoryViewModel)
     {
+        var validationResult = await ValidateCategoryRequest(addCategoryViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var category = _mapper.Map<Category>(addCategoryViewModel);
 
         category.Status = CategoryStatus.Unused.ToString();
@@ -68,6 +76,12 @@ public class CategoryService : ICategoryService
 
     public async Task<bool> UpdateCategory(UpdateCategoryRequest updateCategory)
     {
+        var validationResult = await ValidateCategoryUpdateRequest(updateCategory);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(updateCategory.Id);
         if (category == null) throw new Exception("Khong tim thay Category");
 

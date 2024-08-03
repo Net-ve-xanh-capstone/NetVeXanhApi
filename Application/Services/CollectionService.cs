@@ -6,8 +6,10 @@ using Application.SendModels.Topic;
 using Application.ViewModels.CollectionViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
@@ -39,6 +41,12 @@ public class CollectionService : ICollectionService
 
     public async Task<bool> AddCollection(CollectionRequest addCollectionViewModel)
     {
+        var validationResult = await ValidateCollectionRequest(addCollectionViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var collection = _mapper.Map<Collection>(addCollectionViewModel);
         collection.Status = CollectionStatus.Active.ToString();
         await _unitOfWork.CollectionRepo.AddAsync(collection);
@@ -96,6 +104,12 @@ public class CollectionService : ICollectionService
 
     public async Task<bool> UpdateCollection(UpdateCollectionRequest updateCollection)
     {
+        var validationResult = await ValidateCollectionUpdateRequest(updateCollection);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(updateCollection.Id);
         if (collection == null) throw new Exception("Khong tim thay Collection");
         ;

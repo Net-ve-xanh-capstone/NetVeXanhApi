@@ -168,14 +168,14 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
 
     public async Task<Painting> GetPaintingsByContestAndAccountAsync(Guid contestId, Guid accountId)
     {
-        var paintings = await  DbSet.Include(x => x.RoundTopic)
+        var paintings = await DbSet.Include(x => x.RoundTopic)
                                     .ThenInclude(x => x.Round)
                                     .ThenInclude(x => x.EducationalLevel)
                                     .ThenInclude(x => x.Contest)
                                     .Include(x => x.RoundTopic)
                                     .ThenInclude(x => x.Topic)
                                     .Include(x => x.Account)
-                                    .Where(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id  == contestId && x.AccountId == accountId)
+                                    .Where(x => x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId && x.AccountId == accountId)
                                     .FirstOrDefaultAsync();
         return paintings;
     }
@@ -185,5 +185,14 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
         return await DbSet
             .Where(p => p.RoundTopic.Round.EducationalLevel.Contest.Id == contestId && p.Status != PaintingStatus.Delete.ToString())
             .CountAsync();
+    }
+
+    public async Task<bool> IsExistPaintingInContest(Guid accountId, Guid roundId)
+    {
+        var paintingcount = await DbSet
+            .Include(x => x.RoundTopic).ThenInclude(x => x.Round)
+            .Where(p => p.AccountId == accountId && p.Status != PaintingStatus.Delete.ToString() && p.RoundTopic.RoundId == roundId)
+            .CountAsync();
+        return paintingcount > 0;
     }
 }

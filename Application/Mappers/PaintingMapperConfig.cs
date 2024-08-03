@@ -40,10 +40,37 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
         CreateMap<Painting, PaintingTrackingViewModel>()
-            .ForPath(dest => dest.SubmittedTime, opt => opt.MapFrom(src => src.SubmittedTimestamp))
-            .ForPath(dest => dest.ReviewedTime, opt => opt.MapFrom(src => src.ReviewedTimestamp))
-            .ForPath(dest => dest.FinalDecisionTime, opt => opt.MapFrom(src => src.FinalDecisionTimestamp))
-            .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName));
+             .ForPath(dest => dest.History.Created.Time, opt =>
+                opt.MapFrom(src => src.CreatedTime.HasValue ? src.CreatedTime : (DateTime?)null))
+            .ForPath(dest => dest.History.Created.Message, opt =>
+                opt.MapFrom(src => src.CreatedTime.HasValue ? "Đã tạo" : null))
+
+            .ForPath(dest => dest.History.Updated.Time, opt =>
+                opt.MapFrom(src => src.UpdatedTime.HasValue ? src.UpdatedTime : (DateTime?)null))
+            .ForPath(dest => dest.History.Updated.Message, opt =>
+                opt.MapFrom(src => src.UpdatedTime.HasValue ? "Đã sửa" : null))
+
+            .ForPath(dest => dest.History.Reviewed.Time, opt =>
+                opt.MapFrom(src => src.ReviewedTimestamp.HasValue ? src.ReviewedTimestamp : (DateTime?)null))
+            .ForPath(dest => dest.History.Reviewed.Message, opt =>
+            {
+                opt.MapFrom(src =>
+                    src.ReviewedTimestamp.HasValue
+                        ? (src.Status == PaintingStatus.Rejected.ToString() ? "Không được duyệt" : "Đã được duyệt")
+                        : null);
+            })
+            .ForPath(dest => dest.History.FinalDecision.Time, opt =>
+                opt.MapFrom(src => src.FinalDecisionTimestamp.HasValue ? src.FinalDecisionTimestamp : (DateTime?)null))
+            .ForPath(dest => dest.History.FinalDecision.Message, opt =>
+            {
+                opt.MapFrom(src => GetFinalDecisionMessage(src.FinalDecisionTimestamp, src.Status));
+            })
+            .ForPath(dest => dest.History.Submitted.Time, opt =>
+                opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? src.SubmittedTimestamp : (DateTime?)null))
+            .ForPath(dest => dest.History.Submitted.Message, opt =>
+                opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? "Đã nộp bài" : null));
+
+
 
         CreateMap<PaintingViewModel, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
@@ -102,5 +129,19 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src => 
                 src.Account.Gender! == true ? "Nữ" :
                 src.Account.Gender! == false ? "Nam" : null));
+    }
+    public static string GetFinalDecisionMessage(DateTime? finalDecisionTimestamp, string status)
+    {
+        if (!finalDecisionTimestamp.HasValue)
+            return null;
+
+        return status switch
+        {
+            // Sử dụng giá trị từ PaintingStatus
+            var s when s == PaintingStatus.HasPrizes.ToString() => "Đã đoạt giải",
+            var s when s == PaintingStatus.NotPass.ToString() => "Không qua vòng 1",
+            var s when s == PaintingStatus.Pass.ToString() => "Đã qua vòng 1",
+            _ => null
+        };
     }
 }

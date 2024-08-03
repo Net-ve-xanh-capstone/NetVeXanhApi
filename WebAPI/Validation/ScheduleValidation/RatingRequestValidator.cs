@@ -1,8 +1,8 @@
 ﻿using Application;
-using Application.SendModels.Painting;
+using Application.SendModels.Schedule;
 using FluentValidation;
 
-namespace WebAPI.Validation.PaintingValidation;
+namespace WebAPI.Validation.ScheduleValidation;
 
 public class RatingRequestValidator : AbstractValidator<RatingRequest>
 {

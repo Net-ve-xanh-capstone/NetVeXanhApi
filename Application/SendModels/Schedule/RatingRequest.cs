@@ -1,4 +1,4 @@
-﻿namespace Application.SendModels.Painting;
+﻿namespace Application.SendModels.Schedule;
 
 public class RatingRequest
 {

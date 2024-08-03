@@ -28,6 +28,12 @@ public class RoundTopicService : IRoundTopicService
 
     public async Task<bool> DeleteTopicInRound(RoundTopicDeleteRequest roundTopicDeleteRequest)
     {
+        var validationResult = await ValidateRoundTopicDeleteRequest(roundTopicDeleteRequest);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var roundtopic =
             await _unitOfWork.RoundTopicRepo.GetByRoundIdTopicId(roundTopicDeleteRequest.RoundId,
                 roundTopicDeleteRequest.TopicId);
@@ -45,14 +51,16 @@ public class RoundTopicService : IRoundTopicService
 
     #endregion
 
-    #region Add Topic To Round
+    #region Get All Round Topic
 
     public async Task<List<ListRoundTopicViewModel>> GetAll()
     {
         var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
         return _mapper.Map<List<ListRoundTopicViewModel>>(list);
     }
+    #endregion
 
+    #region Get List Round Topic For Competitor
     public async Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
     {
         var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
@@ -81,9 +89,18 @@ public class RoundTopicService : IRoundTopicService
         }
         return _mapper.Map<List<RoundTopicViewModel>>(list);
     }
+    #endregion
+
+    #region Add Topic To Round
 
     public async Task<bool> AddTopicToRound(RoundTopicRequest roundTopicRequest)
     {
+        var validationResult = await ValidateRoundTopicRequest(roundTopicRequest);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var listRoundTopic = new List<RoundTopic>();
         foreach (var topic in roundTopicRequest.ListTopicId)
         {
@@ -100,11 +117,6 @@ public class RoundTopicService : IRoundTopicService
 
     #endregion
 
-    //Check Id is Exist
-    public async Task<bool> IsExistedId(Guid id)
-    {
-        return await _unitOfWork.RoundTopicRepo.IsExistIdAsync(id);
-    }
 
     #region Validate
     public async Task<ValidationResult> ValidateRoundTopicRequest(RoundTopicRequest roundtopic)

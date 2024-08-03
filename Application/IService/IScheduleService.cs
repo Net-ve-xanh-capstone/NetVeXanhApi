@@ -1,5 +1,4 @@
 ﻿using Application.BaseModels;
-using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;

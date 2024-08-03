@@ -66,6 +66,12 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                         .WithMessage("RoundTopicId không tồn tại.");
                 });
         });
+        RuleFor(x => new { x.AccountId, x.RoundTopicId })
+            .MustAsync(async (x, cancellation) =>
+            {
+                return !await _validationServiceManager.PaintingValidationService.IsExistedPaintingInContest(x.AccountId, x.RoundTopicId);
+            })
+            .WithMessage("Không thể nộp(lưu) vì đã có bài dự thi.");
     }
     private bool BeAValidUrl(string url)
     {

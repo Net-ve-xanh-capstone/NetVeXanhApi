@@ -27,28 +27,26 @@ public class PaintingController : Controller
     [HttpPost("draftepainting1stround")]
     public async Task<IActionResult> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest paintingrequest)
     {
-        var validationResult = await _paintingService.ValidateCompetitorCreateRequest(paintingrequest);
-        if (!validationResult.IsValid)
-        {
-            var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-            var response = new BaseFailedResponseModel
-            {
-                Status = 400,
-                Message = "Validation failed",
-                Result = false,
-                Errors = errors
-            };
-            return BadRequest(response);
-        }
         try
         {
             var result = await _paintingService.DraftPaintingForPreliminaryRound(paintingrequest);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Draft Painting Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -93,7 +91,7 @@ public class PaintingController : Controller
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Validation failed",
+                Message = "Xác thực không thành công",
                 Result = false,
                 Errors = errors
             });
@@ -119,26 +117,24 @@ public class PaintingController : Controller
     {
         try
         {
-            var validationResult = await _paintingService.ValidateStaffCreateRequest(staffCreatePainting);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _paintingService.StaffSubmitPaintingForPreliminaryRound(staffCreatePainting);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Submit Painting Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -164,7 +160,7 @@ public class PaintingController : Controller
         {
             //Chưa validate
             var result = await _paintingService.StaffSubmitPaintingForFinalRound(request);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
 
             return Ok(new BaseResponseModel
             {
@@ -194,26 +190,24 @@ public class PaintingController : Controller
     {
         try
         {
-            var validationResult = await _paintingService.ValidateUpdatePaintingRequest(updatePainting);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _paintingService.UpdatePainting(updatePainting);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -238,12 +232,23 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.UpdatePaintingStaffPermission(updatePaintingViewModel);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -268,7 +273,7 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.DeletePainting(id);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -297,19 +302,6 @@ public class PaintingController : Controller
     {
         try
         {
-            var validationResult = await _paintingService.ValidatePaintingUpdateStatusRequest(request);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _paintingService.ReviewDecisionOfPainting(request);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
@@ -317,6 +309,17 @@ public class PaintingController : Controller
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Review Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -340,19 +343,6 @@ public class PaintingController : Controller
     {
         try
         {
-            var validationResult = await _paintingService.ValidatePaintingUpdateStatusRequest(request);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _paintingService.FinalDecisionOfPainting(request);
             if (result == null) return NotFound();
             return Ok(new BaseResponseModel
@@ -360,6 +350,17 @@ public class PaintingController : Controller
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Delete Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -590,19 +591,6 @@ public class PaintingController : Controller
     {
         try
         {
-            var validationResult = await _paintingService.ValidateFilterPaintingRequest(filterPainting);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var (list, totalPage) = await _paintingService.FilterPainting(filterPainting, listPaintingModel);
             if (totalPage < listPaintingModel.PageNumber)
                 return NotFound(new BaseResponseModel
@@ -619,6 +607,17 @@ public class PaintingController : Controller
                     List = list,
                     TotalPage = totalPage
                 }
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)

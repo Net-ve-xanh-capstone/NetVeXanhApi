@@ -5,8 +5,10 @@ using Application.SendModels.Award;
 using Application.SendModels.Topic;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +39,12 @@ public class AwardService : IAwardService
 
     public async Task<bool> AddAward(AwardRequest addAwardViewModel)
     {
+        var validationResult = await ValidateAwardRequest(addAwardViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var award = _mapper.Map<Award>(addAwardViewModel);
         award.Status = AwardStatus.Active.ToString();
         await _unitOfWork.AwardRepo.AddAsync(award);

@@ -8,6 +8,7 @@ using Application.ViewModels.TopicViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,12 @@ public class RoundService : IRoundService
 
     public async Task<bool> CreateRound(RoundRequest round)
     {
+        var validationResult = await ValidateRoundRequest(round);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var listNewRound = new List<Round>();
         foreach (var id in round.listLevel)
         {
@@ -83,6 +90,12 @@ public class RoundService : IRoundService
 
     public async Task<bool> UpdateRound(RoundUpdateRequest updateRound)
     {
+        var validationResult = await ValidateRoundUpdateRequest(updateRound);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(updateRound.Id);
         if (round == null) throw new Exception("Khong tim thay Round");
         _mapper.Map(updateRound, round);

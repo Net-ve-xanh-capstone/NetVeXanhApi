@@ -35,6 +35,13 @@ public class ReportService : IReportService
 
     public async Task<bool> AddReport(ReportRequest addReportViewModel)
     {
+        var validationResult = await ValidateReportRequest(addReportViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var report = _mapper.Map<Report>(addReportViewModel);
         report.Status = ReportStatus.Pending.ToString();
         await _unitOfWork.ReportRepo.AddAsync(report);
@@ -98,6 +105,12 @@ public class ReportService : IReportService
 
     public async Task<bool> UpdateReport(UpdateReportRequest updateReport)
     {
+        var validationResult = await ValidateReportUpdateRequest(updateReport);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var report = await _unitOfWork.ReportRepo.GetByIdAsync(updateReport.Id);
         if (report == null) throw new Exception("Khong tim thay Report");
 

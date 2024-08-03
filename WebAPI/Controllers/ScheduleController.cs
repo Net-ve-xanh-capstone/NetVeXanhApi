@@ -1,10 +1,10 @@
 ﻿using Application.BaseModels;
 using Application.IService;
-using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
 using Application.SendModels.Topic;
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -223,26 +223,24 @@ public class ScheduleController : Controller
     {
         try
         {
-            var validationResult = await _scheduleService.ValidateScheduleUpdateRequest(updateSchedule);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _scheduleService.UpdateSchedule(updateSchedule);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Schedule not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -327,13 +325,6 @@ public class ScheduleController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
-            }
-
             var result = await _scheduleService.RatingPreliminaryRound(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -346,6 +337,17 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Rating Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -365,13 +367,6 @@ public class ScheduleController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
-            }
-
             var result = await _scheduleService.RatingFirstPrize(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -384,6 +379,17 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Rating Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -403,13 +409,6 @@ public class ScheduleController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
-            }
-
             var result = await _scheduleService.RatingSecondPrize(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -422,6 +421,17 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Rating Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -441,13 +451,6 @@ public class ScheduleController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
-            }
-
             var result = await _scheduleService.RatingThirdPrize(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -460,6 +463,17 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Rating Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -479,13 +493,6 @@ public class ScheduleController : Controller
     {
         try
         {
-            if (!ModelState.IsValid)
-            {
-                var errorMessages = string.Join("; ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
-                return BadRequest(new { Success = false, Message = "Invalid input data. " + errorMessages });
-            }
-
             var result = await _scheduleService.RatingConsolationPrize(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -498,6 +505,17 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Rating Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)

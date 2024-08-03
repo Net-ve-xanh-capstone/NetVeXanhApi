@@ -16,4 +16,6 @@ public interface IPaintingRepository : IGenericRepository<Painting>
     Task<Painting> GetPaintingsByContestAndAccountAsync(Guid contestId, Guid accountId);
 
     Task<int> PaintingCountByContest(Guid contestId);
+
+    Task<bool> IsExistPaintingInContest(Guid accountId, Guid roundId);
 }

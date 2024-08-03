@@ -6,6 +6,7 @@ using Application.ViewModels.PostViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 
@@ -31,6 +32,12 @@ public class PostService : IPostService
 
     public async Task<bool> CreatePost(PostRequest post)
     {
+        var validationResult = await ValidatePostRequest(post);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var newPost = _mapper.Map<Post>(post);
         var newImages = _mapper.Map<List<Image>>(post.Images);
         newPost.Images = newImages;
@@ -135,6 +142,12 @@ public class PostService : IPostService
 
     public async Task<bool> UpdatePost(PostUpdateRequest updatePost)
     {
+        var validationResult = await ValidatePostUpdateRequest(updatePost);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var post = await _unitOfWork.PostRepo.GetByIdAsync(updatePost.Id);
         if (post == null) throw new Exception("Khong tim thay Post");
         _mapper.Map(updatePost, post);

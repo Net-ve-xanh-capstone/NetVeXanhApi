@@ -6,6 +6,7 @@ using Application.SendModels.EducationalLevel;
 using Application.SendModels.Topic;
 using Application.ViewModels.EducationalLevelViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -37,11 +38,18 @@ public class EducationalLevelService : IEducationalLevelService
 
     #region Create
 
-    public async Task<bool> CreateEducationalLevel(EducationalLevelRequest EducationalLevel)
+    public async Task<bool> CreateEducationalLevel(EducationalLevelRequest educationalLevel)
     {
-        var a = await _unitOfWork.ContestRepo.GetStartEndTimeByContestId(EducationalLevel.ContestId);
+        var validationResult = await ValidateLevelRequest(educationalLevel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
 
-        var newEducationalLevel = _mapper.Map<EducationalLevel>(EducationalLevel);
+        var a = await _unitOfWork.ContestRepo.GetStartEndTimeByContestId(educationalLevel.ContestId);
+
+        var newEducationalLevel = _mapper.Map<EducationalLevel>(educationalLevel);
         newEducationalLevel.Status = EducationalLevelStatus.NotStarted.ToString();
         await _unitOfWork.EducationalLevelRepo.AddAsync(newEducationalLevel);
         var check = await _unitOfWork.SaveChangesAsync() > 0;
@@ -54,7 +62,7 @@ public class EducationalLevelService : IEducationalLevelService
         // Create Round 1 Level 1
         var round = new Round();
         round.Name = "Vòng Sơ Khảo";
-        round.CreatedBy = EducationalLevel.CurrentUserId;
+        round.CreatedBy = educationalLevel.CurrentUserId;
         round.EducationalLevelId = newEducationalLevel.Id;
         round.Status = RoundStatus.NotStarted.ToString();
         round.CreatedTime = _currentTime.GetCurrentTime();
@@ -67,7 +75,7 @@ public class EducationalLevelService : IEducationalLevelService
         // Create Round 2 Level 1
         var round2 = new Round();
         round2.Name = "Vòng Chung Kết";
-        round2.CreatedBy = EducationalLevel.CurrentUserId;
+        round2.CreatedBy = educationalLevel.CurrentUserId;
         round2.EducationalLevelId = newEducationalLevel.Id;
         round2.Status = RoundStatus.NotStarted.ToString();
         round2.CreatedTime = _currentTime.GetCurrentTime();
@@ -93,7 +101,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 1st prize Level 1
         var award1 = new Award();
         award1.Rank = "FirstPrize";
-        award1.CreatedBy = EducationalLevel.CurrentUserId;
+        award1.CreatedBy = educationalLevel.CurrentUserId;
         award1.CreatedTime = _currentTime.GetCurrentTime();
         award1.Quantity = 1;
         award1.Status = ContestStatus.NotStarted.ToString();
@@ -103,7 +111,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 2nd prize  Level 1
         var award2 = new Award();
         award2.Rank = "SecondPrize";
-        award2.CreatedBy = EducationalLevel.CurrentUserId;
+        award2.CreatedBy = educationalLevel.CurrentUserId;
         award2.CreatedTime = _currentTime.GetCurrentTime();
         award2.Quantity = 2;
         award2.Status = ContestStatus.NotStarted.ToString();
@@ -113,7 +121,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 3rd prize Level 1
         var award3 = new Award();
         award3.Rank = "ThirdPrize";
-        award3.CreatedBy = EducationalLevel.CurrentUserId;
+        award3.CreatedBy = educationalLevel.CurrentUserId;
         award3.CreatedTime = _currentTime.GetCurrentTime();
         award3.Quantity = 3;
         award3.Status = ContestStatus.NotStarted.ToString();
@@ -123,7 +131,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 4th prize Level 1
         var award4 = new Award();
         award4.Rank = "ConsolationPrize";
-        award4.CreatedBy = EducationalLevel.CurrentUserId;
+        award4.CreatedBy = educationalLevel.CurrentUserId;
         award4.CreatedTime = _currentTime.GetCurrentTime();
         award4.Quantity = 4;
         award4.Status = ContestStatus.NotStarted.ToString();
@@ -133,7 +141,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create Passed Level 1
         var award9 = new Award();
         award9.Rank = "Preliminary";
-        award9.CreatedBy = EducationalLevel.CurrentUserId;
+        award9.CreatedBy = educationalLevel.CurrentUserId;
         award9.CreatedTime = _currentTime.GetCurrentTime();
         award9.Quantity = 5;
         award9.Status = ContestStatus.NotStarted.ToString();
@@ -143,7 +151,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 1st prize Level 2
         var award5 = new Award();
         award5.Rank = "FirstPrize";
-        award5.CreatedBy = EducationalLevel.CurrentUserId;
+        award5.CreatedBy = educationalLevel.CurrentUserId;
         award5.CreatedTime = _currentTime.GetCurrentTime();
         award5.Quantity = 1;
         award5.Status = ContestStatus.NotStarted.ToString();
@@ -153,7 +161,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 2nd prize  Level 2
         var award6 = new Award();
         award6.Rank = "SecondPrize";
-        award6.CreatedBy = EducationalLevel.CurrentUserId;
+        award6.CreatedBy = educationalLevel.CurrentUserId;
         award6.CreatedTime = _currentTime.GetCurrentTime();
         award6.Quantity = 2;
         award6.Status = ContestStatus.NotStarted.ToString();
@@ -163,7 +171,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 3rd prize Level 2
         var award7 = new Award();
         award7.Rank = "ThirdPrize";
-        award7.CreatedBy = EducationalLevel.CurrentUserId;
+        award7.CreatedBy = educationalLevel.CurrentUserId;
         award7.CreatedTime = _currentTime.GetCurrentTime();
         award7.Quantity = 3;
         award7.Status = ContestStatus.NotStarted.ToString();
@@ -173,7 +181,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create 4th prize Level 2
         var award8 = new Award();
         award8.Rank = "ConsolationPrize";
-        award8.CreatedBy = EducationalLevel.CurrentUserId;
+        award8.CreatedBy = educationalLevel.CurrentUserId;
         award8.CreatedTime = _currentTime.GetCurrentTime();
         award8.Quantity = 4;
         award8.Status = ContestStatus.NotStarted.ToString();
@@ -183,7 +191,7 @@ public class EducationalLevelService : IEducationalLevelService
         //Create Passed Level 2
         var award10 = new Award();
         award10.Rank = "Preliminary";
-        award10.CreatedBy = EducationalLevel.CurrentUserId;
+        award10.CreatedBy = educationalLevel.CurrentUserId;
         award10.CreatedTime = _currentTime.GetCurrentTime();
         award10.Quantity = 5;
         award10.Status = ContestStatus.NotStarted.ToString();
@@ -266,6 +274,12 @@ public class EducationalLevelService : IEducationalLevelService
 
     public async Task<bool> UpdateEducationalLevel(EducationalLevelUpdateRequest updateEducationalLevel)
     {
+        var validationResult = await ValidateLevelUpdateRequest(updateEducationalLevel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
         if (EducationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
         _mapper.Map(updateEducationalLevel, EducationalLevel);

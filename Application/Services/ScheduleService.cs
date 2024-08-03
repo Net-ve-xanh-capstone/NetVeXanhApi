@@ -1,7 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
-using Application.SendModels.Painting;
 using Application.SendModels.Schedule;
 using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
@@ -12,6 +11,7 @@ using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
+using Quartz;
 
 namespace Application.Services;
 
@@ -61,6 +61,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> UpdateSchedule(ScheduleUpdateRequest updateSchedule)
     {
+        var validationResult = await ValidateScheduleUpdateRequest(updateSchedule);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(updateSchedule.Id);
         if (schedule == null) throw new Exception("Khong tim thay Schedule");
         _mapper.Map(updateSchedule, schedule);
@@ -87,6 +93,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
+        var validationResult = await ValidateScheduleRequest(schedule);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get Paintings Of Preliminary round
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId);
         var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
@@ -282,6 +294,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)
     {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
         if (schedules.Painting.Any(p => p.Status != PaintingStatus.Accepted.ToString())) return false;
@@ -313,6 +331,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingFirstPrize(RatingRequest ratingPainting)
     {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -352,6 +376,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingSecondPrize(RatingRequest ratingPainting)
     {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -391,6 +421,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingThirdPrize(RatingRequest ratingPainting)
     {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -430,6 +466,12 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingConsolationPrize(RatingRequest ratingPainting)
     {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -473,7 +515,7 @@ public class ScheduleService : IScheduleService
     {
         return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
     }
-
+    #region Validate
     public async Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule)
     {
         return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
@@ -483,7 +525,11 @@ public class ScheduleService : IScheduleService
     {
         return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
     }
-
+    public async Task<ValidationResult> ValidateRatingRequest(RatingRequest painting)
+    {
+        return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
+    }
+    #endregion
     public async Task<(byte[], string)> GetListCompetitorPass(Guid roundId)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);

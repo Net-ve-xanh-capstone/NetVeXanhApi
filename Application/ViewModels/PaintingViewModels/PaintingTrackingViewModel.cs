@@ -12,10 +12,20 @@ namespace Application.ViewModels.PaintingViewModels
         public string Image { get; set; }
         public string Name { get; set; }
         public string OwnerName { get; set; }
-        public DateTime CreatedTime { get; set; }
-        public DateTime UpdateTime { get; set; }
-        public DateTime? SubmittedTime { get; set; }
-        public DateTime? ReviewedTime { get; set; }
-        public DateTime? FinalDecisionTime { get; set; }
+        public History History { get;set; }
     }
+    public class Tracking
+    {
+        public DateTime? Time { get; set; }
+        public string? Message { get; set; }
+    }
+    public class History
+    {
+        public Tracking? Created { get; set; }
+        public Tracking? Updated { get; set; }
+        public Tracking? Submitted { get; set; }
+        public Tracking? Reviewed { get; set; }
+        public Tracking? FinalDecision { get; set; }
+    }
+
 }

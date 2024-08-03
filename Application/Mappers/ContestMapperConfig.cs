@@ -15,7 +15,7 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                 src.Status == ContestStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
                 src.Status == ContestStatus.InProcess.ToString() ? "Đang tiến hành" :
-                src.Status == ContestStatus.Complete.ToString() ? "Hoàn thành" :
+                src.Status == ContestStatus.Complete.ToString() ? "Đã Hoàn thành" :
                 src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
             ));
         CreateMap<ContestViewModel, Contest>()
@@ -40,7 +40,13 @@ public partial class MapperConfigs : Profile
         CreateMap<Contest, ContestDetailViewModel>()
             .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
             .ForMember(dest => dest.Resource, opt => opt.MapFrom(src => src.Resources))
-            .ForMember(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel));
+            .ForMember(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == ContestStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
+                src.Status == ContestStatus.InProcess.ToString() ? "Đang tiến hành" :
+                src.Status == ContestStatus.Complete.ToString() ? "Đã Hoàn thành" :
+                src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
+            )); 
 
         CreateMap<Contest, FilterPaintingContestViewModel>();
     }

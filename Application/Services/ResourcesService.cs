@@ -28,9 +28,15 @@ public class ResourcesService : IResourcesService
 
     #region Create
 
-    public async Task<bool> CreateResources(ResourcesRequest Resources)
+    public async Task<bool> CreateResources(ResourcesRequest resources)
     {
-        var newResources = _mapper.Map<Resources>(Resources);
+        var validationResult = await ValidateResourceRequest(resources);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+        var newResources = _mapper.Map<Resources>(resources);
         newResources.Status = ResourcesStatus.Active.ToString();
         await _unitOfWork.ResourcesRepo.AddAsync(newResources);
 
@@ -66,6 +72,12 @@ public class ResourcesService : IResourcesService
 
     public async Task<bool> UpdateResources(ResourcesUpdateRequest updateResources)
     {
+        var validationResult = await ValidateResourceUpdateRequest(updateResources);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var Resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(updateResources.Id);
         if (Resources == null) throw new Exception("Khong tim thay Resource");
         _mapper.Map(updateResources, Resources);

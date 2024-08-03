@@ -1,17 +1,14 @@
-﻿using System.Security.Cryptography;
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Painting;
-using Application.SendModels.Topic;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Infracstructures.SendModels.Painting;
 
 namespace Application.Services;
@@ -41,6 +38,12 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> DraftPaintingForPreliminaryRound(CompetitorCreatePaintingRequest request)
     {
+        var validationResult = await ValidateCompetitorCreateRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var painting = _mapper.Map<Painting>(request);
         var rt = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(rt!.RoundId);
@@ -109,6 +112,12 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> StaffSubmitPaintingForPreliminaryRound(StaffCreatePaintingRequest request)
     {
+        var validationResult = await ValidateStaffCreateRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
         if (check)
@@ -128,7 +137,7 @@ public class PaintingService : IPaintingService
             {
                 new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
             }
-            
+
             //Add DB
             if (request.Status == PaintingStatus.Submitted.ToString() ||
                 request.Status == PaintingStatus.Rejected.ToString() ||
@@ -154,10 +163,10 @@ public class PaintingService : IPaintingService
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
                 competitor.Username = competitor.Code;
-                
+
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
-                
+
                 await _mailService.SendAccountInformation(competitor, password);
                 return result;
             }
@@ -214,12 +223,11 @@ public class PaintingService : IPaintingService
     public async Task<bool> DeletePainting(Guid paintingId)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(paintingId);
-        if (painting == null) throw new Exception("Khong tim thay Painting");
+        if (painting == null) throw new Exception("Không tìm thấy Painting");
 
         if (painting.Status != PaintingStatus.Draft.ToString())
         {
-            throw new Exception("Khong duoc xoa");
-            ;
+            throw new Exception("Bài thi đã nộp không đươc xóa");
         }
 
         painting.Status = PaintingStatus.Delete.ToString();
@@ -233,6 +241,12 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> UpdatePainting(UpdatePaintingRequest updatePainting)
     {
+        var validationResult = await ValidateUpdatePaintingRequest(updatePainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
         if (painting == null) throw new Exception("Không tìm thấy Painting");
@@ -245,7 +259,7 @@ public class PaintingService : IPaintingService
     }
 
     #endregion
-    
+
     #region Update Painting
 
     public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
@@ -255,7 +269,7 @@ public class PaintingService : IPaintingService
         painting.UpdatedBy = updatePainting.CurrentUserId;
         painting.UpdatedTime = DateTime.Now;
         _mapper.Map(updatePainting, painting);
-        
+
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -266,6 +280,12 @@ public class PaintingService : IPaintingService
 
     public async Task<PaintingViewModel?> ReviewDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
+        var validationResult = await ValidatePaintingUpdateStatusRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(request.Id);
         if (painting == null) return null;
 
@@ -288,6 +308,12 @@ public class PaintingService : IPaintingService
 
     public async Task<PaintingViewModel?> FinalDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
+        var validationResult = await ValidatePaintingUpdateStatusRequest(request);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(request.Id);
         if (painting == null) return null;
 
@@ -328,7 +354,7 @@ public class PaintingService : IPaintingService
 
     #endregion
 
-    #region Get Painting By Id
+    #region Painting Tracking
 
     public async Task<PaintingTrackingViewModel> PaintingTracking(Guid id)
     {
@@ -379,6 +405,12 @@ public class PaintingService : IPaintingService
     public async Task<(List<PaintingViewModel>, int)> FilterPainting(FilterPaintingRequest filterPainting,
         ListModels listPaintingModel)
     {
+        var validationResult = await ValidateFilterPaintingRequest(filterPainting);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var listPainting = await _unitOfWork.PaintingRepo.FilterPaintingAsync(filterPainting);
         if (listPainting.Count == 0) throw new Exception("Không có Painting nào!");
         var result = _mapper.Map<List<PaintingViewModel>>(listPainting);
@@ -439,14 +471,6 @@ public class PaintingService : IPaintingService
 
     #endregion
 
-
-
-    //Check Id is Exist
-    public async Task<bool> IsExistedId(Guid id)
-    {
-        return await _unitOfWork.PaintingRepo.IsExistIdAsync(id);
-    }
-
     #region Get Painting By account contest 
 
     public async Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid accountId)
@@ -470,10 +494,7 @@ public class PaintingService : IPaintingService
     {
         return await _validatorFactory.PaintingUpdateStatusRequestValidator.ValidateAsync(painting);
     }
-    public async Task<ValidationResult> ValidateRatingRequest(RatingRequest painting)
-    {
-        return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
-    }
+
     public async Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting)
     {
         return await _validatorFactory.StaffCreatePaintingRequestValidator.ValidateAsync(painting);

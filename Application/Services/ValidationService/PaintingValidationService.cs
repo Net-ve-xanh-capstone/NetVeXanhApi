@@ -22,5 +22,11 @@ namespace Application.Services.ValidationService
         }
 
         //Check is Exist Painting In Contest
+        public async Task<bool> IsExistedPaintingInContest(Guid accountId, Guid roundtopicId)
+        {
+            var roundtopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(roundtopicId);
+            if (roundtopic == null) throw new Exception("Không tìm thấy roundtopic");
+            return await _unitOfWork.PaintingRepo.IsExistPaintingInContest(accountId, roundtopic.RoundId.Value);
+        }
     }
 }

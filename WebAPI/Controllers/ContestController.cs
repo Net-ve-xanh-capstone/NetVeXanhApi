@@ -3,6 +3,7 @@ using Application.IRepositories;
 using Application.IService;
 using Application.SendModels.Contest;
 using Application.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -25,25 +26,23 @@ public class ContestController : Controller
     {
         try
         {
-            var validationResult = await _contestService.ValidateContestRequest(contest);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _contestService.AddContest(contest);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Create Contest Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -67,26 +66,24 @@ public class ContestController : Controller
     {
         try
         {
-            var validationResult = await _contestService.ValidateContestUpdateRequest(updateContest);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _contestService.UpdateContest(updateContest);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -111,7 +108,7 @@ public class ContestController : Controller
         try
         {
             var result = await _contestService.DeleteContest(id);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

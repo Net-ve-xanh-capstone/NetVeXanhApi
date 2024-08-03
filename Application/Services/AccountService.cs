@@ -5,7 +5,9 @@ using Application.SendModels.AccountSendModels;
 using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
@@ -154,6 +156,13 @@ public class AccountService : IAccountService
 
     public async Task<bool?> UpdateAccount(AccountUpdateRequest updateAccount)
     {
+        var validationResult = await ValidateAccountUpdateRequest(updateAccount);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(updateAccount.Id);
         if (account == null) throw new Exception("Không tìm thấy tài khoản");
         _mapper.Map(updateAccount, account);

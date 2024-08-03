@@ -3,6 +3,7 @@ using Application.IService;
 using Application.SendModels.EducationalLevel;
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -25,25 +26,23 @@ public class EducationalLevelController : Controller
     {
         try
         {
-            var validationResult = await _educationalLevelService.ValidateLevelRequest(educationalLevel);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _educationalLevelService.CreateEducationalLevel(educationalLevel);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Create EducationalLevel Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -210,26 +209,24 @@ public class EducationalLevelController : Controller
     {
         try
         {
-            var validationResult = await _educationalLevelService.ValidateLevelUpdateRequest(updateEducationalLevel);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _educationalLevelService.UpdateEducationalLevel(updateEducationalLevel);
-            if (result == null) return NotFound(new { Success = false, Message = "EducationalLevel not found" });
+            if (!result) return NotFound(new { Success = false, Message = "EducationalLevel not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -254,7 +251,7 @@ public class EducationalLevelController : Controller
         try
         {
             var result = await _educationalLevelService.DeleteEducationalLevel(id);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

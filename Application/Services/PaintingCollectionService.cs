@@ -32,6 +32,12 @@ public class PaintingCollectionService : IPaintingCollectionService
 
     public async Task<bool> AddPaintingToCollection(PaintingCollectionRequest addPaintingCollectionViewModel)
     {
+        var validationResult = await ValidatePaintingCollectionRequest(addPaintingCollectionViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var paintingCollection = _mapper.Map<PaintingCollection>(addPaintingCollectionViewModel);
         await _unitOfWork.PaintingCollectionRepo.AddAsync(paintingCollection);
 

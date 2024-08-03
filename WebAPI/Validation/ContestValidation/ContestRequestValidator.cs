@@ -24,9 +24,6 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
         RuleFor(e => e.EndTime)
             .NotEmpty().WithMessage("Thời gian kết thúc không được để trống.");
 
-        RuleFor(e => e.Description)
-            .MaximumLength(500).WithMessage("Mô tả không được quá 500 ký tự.");
-
         RuleFor(e => e.Content)
             .NotEmpty().WithMessage("Nội dung không được để trống.");
 
@@ -67,18 +64,23 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
             .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.");
 
         RuleFor(e => e.Rank1)
+            .NotEmpty().WithMessage("Số lượng giải không được để trống.")
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải nhất phải lớn hơn hoặc bằng 1.");
 
         RuleFor(e => e.Rank2)
+            .NotEmpty().WithMessage("Số lượng giải không được để trống.")
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải nhì phải lớn hơn hoặc bằng 1");
 
         RuleFor(e => e.Rank3)
+            .NotEmpty().WithMessage("Số lượng giải không được để trống.")
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải ba phải lớn hơn hoặc bằng 1.");
 
         RuleFor(e => e.Rank4)
+            .NotEmpty().WithMessage("Số lượng giải không được để trống.")
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng giải tư phải lớn hơn hoặc bằng 1.");
 
         RuleFor(e => e.PassRound1)
+            .NotEmpty().WithMessage("Số lượng qua vòng 1 không được để trống.")
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng qua vòng 1 phải lớn hơn hoặc bằng 1.");
     }
 

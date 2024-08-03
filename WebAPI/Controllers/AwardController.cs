@@ -3,6 +3,7 @@ using Application.IService;
 using Application.SendModels.Award;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +42,17 @@ public class AwardController : Controller
                 Result = result
             });
         }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
+            });
+        }
         catch (Exception ex)
         {
             return BadRequest(new BaseFailedResponseModel
@@ -68,6 +80,17 @@ public class AwardController : Controller
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)

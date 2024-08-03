@@ -4,6 +4,7 @@ using Application.SendModels.Report;
 using Application.SendModels.Topic;
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -26,25 +27,23 @@ public class ReportController : ControllerBase
     {
         try
         {
-            var validationResult = await _reportService.ValidateReportRequest(report);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _reportService.AddReport(report);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Message = "Create Report Success",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -68,26 +67,24 @@ public class ReportController : ControllerBase
     {
         try
         {
-            var validationResult = await _reportService.ValidateReportUpdateRequest(updateReport);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _reportService.UpdateReport(updateReport);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Xác thực không thành công",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)
@@ -112,7 +109,7 @@ public class ReportController : ControllerBase
         try
         {
             var result = await _reportService.DeleteReport(id);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

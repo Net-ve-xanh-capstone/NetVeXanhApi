@@ -8,7 +8,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _context;
 
 
-    public UnitOfWork(AppDbContext context, IAccountRepository accountRepository,
+    public UnitOfWork(AppDbContext context, 
+        IAccountRepository accountRepository,
         IAwardRepository awardRepository,
         IAwardScheduleRepository awardScheduleRepository,
         ICollectionRepository collectionRepository,
@@ -26,7 +27,8 @@ public class UnitOfWork : IUnitOfWork
         IContestRepository contestRepository,
         ICategoryRepository categoryRepository,
         IReportRepository reportRepository,
-        IRoundTopicRepository roundTopicRepo)
+        IRoundTopicRepository roundTopicRepo,
+        IDistrictRepository districtRepo)
 
     {
         _context = context;
@@ -49,6 +51,7 @@ public class UnitOfWork : IUnitOfWork
         CategoryRepo = categoryRepository;
         ReportRepo = reportRepository;
         RoundTopicRepo = roundTopicRepo;
+        DistrictRepo = districtRepo;
     }
 
     public IAccountRepository AccountRepo { get; }
@@ -88,6 +91,8 @@ public class UnitOfWork : IUnitOfWork
     public IReportRepository ReportRepo { get; }
 
     public IRoundTopicRepository RoundTopicRepo { get; }
+    
+    public IDistrictRepository DistrictRepo { get; }
 
     public async Task<int> SaveChangesAsync()
     {

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Domain.Models;
+using Domain.Models.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -34,6 +35,8 @@ public class AppDbContext : DbContext
     public DbSet<Topic> Topic { get; set; }
     public DbSet<Report> Report { get; set; }
     public DbSet<RoundTopic> RoundTopic { get; set; }
+    public DbSet<District> District { get; set; }
+    public DbSet<Ward> Ward { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

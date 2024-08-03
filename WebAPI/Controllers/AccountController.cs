@@ -4,6 +4,7 @@ using Application.IService;
 using Application.SendModels.AccountSendModels;
 using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -389,19 +390,6 @@ public class AccountController : ControllerBase
     {
         try
         {
-            var validationResult = await _accountService.ValidateAccountUpdateRequest(updateAccount);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
             var result = await _accountService.UpdateAccount(updateAccount);
             if (result == null) return NotFound(new { Success = false, Message = "Account not found" });
             return Ok(new BaseResponseModel
@@ -409,6 +397,17 @@ public class AccountController : ControllerBase
                 Status = Ok().StatusCode,
                 Result = result,
                 Message = "Update Successfully"
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Validation failed",
+                Result = false,
+                Errors = errors
             });
         }
         catch (Exception ex)

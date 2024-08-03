@@ -1,5 +1,6 @@
 ﻿using Application.IValidators;
 using Application.SendModels.Painting;
+using Application.SendModels.Schedule;
 using FluentValidation;
 using Infracstructures.SendModels.Painting;
 
@@ -10,14 +11,13 @@ public class PaintingValidator : IPaintingValidator
     public PaintingValidator(IValidator<CompetitorCreatePaintingRequest> paintingvalidator,
         IValidator<StaffCreatePaintingRequest> painting2validator,
         IValidator<PaintingUpdateStatusRequest> paintingupdatestatusvalidator,
-        IValidator<RatingRequest> ratingvalidator,
         IValidator<UpdatePaintingRequest> updatepaintingvalidator,
         IValidator<FilterPaintingRequest> filterpaintingvalidator)
     {
         PaintingRequestValidator = paintingvalidator;
         PaintingRequest2Validator = painting2validator;
         PaintingUpdateStatusRequestValidator = paintingupdatestatusvalidator;
-        RatingRequestValidator = ratingvalidator;
+
         UpdatePaintingRequestValidator = updatepaintingvalidator;
         FilterPaintingRequestValidator = filterpaintingvalidator;
     }
@@ -28,7 +28,7 @@ public class PaintingValidator : IPaintingValidator
 
     public IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
 
-    public IValidator<RatingRequest> RatingRequestValidator { get; }
+
 
     public IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }
 

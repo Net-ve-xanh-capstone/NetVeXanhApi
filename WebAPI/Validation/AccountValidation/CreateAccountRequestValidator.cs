@@ -19,7 +19,7 @@ namespace WebAPI.Validation.AccountValidation
                     {
                         return !await _validationServiceManager.AccountValidationService.IsExistUsername(username);
                     })
-                .WithMessage("Số điện thoại đã được sử dụng.");
+                .WithMessage("Tên đăng nhập đã có tài khoản sử dụng!");
 
             RuleFor(x => x.FullName)
                 .NotEmpty().WithMessage("Họ và tên không được để trống.");
@@ -32,7 +32,7 @@ namespace WebAPI.Validation.AccountValidation
                     {
                         return !await _validationServiceManager.AccountValidationService.IsExistEmail(email);
                     })
-                .WithMessage("Email đã được sử dụng.");
+                .WithMessage("Email đã được sử dụng!");
 
             RuleFor(x => x.Role)
                 .NotEmpty().WithMessage("Vai trò không được để trống.")
@@ -53,7 +53,7 @@ namespace WebAPI.Validation.AccountValidation
                     {
                         return !await _validationServiceManager.AccountValidationService.IsExistPhone(phone);
                     })
-                .WithMessage("Số điện thoại đã được sử dụng.");
+                .WithMessage("Số điện thoại đã được sử dụng!");
 
             RuleFor(user => user.Birthday)
                 .NotEmpty().WithMessage("Ngày sinh không được để trống.")

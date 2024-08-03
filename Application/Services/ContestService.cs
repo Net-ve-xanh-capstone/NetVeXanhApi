@@ -5,8 +5,10 @@ using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +39,13 @@ public class ContestService : IContestService
 
     public async Task<bool> AddContest(ContestRequest addContestViewModel)
     {
+        var validationResult = await ValidateContestRequest(addContestViewModel);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+
         #region Tạo Contest
 
         var contest = _mapper.Map<Contest>(addContestViewModel);
@@ -298,6 +307,12 @@ public class ContestService : IContestService
 
     public async Task<bool> UpdateContest(UpdateContest updateContest)
     {
+        var validationResult = await ValidateContestUpdateRequest(updateContest);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var contest = await _unitOfWork.ContestRepo.GetByIdAsync(updateContest.Id);
         if (contest == null) throw new Exception("Khong tim thay Contest");
 
@@ -351,6 +366,7 @@ public class ContestService : IContestService
     }
 
     #endregion
+
     #region get contest for filter painting
 
     public async Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting()

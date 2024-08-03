@@ -84,7 +84,7 @@ public class NotificationController : Controller
         try
         {
             var result = await _notificationService.ReadNotification(id);
-            if (result == null) return NotFound();
+            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

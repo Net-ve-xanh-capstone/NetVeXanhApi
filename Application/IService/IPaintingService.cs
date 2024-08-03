@@ -1,5 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Painting;
+using Application.SendModels.Schedule;
 using Application.ViewModels.PaintingViewModels;
 using FluentValidation;
 using FluentValidation.Results;
@@ -39,13 +40,11 @@ public interface IPaintingService
 
     #endregion
     Task<PaintingTrackingViewModel> PaintingTracking(Guid id);
-    Task<bool> IsExistedId(Guid id);
     Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
 
     Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
     Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);
     Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting);
-    Task<ValidationResult> ValidateRatingRequest(RatingRequest painting);
     Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting);
     Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting);
 }

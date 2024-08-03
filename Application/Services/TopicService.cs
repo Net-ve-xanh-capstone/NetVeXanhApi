@@ -35,9 +35,15 @@ public class TopicService : ITopicService
 
     #region Create
 
-    public async Task<bool> CreateTopic(TopicRequest Topic)
+    public async Task<bool> CreateTopic(TopicRequest topic)
     {
-        var newTopic = _mapper.Map<Topic>(Topic);
+        var validationResult = await ValidateTopicRequest(topic);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
+        var newTopic = _mapper.Map<Topic>(topic);
         newTopic.Status = TopicStatus.Active.ToString();
         await _unitOfWork.TopicRepo.AddAsync(newTopic);
 
@@ -90,6 +96,12 @@ public class TopicService : ITopicService
 
     public async Task<bool> UpdateTopic(TopicUpdateRequest updateTopic)
     {
+        var validationResult = await ValidateTopicUpdateRequest(updateTopic);
+        if (!validationResult.IsValid)
+        {
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        }
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(updateTopic.Id);
         if (Topic == null) throw new Exception("Khong tim thay Topic");
 

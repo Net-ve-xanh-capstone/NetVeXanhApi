@@ -153,7 +153,7 @@ namespace Infracstructures
             RoundTopicDeleteRequestValidator = roundTopicDeleteRequestValidator;
             FilterPaintingRequestValidator = filterPaintingRequestValidator;
             StaffCreatePaintingFinalRoundRequestValidator = staffCreatePaintingFinalRoundRequestValidator;
-            staffUpdatePaintingRequestValidator = staffUpdatePaintingRequestValidator;
+            StaffUpdatePaintingRequestValidator = staffUpdatePaintingRequestValidator;
         }
     }
 

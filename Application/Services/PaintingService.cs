@@ -274,12 +274,12 @@ public class PaintingService : IPaintingService
 
     public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
     {
-        /*var validationResult = await ValidateStaffUpdatePaintingRequest(updatePainting);
+        var validationResult = await ValidateStaffUpdatePaintingRequest(updatePainting);
         if (!validationResult.IsValid)
         {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }*/
+        }
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
         if (painting == null) throw new Exception("Không tìm thấy Painting");
         painting.UpdatedBy = updatePainting.CurrentUserId;
@@ -324,12 +324,12 @@ public class PaintingService : IPaintingService
 
     public async Task<PaintingViewModel?> FinalDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
-        var validationResult = await ValidatePaintingUpdateStatusRequest(request);
+        /*var validationResult = await ValidatePaintingUpdateStatusRequest(request);
         if (!validationResult.IsValid)
         {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
+        }*/
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(request.Id);
         if (painting == null) return null;
 

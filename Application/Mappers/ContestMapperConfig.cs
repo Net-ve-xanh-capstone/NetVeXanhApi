@@ -41,5 +41,7 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
             .ForMember(dest => dest.Resource, opt => opt.MapFrom(src => src.Resources))
             .ForMember(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel));
+
+        CreateMap<Contest, FilterPaintingContestViewModel>();
     }
 }

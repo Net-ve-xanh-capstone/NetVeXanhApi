@@ -2,6 +2,7 @@
 using Application.IService.ICommonService;
 using Application.SendModels.Contest;
 using Application.SendModels.Topic;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
 using Domain.Enums;
@@ -314,7 +315,7 @@ public class ContestService : IContestService
     public async Task<ContestDetailViewModel> GetContestById(Guid contestId)
     {
         var contest = await _unitOfWork.ContestRepo.GetAllContestInformationAsync(contestId);
-        if (contest == null) throw new Exception("Khong tim thay Contest");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi nào!");
         var result = _mapper.Map<ContestDetailViewModel>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
         result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
@@ -325,9 +326,10 @@ public class ContestService : IContestService
 
     #region Get 5 recent contest year
 
-    public async Task<List<int>> Get5RecentYear()
+    public async Task<List<ContestNameYearViewModel>> Get5RecentYear()
     {
         var result = await _unitOfWork.ContestRepo.Get5RecentYearAsync();
+        if (result == null) throw new Exception("Không có Cuộc thi nào!");
         return result;
     }
 
@@ -346,6 +348,29 @@ public class ContestService : IContestService
             item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
         }
         return result;
+    }
+
+    #endregion
+    #region get contest for filter painting
+
+    public async Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting()
+    {
+        var contest = await _unitOfWork.ContestRepo.GetAllAsync();
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        var result = _mapper.Map<List<FilterPaintingContestViewModel>>(contest);
+
+        return result;
+    }
+
+    #endregion
+
+    #region Get Account Award Information
+
+    public async Task<List<AccountAwardViewModel>> GetAccountWithAwardPainting()
+    {
+        var contest = await _unitOfWork.ContestRepo.GetAccountsByMostRecentContestAsync();
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        return contest;
     }
 
     #endregion

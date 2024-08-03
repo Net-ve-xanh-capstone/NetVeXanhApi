@@ -1,6 +1,7 @@
 ﻿using System;
 using Application.IRepositories;
 using Application.SendModels.Painting;
+using Azure.Core;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -105,30 +106,48 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
 
     public async Task<List<Painting>> FilterPaintingAsync(FilterPaintingRequest filterPainting)
     {
-        var listPainting = DbSet
+        var query = DbSet
             .Include(x => x.RoundTopic)
             .ThenInclude(x => x.Round)
             .ThenInclude(x => x.EducationalLevel)
             .ThenInclude(x => x.Contest)
             .Include(x => x.RoundTopic)
             .ThenInclude(x => x.Topic)
-            .Include(x => x.Account)
-            .AsQueryable();
+            .Include(x => x.Account).AsQueryable();
+
         if (!string.IsNullOrEmpty(filterPainting.Code))
-            listPainting = listPainting.Where(p => p.Code.Contains(filterPainting.Code));
+        {
+            query = query.Where(p => p.Code == filterPainting.Code);
+        }
+
         if (!string.IsNullOrEmpty(filterPainting.TopicName))
-            listPainting = listPainting.Where(p => p.RoundTopic.Topic.Name.Contains(filterPainting.TopicName));
-        if (filterPainting.StartDate != null && filterPainting.EndDate != null)
-            listPainting = listPainting.Where(p =>
-                p.UpdatedTime >= filterPainting.StartDate && p.UpdatedTime <= filterPainting.EndDate);
+        {
+            var topicNameLower = filterPainting.TopicName.ToLower();
+            query = query.Where(p => p.RoundTopic.Topic.Name.ToLower().Contains(topicNameLower));
+        }
+
+        if (!string.IsNullOrEmpty(filterPainting.ContestId))
+        {
+            var contestId = Guid.Parse(filterPainting.ContestId);
+            query = query.Where(p => p.RoundTopic.Round.EducationalLevel.Contest.Id == contestId);
+        }
+
         if (!string.IsNullOrEmpty(filterPainting.Level))
-            listPainting =
-                listPainting.Where(p => p.RoundTopic.Round.EducationalLevel.Level.Contains(filterPainting.Level));
+        {
+            query = query.Where(p => p.RoundTopic.Round.EducationalLevel.Level == filterPainting.Level);
+        }
+
         if (!string.IsNullOrEmpty(filterPainting.RoundName))
-            listPainting = listPainting.Where(p => p.RoundTopic.Round.Name.Contains(filterPainting.RoundName));
+        {
+            query = query.Where(p => p.RoundTopic.Round.Name == filterPainting.RoundName);
+        }
+
         if (!string.IsNullOrEmpty(filterPainting.Status))
-            listPainting = listPainting.Where(p => p.Status.Contains(filterPainting.Status));
-        return await listPainting.ToListAsync();
+        {
+            query = query.Where(p => p.Status == filterPainting.Status);
+        }
+
+        return query.ToList();
     }
 
     public async Task<int> GetNumPaintingInContest(Guid contestId)

@@ -60,6 +60,23 @@ public class CollectionService : ICollectionService
 
     #endregion
 
+    #region Add Collection with award Painting in Contest
+    public async Task<bool> AddCollectionWithPaintingAwardInContest(CreatePaintingAwardCollectionRequest addCollectionViewModel)
+    {
+
+        var collection = _mapper.Map<Collection>(addCollectionViewModel);
+        collection.Status = CollectionStatus.Active.ToString();
+        await _unitOfWork.CollectionRepo.AddAsync(collection);
+        await _unitOfWork.SaveChangesAsync();
+        //add Painting
+        var listPaintingCollection = new List<PaintingCollection>();
+        
+        await _unitOfWork.PaintingCollectionRepo.AddRangeAsync(listPaintingCollection);
+        return await _unitOfWork.SaveChangesAsync() > 0;
+
+    }
+    #endregion
+
     #region Delete Collection
 
     public async Task<bool> DeleteCollection(Guid collectionId)
@@ -116,6 +133,8 @@ public class CollectionService : ICollectionService
     }
 
     #endregion
+
+
 
     #region Get All Collection
 

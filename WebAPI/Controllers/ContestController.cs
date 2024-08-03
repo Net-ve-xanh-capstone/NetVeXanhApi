@@ -192,6 +192,35 @@ public class ContestController : Controller
 
     #endregion
 
+    #region get contest for filter painting
+
+    [HttpGet("getcontestforfilterpainting")]
+    public async Task<IActionResult> GetContestForFilterPainting()
+    {
+        try
+        {
+            var result = await _contestService.GetContestForFilterPainting();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Contest Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
     #region Get 5 recent contest year
 
     [HttpGet("get5recentyear")]
@@ -221,6 +250,34 @@ public class ContestController : Controller
 
     #endregion
 
+    #region Get 5 recent contest year
+
+    [HttpGet("getaccountwithawardpainting")]
+    public async Task<IActionResult> GetAccountWithAwardPainting()
+    {
+        try
+        {
+            var result = await _contestService.GetAccountWithAwardPainting();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Get Nearest Contest
 

@@ -1,4 +1,5 @@
 ﻿using Application.SendModels.Contest;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using FluentValidation;
 using FluentValidation.Results;
@@ -14,9 +15,10 @@ public interface IContestService
 
     Task<ContestDetailViewModel?> GetContestById(Guid contestId);
 
-    Task<List<int>> Get5RecentYear();
+    Task<List<ContestNameYearViewModel>> Get5RecentYear();
 
     Task<List<ContestViewModel?>> GetAllContest();
+    Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting();
 
     Task<ContestDetailViewModel> GetNearestContest();
 
@@ -24,4 +26,5 @@ public interface IContestService
     Task<ValidationResult> ValidateContestRequest(ContestRequest contest);
 
     Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate);
+    Task<List<AccountAwardViewModel>> GetAccountWithAwardPainting();
 }

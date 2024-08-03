@@ -12,6 +12,7 @@ public class PaintingViewModel
     public string TopicName { get; set; }
     public string RoundName { get; set; }
     public string Level { get; set; }
+    public string ContestId { get; set; }
     public string ContestName { get; set; }
     public Guid? ScheduleId { get; set; }
     public string Status { get; set; }
@@ -22,6 +23,7 @@ public class PaintingViewModel
     public string Birthday { get; set; }
     public string Address { get; set; }
     public string Phone { get; set; }
+    public DateTime CreatedTime { get; set; }
     public Guid RoundId { get; set; }
     public Guid RoundTopicId { get; set; }
 

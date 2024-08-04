@@ -27,6 +27,7 @@ public partial class MapperConfigs : Profile
         CreateMap<Account, AccountInPainting>();
 
         CreateMap<Account, AccountInContestViewModel>();
+        CreateMap<Account, AccountValidationInfoViewModel>();
         
     }
     

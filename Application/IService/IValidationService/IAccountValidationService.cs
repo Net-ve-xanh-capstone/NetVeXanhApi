@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.ViewModels.AccountViewModels;
 
 namespace Application.IService.IValidationService
 {
@@ -15,5 +16,7 @@ namespace Application.IService.IValidationService
         Task<bool> IsExistPhone(string phone);
         Task<bool> IsExistEmail(string email);
         Task<bool> IsExistUsername(string username);
+
+        Task<AccountValidationInfoViewModel> GetAccountByPaintingId(Guid paintingId);
     }
 }

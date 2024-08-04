@@ -25,7 +25,8 @@ public partial class MapperConfigs : Profile
         CreateMap<Painting, PaintingViewModel>()
             .ForPath(dest => dest.RoundId, opt => opt.MapFrom(src => src.RoundTopic.RoundId))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
-            .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src => src.Account.Birthday))
+            .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src =>
+                src.Account.Birthday.HasValue ? src.Account.Birthday.Value.ToString("dd/MM/yyyy") : string.Empty))
             .ForPath(dest => dest.Address, opt => opt.MapFrom(src => src.Account.Address))
             .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))

@@ -48,6 +48,14 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
+    public async Task<Account?> GetAccountByPaintingIdAsync(Guid paintingId)
+    {
+        return await DbSet
+        .Include(x => x.Account)
+        .Where(x => x.Id == paintingId && x.Account.Role == Role.Competitor.ToString())
+        .Select(x => x.Account)
+        .FirstOrDefaultAsync();
+    }
 
     public virtual async Task<List<Painting>> List16WiningPaintingAsync()
     {

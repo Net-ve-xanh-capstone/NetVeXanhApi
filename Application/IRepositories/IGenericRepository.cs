@@ -25,5 +25,6 @@ public interface IGenericRepository<TModel> where TModel : class
     Task<Pagination<TModel>> ToPaginationAsync(int pageIndex = 0, int pageSize = 10);
 
     Task DeleteAsync(TModel model);
+    Task DeleteRangeAsync(List<TModel> models);
     Task<bool> IsExistIdAsync(Guid id);
 }

@@ -45,6 +45,7 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
     public override async Task<Post?> GetByIdAsync(Guid id)
     {
         var a = await DbSet
+            .Include(x => x.Category)
             .Include(x => x.Images)
             .FirstOrDefaultAsync(x => x.Id == id && x.Status == PostStatus.Active.ToString());
         return a;

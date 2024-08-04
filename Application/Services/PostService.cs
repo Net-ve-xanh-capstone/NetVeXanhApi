@@ -154,18 +154,16 @@ public class PostService : IPostService
 
         if (updatePost.NewImages != null)
         {
+            
             var newImages = _mapper.Map<List<Image>>(updatePost.NewImages);
-            foreach (var image in newImages) post.Images.Add(image);
-        }
-
-        if (updatePost.DeleteImages != null)
-            foreach (var image in updatePost.DeleteImages)
+            await _unitOfWork.ImageRepo.DeleteRangeAsync(post.Images.ToList());
+            foreach (var image in newImages)
             {
-                var deleteImage = post.Images.FirstOrDefault(x => x.Id == image);
-                post.Images.Remove(deleteImage);
+                image.PostId = post.Id;
+                post.Images.Add(image);
             }
-
-
+            _unitOfWork.PostRepo.Update(post);
+        }
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 

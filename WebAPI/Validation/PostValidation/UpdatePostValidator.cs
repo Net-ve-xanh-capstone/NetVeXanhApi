@@ -73,11 +73,6 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                 });
         });
 
-        // Validate DeleteImages
-        RuleFor(x => x.DeleteImages)
-            .NotNull().WithMessage("Danh sách DeleteImages không được để null.")
-            .Must(images => images == null || images.All(image => image != Guid.Empty)).WithMessage("Mỗi GUID trong DeleteImages phải là một GUID hợp lệ.");
-
         // Validate NewImages
         RuleFor(x => x.NewImages)
             .NotNull().WithMessage("Danh sách NewImages không được để null.")

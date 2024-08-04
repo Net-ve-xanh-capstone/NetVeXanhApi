@@ -403,11 +403,15 @@ public class ContestService : IContestService
 
     #endregion
 
-    //Check Id is Exist
+    #region is Existed
+
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.ContestRepo.IsExistIdAsync(id);
     }
+
+
+    #endregion
 
     #region Validate
     public async Task<ValidationResult> ValidateContestRequest(ContestRequest contest)

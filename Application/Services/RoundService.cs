@@ -161,8 +161,7 @@ public class RoundService : IRoundService
         return _mapper.Map<List<RoundViewModel>>(result);
     }
     #endregion
-
-    //Check Id is Exist
+    
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.RoundRepo.IsExistIdAsync(id);

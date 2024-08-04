@@ -23,6 +23,14 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Painting, PaintingViewModel>()
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src =>
+                src.Award == null ? "Không có giải" :
+                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" : 
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+            ))
             .ForPath(dest => dest.RoundId, opt => opt.MapFrom(src => src.RoundTopic.RoundId))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
             .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src =>

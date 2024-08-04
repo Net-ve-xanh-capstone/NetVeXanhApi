@@ -129,8 +129,7 @@ public class ContestController : Controller
     }
 
     #endregion
-
-
+    
     #region Get Contest By Id
 
     [HttpGet("{id}")]

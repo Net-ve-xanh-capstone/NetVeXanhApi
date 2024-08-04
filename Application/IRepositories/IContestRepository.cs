@@ -22,4 +22,5 @@ public interface IContestRepository : IGenericRepository<Contest>
     public Task<List<Contest>> StartContest();
     Task<List<Guid>> GetCollectionsWithStaffAccountsAsync();
     Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync();
+    Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList);
 }

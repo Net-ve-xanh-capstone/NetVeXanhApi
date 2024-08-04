@@ -9,13 +9,7 @@ namespace Application.ViewModels.ContestViewModels
 {
     public class ContestRewardViewModel
     {
-        public string Name { get; set;}
-        public List<AwardContestRewardViewModel> AwardContestReward { get; set; }
-    }
-    public class AwardContestRewardViewModel
-    {
-        public string Level { get; set; }
-        public string? Rank { get; set; }
-        public List<AccountRewardViewModel> AccountReward {  get; set; } 
+        public string Name { get; set; }
+        public List<AccountRewardViewModel> AccountReward { get; set; }
     }
 }

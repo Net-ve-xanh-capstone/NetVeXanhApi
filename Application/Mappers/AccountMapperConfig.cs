@@ -32,6 +32,11 @@ public partial class MapperConfigs : Profile
 
         CreateMap<Account, AccountRewardViewModel>()
             .ForMember(dest => dest.PaintingImage, opt => opt.MapFrom(src => src.Painting.FirstOrDefault().Image))
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
+                src.Painting != null && src.Painting.Any()
+                    ? GetRankInVietnamese(src.Painting.First().Award.Rank)
+                    : "Không có giải"
+                ))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Gender! == true ? "Nữ" :
                 src.Gender! == false ? "Nam" : null)); ;
@@ -44,5 +49,13 @@ public partial class MapperConfigs : Profile
         var age = today.Year - birthday.Year;
         if (birthday.Date > today.AddYears(-age)) age--;
         return age;
+    }
+    private string GetRankInVietnamese(string rank)
+    {
+        return rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+               rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+               rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+               rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+               rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải";
     }
 }

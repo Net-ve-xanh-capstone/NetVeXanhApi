@@ -16,5 +16,6 @@ namespace Application.ViewModels.AccountViewModels
         public string? Phone { get; set; }
         public string Gender { get; set; }
         public string PaintingImage { get; set; }
+        public string? Rank { get; set; }
     }
 }

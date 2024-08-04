@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Domain.Models;
+using Domain.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -28,7 +29,7 @@ public class AddressController  : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Get District Success",
                 Result = district
             });
         }
@@ -36,13 +37,6 @@ public class AddressController  : ControllerBase
         {
             return Ok(new BaseFailedResponseModel
             {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Award>(),
-                    TotalPage = 0
-                },
                 Errors = ex
             });
         }
@@ -61,7 +55,7 @@ public class AddressController  : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Get Ward Success",
                 Result = district
             });
         }
@@ -69,13 +63,6 @@ public class AddressController  : ControllerBase
         {
             return Ok(new BaseFailedResponseModel
             {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Award>(),
-                    TotalPage = 0
-                },
                 Errors = ex
             });
         }

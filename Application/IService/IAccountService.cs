@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.AccountSendModels;
 using Application.ViewModels.AccountViewModels;
+using Application.ViewModels.ContestViewModels;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -22,7 +23,7 @@ public interface IAccountService
     Task<bool?> InactiveAccount(Guid id);
     Task<bool?> ActiveAccount(Guid id);
 
-    Task<List<AccountViewModel>> ListAccountHaveAwardIn3NearestContest();
+    Task<List<ContestRewardViewModel>> ListAccountHaveAwardIn3NearestContest();
 
     Task<AccountViewModel?> GetAccountByCode(string code);
     Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account);

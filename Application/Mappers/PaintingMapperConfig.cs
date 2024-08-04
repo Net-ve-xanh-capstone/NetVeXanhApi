@@ -31,6 +31,18 @@ public partial class MapperConfigs : Profile
                 src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" : 
                 src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
             ))
+            .ForPath(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == PaintingStatus.Draft.ToString() ? "Bản nháp" :
+                src.Status == PaintingStatus.Submitted.ToString() ? "Đã nộp" :
+                src.Status == PaintingStatus.Delete.ToString() ? "Đã xóa" :
+                src.Status == PaintingStatus.Accepted.ToString() ? "Đã chấp nhận" :
+                src.Status == PaintingStatus.Rejected.ToString() ? "Đã từ chối" :
+                src.Status == PaintingStatus.Pass.ToString() ? "Qua Vòng 1" :
+                src.Status == PaintingStatus.NotPass.ToString() ? "Không qua vòng 1" :
+                src.Status == PaintingStatus.FinalRound.ToString() ? "Vòng chung kết" :
+                src.Status == PaintingStatus.HasPrizes.ToString() ? "Có giải thưởng" :
+                "Trạng thái không xác định"
+            ))
             .ForPath(dest => dest.RoundId, opt => opt.MapFrom(src => src.RoundTopic.RoundId))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
             .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src =>

@@ -104,8 +104,10 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<List<Guid>> Get3NearestContestId()
     {
-        var result = DbSet.OrderBy(x => x.CreatedTime).Select(x => x.Id).Take(3).ToListAsync();
-        return await result;
+        var result = await DbSet
+            .Where(x=>x.Status == ContestStatus.Complete.ToString())
+            .OrderBy(x => x.CreatedTime).Select(x => x.Id).Take(3).ToListAsync();
+        return result;
     }
 
     public async Task<Contest?> GetContestByIdForRoundTopic(Guid id)
@@ -173,5 +175,48 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ToListAsync();
 
         return accounts;
+    }
+    public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
+    {
+        var listContest = await DbSet
+            .Where(x => contestIdList.Contains((Guid)x.Id))
+            .Include(c => c.EducationalLevel) // Bao gồm EducationalLevels
+                .ThenInclude(el => el.Award) // Bao gồm Awards cho mỗi EducationalLevel
+                    .ThenInclude(a => a.Painting) // Bao gồm Painting cho mỗi Award
+                        .ThenInclude(p => p.Account) // Bao gồm Account cho mỗi Painting
+            .ToListAsync();
+
+        var filteredContests = listContest
+            .Select(c => new
+            {
+                Contest = c,
+                EducationalLevel = c.EducationalLevel
+                    .Select(el => new
+                    {
+                        EducationalLevel = el,
+                        Awards = el.Award
+                            .Where(a => a.Rank == RankAward.FirstPrize.ToString() || a.Rank == RankAward.SecondPrize.ToString())
+                            .ToList()
+                    })
+                    .Where(el => el.Awards.Any()) // Giữ lại các cấp học nếu có giải thưởng đã lọc
+                    .ToList()
+            })
+            .Where(x => x.EducationalLevel.Any()) // Giữ lại các cuộc thi nếu có ít nhất một cấp học với giải thưởng đã lọc
+            .Select(x => new Contest
+            {
+                Id = x.Contest.Id,
+                Name = x.Contest.Name,
+                EducationalLevel = x.EducationalLevel
+                    .Select(el => new EducationalLevel
+                    {
+                        Id = el.EducationalLevel.Id,
+                        Level = el.EducationalLevel.Level,
+                        Award = el.Awards
+                    })
+                    .ToList()
+            })
+            .ToList();
+
+        return filteredContests;
     }
 }

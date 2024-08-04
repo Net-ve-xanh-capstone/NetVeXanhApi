@@ -4,6 +4,7 @@ using Application.IService.ICommonService;
 using Application.SendModels.AccountSendModels;
 using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
+using Application.ViewModels.ContestViewModels;
 using AutoMapper;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
@@ -183,25 +184,15 @@ public class AccountService : IAccountService
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<AccountViewModel>> ListAccountHaveAwardIn3NearestContest()
+    public async Task<List<ContestRewardViewModel>> ListAccountHaveAwardIn3NearestContest()
     {
         var listContestId = await _unitOfWork.ContestRepo.Get3NearestContestId();
-        if (listContestId == null || listContestId.Count == 0) throw new Exception("Không tìm thấy cuộc thi");
+        if (listContestId.Count == 0) throw new Exception("Không tìm thấy cuộc thi");
 
-        var listLevelId = await _unitOfWork.EducationalLevelRepo.GetLevelIdByListContestId(listContestId);
-        if (listLevelId == null || listLevelId.Count == 0) throw new Exception("Không tìm thấy Level trong Contest");
+        var listContestAward = await _unitOfWork.ContestRepo.GetContestRewardByListContestId(listContestId);
+        if (listContestAward.Count == 0) throw new Exception("Không tìm thấy Account");
 
-        var listAwardId = await _unitOfWork.AwardRepo.GetAwardIdByListLevelId(listLevelId);
-        if (listAwardId == null || listAwardId.Count == 0) throw new Exception("Không tìm thấy Award trong Level");
-
-        var listAccountId = await _unitOfWork.PaintingRepo.ListAccountIdByListAwardId(listAwardId);
-        if (listAccountId == null || listAccountId.Count == 0)
-            throw new Exception("Không tìm thấy Painting nào đạt giải");
-
-        var listAccount = await _unitOfWork.AccountRepo.GetAccountByListAccountId(listAccountId);
-        if (listAccount == null || listAccount.Count == 0) throw new Exception("Không tìm thấy Account");
-
-        return _mapper.Map<List<AccountViewModel>>(listAccount);
+        return _mapper.Map<List<ContestRewardViewModel>>(listContestAward);
     }
 
     

@@ -24,11 +24,18 @@ public partial class MapperConfigs : Profile
         CreateMap<Account, AccountViewModel>().ReverseMap();
 
         CreateMap<Account, AccountAwardViewModel>();
+
         CreateMap<Account, AccountInPainting>();
 
         CreateMap<Account, AccountInContestViewModel>();
         CreateMap<Account, AccountValidationInfoViewModel>();
-        
+
+        CreateMap<Account, AccountRewardViewModel>()
+            .ForMember(dest => dest.PaintingImage, opt => opt.MapFrom(src => src.Painting.FirstOrDefault().Image))
+            .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
+                src.Gender! == true ? "Nữ" :
+                src.Gender! == false ? "Nam" : null)); ;
+
     }
     
     private int CalculateAge(DateTime birthday)

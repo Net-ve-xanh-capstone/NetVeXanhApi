@@ -49,5 +49,10 @@ public partial class MapperConfigs : Profile
             )); 
 
         CreateMap<Contest, FilterPaintingContestViewModel>();
+
+
+        CreateMap<Contest, ContestRewardViewModel>()
+            .ForMember(dest => dest.AwardContestReward, opt => opt.MapFrom(src => src.EducationalLevel.SelectMany(level => level.Award)));
+
     }
 }

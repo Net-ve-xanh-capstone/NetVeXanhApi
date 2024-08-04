@@ -1,7 +1,9 @@
-﻿using Application.SendModels.Award;
+﻿using System.Linq;
+using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -27,5 +29,16 @@ public partial class MapperConfigs : Profile
                 });
             });
         CreateMap<Award, AwardInLevelViewModel>();
+
+        CreateMap<Award, AwardContestRewardViewModel>()
+            .ForMember(x => x.Level, x => x.MapFrom(x => x.EducationalLevel.Level))
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
+                src.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+                src.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+            ))
+            .ForMember(dest => dest.AccountReward, opt => opt.MapFrom(src => src.Painting.Select(p => p.Account).ToList()));
     }
 }

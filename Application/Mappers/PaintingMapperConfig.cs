@@ -41,6 +41,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
         CreateMap<Painting, PaintingTrackingViewModel>()
+            .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
              .ForPath(dest => dest.History.Created.Time, opt =>
                 opt.MapFrom(src => src.CreatedTime.HasValue ? src.CreatedTime : (DateTime?)null))
             .ForPath(dest => dest.History.Created.Message, opt =>

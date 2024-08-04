@@ -52,7 +52,7 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Contest, ContestRewardViewModel>()
-             .ForMember(dest => dest.AccountReward, opt => opt.MapFrom(src =>
+             .ForMember(dest => dest.ListAccount, opt => opt.MapFrom(src =>
                     src.EducationalLevel
                         .SelectMany(el => el.Award) // Lấy tất cả Awards từ từng EducationalLevel
                         .SelectMany(a => a.Painting) // Lấy tất cả Paintings từ từng Award

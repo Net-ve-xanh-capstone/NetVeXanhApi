@@ -16,7 +16,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account)
+            .Include(x => x.Account).OrderBy(x => x.CreatedTime)
             .ToListAsync();
     }
     

@@ -121,4 +121,10 @@ public class GenericRepository<TModel> : IGenericRepository<TModel> where TModel
     {
         return await DbSet.FindAsync(id) != null;
     }
+    
+    
+    public virtual async Task<List<TModel>> GetByIdsAsync(List<Guid> ids)
+    {
+        return await DbSet.Where(e => ids.Contains((Guid)e.GetType().GetProperty("Id").GetValue(e, null))).ToListAsync();
+    }
 }

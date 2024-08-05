@@ -87,6 +87,22 @@ public class MailService : IMailService
         await SendEmail(mail);
     }
 
+    public async Task SendScheduleToExaminer(Account account)
+    {
+        var template = GetEmailTemplate("NotificationScheduleForExaminer.html");
+        template = template.Replace("[Tên giám khảo]", account.FullName);
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+        var body = template;
+        var mail = new MailModel();
+        mail.To = account.Email;
+        mail.Subject = "Thông Báo Lịch Chấm Thi";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+
     public string GetEmailTemplate(string templateName)
     {
         var templatePath = Path.Combine(_templateDirectory, templateName);

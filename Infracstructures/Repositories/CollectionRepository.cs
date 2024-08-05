@@ -1,5 +1,4 @@
 ﻿using Application.IRepositories;
-using Application.ViewModels.CollectionViewModels;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,17 +14,15 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
     public override async Task<List<Collection>> GetAllAsync()
     {
         var collections = await DbSet.Where(x => x.Status == CollectionStatus.Active.ToString())
-        .Include(x => x.Account)
-        .Include(x => x.PaintingCollection)
+            .Include(x => x.Account)
+            .Include(x => x.PaintingCollection)
             .ThenInclude(pc => pc.Painting)
-        .ToListAsync();
+            .ToListAsync();
 
         foreach (var collection in collections)
-        {
             collection.PaintingCollection = collection.PaintingCollection
                 .Take(3)
                 .ToList();
-        }
 
         return collections;
     }
@@ -39,21 +36,21 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
     {
         return await DbSet.Where(x => x.Id == collectionId)
             .Include(x => x.PaintingCollection)
-                .ThenInclude(pc => pc.Painting)
-                .ThenInclude(p => p.RoundTopic)
-                .ThenInclude(rt => rt.Topic)
+            .ThenInclude(pc => pc.Painting)
+            .ThenInclude(p => p.RoundTopic)
+            .ThenInclude(rt => rt.Topic)
             .Include(x => x.PaintingCollection)
-                .ThenInclude(pc => pc.Painting)
-                .ThenInclude(p => p.RoundTopic)
-                .ThenInclude(rt => rt.Round)
-                .ThenInclude(r => r.EducationalLevel)
-                .ThenInclude(l => l.Contest)
+            .ThenInclude(pc => pc.Painting)
+            .ThenInclude(p => p.RoundTopic)
+            .ThenInclude(rt => rt.Round)
+            .ThenInclude(r => r.EducationalLevel)
+            .ThenInclude(l => l.Contest)
             .Include(x => x.PaintingCollection)
-                .ThenInclude(pc => pc.Painting)
-                .ThenInclude(p => p.Account)
+            .ThenInclude(pc => pc.Painting)
+            .ThenInclude(p => p.Account)
             .Include(x => x.PaintingCollection)
-                .ThenInclude(pc => pc.Painting)
-                .ThenInclude(a=>a.Award)
+            .ThenInclude(pc => pc.Painting)
+            .ThenInclude(a => a.Award)
             .FirstOrDefaultAsync();
     }
 
@@ -73,6 +70,4 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
             .ToListAsync();
         return collections;
     }
-
-    
 }

@@ -114,7 +114,7 @@ public class GenericRepository<TModel> : IGenericRepository<TModel> where TModel
 
     public virtual async Task DeleteRangeAsync(List<TModel> models)
     {
-       DbSet.RemoveRange(models);
+        DbSet.RemoveRange(models);
     }
 
     public async Task<bool> IsExistIdAsync(Guid id)

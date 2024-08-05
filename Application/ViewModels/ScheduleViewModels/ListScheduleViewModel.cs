@@ -1,6 +1,4 @@
-﻿using Domain.Models;
-
-namespace Application.ViewModels.ScheduleViewModels;
+﻿namespace Application.ViewModels.ScheduleViewModels;
 
 public class ListScheduleViewModel
 {

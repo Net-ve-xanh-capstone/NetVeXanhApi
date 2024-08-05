@@ -1,6 +1,5 @@
 ﻿using Application.SendModels.RoundTopic;
 using Application.ViewModels.TopicViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

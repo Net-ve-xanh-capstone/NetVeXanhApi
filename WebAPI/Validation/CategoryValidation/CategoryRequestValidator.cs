@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Category;
 using FluentValidation;
 
@@ -9,13 +7,14 @@ namespace WebAPI.Validation.CategoryValidation;
 public class CategoryRequestValidator : AbstractValidator<CategoryRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public CategoryRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
 
         //CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

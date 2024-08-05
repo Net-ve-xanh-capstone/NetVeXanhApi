@@ -1,6 +1,6 @@
-﻿using Quartz;
+﻿using Application.IService.ICommonService;
 using Microsoft.Extensions.DependencyInjection;
-using Application.IService.ICommonService;
+using Quartz;
 
 namespace Application.Jobs;
 

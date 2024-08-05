@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Contest;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.ContestValidation;
 public class ContestRequestValidator : AbstractValidator<ContestRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ContestRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -31,7 +30,7 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
             .Must(BeAValidUrl).WithMessage("Logo phải là một URL hợp lệ.");*/
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -51,14 +50,16 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
 
         RuleFor(e => e.Round1StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 1 không được để trống.")
-            .LessThan(e => e.Round1EndTime).WithMessage("Thời gian bắt đầu vòng 1 phải trước thời gian kết thúc vòng 1.");
+            .LessThan(e => e.Round1EndTime)
+            .WithMessage("Thời gian bắt đầu vòng 1 phải trước thời gian kết thúc vòng 1.");
 
         RuleFor(e => e.Round1EndTime)
             .NotEmpty().WithMessage("Thời gian kết thúc vòng 1 không được để trống.");
 
         RuleFor(e => e.Round2StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu vòng 2 không được để trống.")
-            .LessThan(e => e.Round2EndTime).WithMessage("Thời gian bắt đầu vòng 2 phải trước thời gian kết thúc vòng 2.");
+            .LessThan(e => e.Round2EndTime)
+            .WithMessage("Thời gian bắt đầu vòng 2 phải trước thời gian kết thúc vòng 2.");
 
         RuleFor(e => e.Round2EndTime)
             .NotEmpty().WithMessage("Thời gian kết thúc vòng 2 không được để trống.");
@@ -86,7 +87,7 @@ public class ContestRequestValidator : AbstractValidator<ContestRequest>
 
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

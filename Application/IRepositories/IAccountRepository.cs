@@ -1,5 +1,4 @@
 ﻿using Domain.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Application.IRepositories;
 
@@ -23,11 +22,13 @@ public interface IAccountRepository : IGenericRepository<Account>
     Task<int> CompetitorCountByContest(Guid contestId);
 
     #region Validate
+
     Task<bool> IsExistCompetitor(Guid id);
 
     Task<bool> IsExistStaff(Guid id);
     Task<bool> IsExistPhone(string phone);
     Task<bool> IsExistEmail(string email);
     Task<bool> IsExistUsername(string username);
+
     #endregion
 }

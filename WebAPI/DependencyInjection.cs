@@ -1,7 +1,5 @@
 ﻿using System.Text;
 using System.Text.Json.Serialization;
-using Application.IService.ICommonService;
-using Application.Services.CommonService;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Infracstructures;

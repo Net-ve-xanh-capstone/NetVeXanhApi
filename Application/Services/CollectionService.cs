@@ -2,17 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Collection;
-using Application.SendModels.Topic;
 using Application.ViewModels.CollectionViewModels;
-using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -43,10 +38,8 @@ public class CollectionService : ICollectionService
     {
         var validationResult = await ValidateCollectionRequest(addCollectionViewModel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var collection = _mapper.Map<Collection>(addCollectionViewModel);
         collection.Status = CollectionStatus.Active.ToString();
         await _unitOfWork.CollectionRepo.AddAsync(collection);
@@ -54,35 +47,15 @@ public class CollectionService : ICollectionService
         //add Painting
         var listPaintingCollection = new List<PaintingCollection>();
         foreach (var paintingId in addCollectionViewModel.listPaintingId)
-        {
             listPaintingCollection.Add(new PaintingCollection
             {
                 PaintingId = paintingId,
                 CollectionId = collection.Id
             });
-        }
-        await _unitOfWork.PaintingCollectionRepo.AddRangeAsync(listPaintingCollection);
-        return await _unitOfWork.SaveChangesAsync() >0;
-        
-    }
-
-    #endregion
-
-    #region Add Collection with award Painting in Contest
-    public async Task<bool> AddCollectionWithPaintingAwardInContest(CreatePaintingAwardCollectionRequest addCollectionViewModel)
-    {
-
-        var collection = _mapper.Map<Collection>(addCollectionViewModel);
-        collection.Status = CollectionStatus.Active.ToString();
-        await _unitOfWork.CollectionRepo.AddAsync(collection);
-        await _unitOfWork.SaveChangesAsync();
-        //add Painting
-        var listPaintingCollection = new List<PaintingCollection>();
-        
         await _unitOfWork.PaintingCollectionRepo.AddRangeAsync(listPaintingCollection);
         return await _unitOfWork.SaveChangesAsync() > 0;
-
     }
+
     #endregion
 
     #region Delete Collection
@@ -106,10 +79,8 @@ public class CollectionService : ICollectionService
     {
         var validationResult = await ValidateCollectionUpdateRequest(updateCollection);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(updateCollection.Id);
         if (collection == null) throw new Exception("Khong tim thay Collection");
         ;
@@ -142,12 +113,11 @@ public class CollectionService : ICollectionService
     {
         var collection = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
         if (collection == null) throw new Exception("Khong co Painting nao trong Collection");
-        
+
         return _mapper.Map<GetPaintingInCollection>(collection);
     }
 
     #endregion
-
 
 
     #region Get All Collection
@@ -205,7 +175,27 @@ public class CollectionService : ICollectionService
     {
         return await _unitOfWork.CollectionRepo.IsExistIdAsync(id);
     }
+
+    #region Add Collection with award Painting in Contest
+
+    public async Task<bool> AddCollectionWithPaintingAwardInContest(
+        CreatePaintingAwardCollectionRequest addCollectionViewModel)
+    {
+        var collection = _mapper.Map<Collection>(addCollectionViewModel);
+        collection.Status = CollectionStatus.Active.ToString();
+        await _unitOfWork.CollectionRepo.AddAsync(collection);
+        await _unitOfWork.SaveChangesAsync();
+        //add Painting
+        var listPaintingCollection = new List<PaintingCollection>();
+
+        await _unitOfWork.PaintingCollectionRepo.AddRangeAsync(listPaintingCollection);
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
+    #endregion
+
     #region Validate
+
     public async Task<ValidationResult> ValidateCollectionRequest(CollectionRequest collection)
     {
         return await _validatorFactory.CollectionRequestValidator.ValidateAsync(collection);
@@ -215,5 +205,6 @@ public class CollectionService : ICollectionService
     {
         return await _validatorFactory.UpdateCollectionRequestValidator.ValidateAsync(collectionUpdate);
     }
+
     #endregion
 }

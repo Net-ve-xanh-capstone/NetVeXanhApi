@@ -2,7 +2,6 @@
 using Application.IRepositories;
 using Application.IService;
 using Application.SendModels.Contest;
-using Application.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -129,7 +128,7 @@ public class ContestController : Controller
     }
 
     #endregion
-    
+
     #region Get Contest By Id
 
     [HttpGet("{id}")]

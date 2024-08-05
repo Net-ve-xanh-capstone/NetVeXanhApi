@@ -46,21 +46,20 @@ public partial class MapperConfigs : Profile
                 src.Status == ContestStatus.InProcess.ToString() ? "Đang tiến hành" :
                 src.Status == ContestStatus.Complete.ToString() ? "Đã Hoàn thành" :
                 src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
-            )); 
+            ));
 
         CreateMap<Contest, FilterPaintingContestViewModel>();
 
 
         CreateMap<Contest, ContestRewardViewModel>()
-             .ForMember(dest => dest.ListAccount, opt => opt.MapFrom(src =>
-                    src.EducationalLevel
-                        .SelectMany(el => el.Award) // Lấy tất cả Awards từ từng EducationalLevel
-                        .SelectMany(a => a.Painting) // Lấy tất cả Paintings từ từng Award
-                        .Select(p => p.Account) // Lấy tất cả Accounts từ từng Painting
-                        .Distinct() // Loại bỏ các Account trùng lặp
-                        .ToList()
-                    ));
+            .ForMember(dest => dest.ListAccount, opt => opt.MapFrom(src =>
+                src.EducationalLevel
+                    .SelectMany(el => el.Award) // Lấy tất cả Awards từ từng EducationalLevel
+                    .SelectMany(a => a.Painting) // Lấy tất cả Paintings từ từng Award
+                    .Select(p => p.Account) // Lấy tất cả Accounts từ từng Painting
+                    .Distinct() // Loại bỏ các Account trùng lặp
+                    .ToList()
+            ));
         /*.ForMember(dest => dest.AwardContestReward, opt => opt.MapFrom(src => src.EducationalLevel.SelectMany(level => level.Award)));*/
-
     }
 }

@@ -7,6 +7,7 @@ namespace WebAPI.Validation.ReportValidation;
 public class ReportRequestValidator : AbstractValidator<ReportRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ReportRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -20,7 +21,7 @@ public class ReportRequestValidator : AbstractValidator<ReportRequest>
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

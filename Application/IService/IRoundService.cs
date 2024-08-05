@@ -2,7 +2,6 @@
 using Application.SendModels.Round;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

@@ -10,7 +10,7 @@ public class AccountValidator : IAccountValidator
     public AccountValidator(IValidator<AccountUpdateRequest> accountvalidator,
         IValidator<SubAccountRequest> subaccountvalidator,
         IValidator<CreateAccountRequest> createaccountvalidator
-        )
+    )
     {
         AccountUpdateRequestValidator = accountvalidator;
         SubAccountRequestValidator = subaccountvalidator;

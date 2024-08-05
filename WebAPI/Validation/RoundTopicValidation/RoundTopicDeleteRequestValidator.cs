@@ -1,5 +1,4 @@
 ﻿using Application;
-using Application.IService;
 using Application.SendModels.RoundTopic;
 using FluentValidation;
 
@@ -8,6 +7,7 @@ namespace WebAPI.Validation.RoundTopicValidation;
 public class RoundTopicDeleteRequestValidator : AbstractValidator<RoundTopicDeleteRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public RoundTopicDeleteRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;

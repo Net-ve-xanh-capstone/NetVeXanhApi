@@ -1,7 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

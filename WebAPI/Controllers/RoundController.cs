@@ -1,8 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Round;
-using Application.SendModels.Topic;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +58,7 @@ public class RoundController : Controller
 
     #endregion
 
-    #region Get All Round 
+    #region Get All Round
 
     [HttpGet("getallround")]
     public async Task<IActionResult> GetAllRound([FromQuery] ListModels listRoundModel)

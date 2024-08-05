@@ -2,14 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Report;
-using Application.SendModels.Topic;
 using Application.ViewModels.ReportViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -22,7 +20,8 @@ public class ReportService : IReportService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
-    public ReportService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime, IConfiguration configuration, IValidatorFactory validatorFactory)
+    public ReportService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime, IConfiguration configuration,
+        IValidatorFactory validatorFactory)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -37,10 +36,8 @@ public class ReportService : IReportService
     {
         var validationResult = await ValidateReportRequest(addReportViewModel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
 
         var report = _mapper.Map<Report>(addReportViewModel);
         report.Status = ReportStatus.Pending.ToString();
@@ -107,10 +104,8 @@ public class ReportService : IReportService
     {
         var validationResult = await ValidateReportUpdateRequest(updateReport);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var report = await _unitOfWork.ReportRepo.GetByIdAsync(updateReport.Id);
         if (report == null) throw new Exception("Khong tim thay Report");
 
@@ -142,6 +137,7 @@ public class ReportService : IReportService
     }
 
     #region Validate
+
     public async Task<ValidationResult> ValidateReportRequest(ReportRequest report)
     {
         return await _validatorFactory.ReportRequestValidator.ValidateAsync(report);
@@ -151,5 +147,6 @@ public class ReportService : IReportService
     {
         return await _validatorFactory.UpdateReportRequestValidator.ValidateAsync(reportUpdate);
     }
+
     #endregion
 }

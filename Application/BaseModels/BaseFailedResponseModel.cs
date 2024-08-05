@@ -1,6 +1,6 @@
 ﻿namespace Application.BaseModels;
 
-public class 
+public class
     BaseFailedResponseModel
 {
     public int Status { get; set; }

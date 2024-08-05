@@ -1,12 +1,10 @@
 ﻿using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.PaintingCollection;
-using Application.SendModels.Topic;
 using AutoMapper;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -34,10 +32,8 @@ public class PaintingCollectionService : IPaintingCollectionService
     {
         var validationResult = await ValidatePaintingCollectionRequest(addPaintingCollectionViewModel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var paintingCollection = _mapper.Map<PaintingCollection>(addPaintingCollectionViewModel);
         await _unitOfWork.PaintingCollectionRepo.AddAsync(paintingCollection);
 
@@ -54,9 +50,8 @@ public class PaintingCollectionService : IPaintingCollectionService
     }
 
 
-
     #region Validate
-    
+
     public async Task<ValidationResult> ValidatePaintingCollectionRequest(PaintingCollectionRequest paintingcollection)
     {
         return await _validatorFactory.PaintingCollectionRequestValidator.ValidateAsync(paintingcollection);

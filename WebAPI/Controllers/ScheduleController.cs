@@ -1,9 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Schedule;
-using Application.SendModels.Topic;
-using Application.Services;
-using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -187,34 +184,34 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By ContestId
-    
-        [HttpGet("contestId/{id}")]
-        public async Task<IActionResult> GetScheduleByContestId([FromRoute] Guid id)
+
+    [HttpGet("contestId/{id}")]
+    public async Task<IActionResult> GetScheduleByContestId([FromRoute] Guid id)
+    {
+        try
         {
-            try
+            var result = await _scheduleService.GetListSchedule(id);
+            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            return Ok(new BaseResponseModel
             {
-                var result = await _scheduleService.GetListSchedule(id);
-                if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
-                return Ok(new BaseResponseModel
-                {
-                    Status = Ok().StatusCode,
-                    Message = "Get Schedule Success",
-                    Result = result
-                });
-            }
-            catch (Exception ex)
-            {
-                return Ok(new BaseFailedResponseModel
-                {
-                    Status = Ok().StatusCode,
-                    Message = ex.Message,
-                    Result = false,
-                    Errors = ex
-                });
-            }
+                Status = Ok().StatusCode,
+                Message = "Get Schedule Success",
+                Result = result
+            });
         }
-    
-        #endregion
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Update Schedule
 
@@ -288,6 +285,36 @@ public class ScheduleController : Controller
 
     #endregion
 
+    #region Get Schedule for examiner by examiner Id for Web
+
+    [HttpGet("contest/{contestId}/examiner/{examinerId}/")]
+    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid contestId, Guid examinerId)
+    {
+        try
+        {
+            var result = await _scheduleService.GetScheduleForWeb(contestId, examinerId);
+            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Schedule Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
     #region Get Schedule for examiner by examiner Id
 
     [HttpGet("/examiner/{id}")]
@@ -296,6 +323,49 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetScheduleByExaminerId(id);
+            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Schedule Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get List Accoutn Pass
+
+    [HttpGet("export-round-results")]
+    public async Task<IActionResult> ExportRound1Results(Guid roundId)
+    {
+        var result = await _scheduleService.GetListCompetitorPass(roundId);
+        var list = result.Item1;
+        var name = $"{result.Item2}.xlsx";
+        return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
+    }
+
+    #endregion
+
+    #region Get Schedule for examiner by examiner Id
+
+    [HttpGet("/finalround/{id}")]
+    public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
+    {
+        try
+        {
+            var result = await _scheduleService.GetListCompetitorFinalRound(id);
             if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
             return Ok(new BaseResponseModel
             {
@@ -525,49 +595,6 @@ public class ScheduleController : Controller
                 Status = BadRequest().StatusCode,
                 Message = ex.Message,
                 Result = false,
-                Errors = ex
-            });
-        }
-    }
-
-    #endregion
-
-    #region Get List Accoutn Pass
-
-    [HttpGet("export-round-results")]
-    public async Task<IActionResult> ExportRound1Results(Guid roundId)
-    {
-        var result = await  _scheduleService.GetListCompetitorPass(roundId);
-        var list = result.Item1;
-        var name = $"{result.Item2}.xlsx";
-        return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
-    }
-
-    #endregion
-    
-    #region Get Schedule for examiner by examiner Id
-
-    [HttpGet("/finalround/{id}")]
-    public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
-    {
-        try
-        {
-            var result = await _scheduleService.GetListCompetitorFinalRound(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
-                Result = result
-            });
-        }
-        catch (Exception ex)
-        {
-            return Ok(new BaseFailedResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = null,
                 Errors = ex
             });
         }

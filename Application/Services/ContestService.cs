@@ -1,16 +1,13 @@
 ﻿using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Contest;
-using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -41,10 +38,8 @@ public class ContestService : IContestService
     {
         var validationResult = await ValidateContestRequest(addContestViewModel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
 
         #region Tạo Contest
 
@@ -152,105 +147,105 @@ public class ContestService : IContestService
 
         // Create awards for Level 1
         var awardsLevel1 = new List<Award>
-{
-    new Award
-    {
-        Rank = "FirstPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank1,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level
-    },
-    new Award
-    {
-        Rank = "SecondPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank2,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level
-    },
-    new Award
-    {
-        Rank = "ThirdPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank3,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level
-    },
-    new Award
-    {
-        Rank = "ConsolationPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank4,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level
-    },
-    new Award
-    {
-        Rank = "Preliminary",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.PassRound1,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level
-    }
-};
+        {
+            new()
+            {
+                Rank = "FirstPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank1,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level
+            },
+            new()
+            {
+                Rank = "SecondPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank2,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level
+            },
+            new()
+            {
+                Rank = "ThirdPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank3,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level
+            },
+            new()
+            {
+                Rank = "ConsolationPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank4,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level
+            },
+            new()
+            {
+                Rank = "Preliminary",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.PassRound1,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level
+            }
+        };
 
         listAward.AddRange(awardsLevel1);
 
         // Create awards for Level 2
         var awardsLevel2 = new List<Award>
-{
-    new Award
-    {
-        Rank = "FirstPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank1,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level2
-    },
-    new Award
-    {
-        Rank = "SecondPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank2,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level2
-    },
-    new Award
-    {
-        Rank = "ThirdPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank3,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level2
-    },
-    new Award
-    {
-        Rank = "ConsolationPrize",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.Rank4,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level2
-    },
-    new Award
-    {
-        Rank = "Preliminary",
-        CreatedBy = addContestViewModel.CurrentUserId,
-        CreatedTime = _currentTime.GetCurrentTime(),
-        Quantity = addContestViewModel.PassRound1,
-        Status = ContestStatus.NotStarted.ToString(),
-        EducationalLevel = level2
-    }
-};
+        {
+            new()
+            {
+                Rank = "FirstPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank1,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level2
+            },
+            new()
+            {
+                Rank = "SecondPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank2,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level2
+            },
+            new()
+            {
+                Rank = "ThirdPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank3,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level2
+            },
+            new()
+            {
+                Rank = "ConsolationPrize",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.Rank4,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level2
+            },
+            new()
+            {
+                Rank = "Preliminary",
+                CreatedBy = addContestViewModel.CurrentUserId,
+                CreatedTime = _currentTime.GetCurrentTime(),
+                Quantity = addContestViewModel.PassRound1,
+                Status = ContestStatus.NotStarted.ToString(),
+                EducationalLevel = level2
+            }
+        };
 
         listAward.AddRange(awardsLevel2);
 
@@ -309,10 +304,8 @@ public class ContestService : IContestService
     {
         var validationResult = await ValidateContestUpdateRequest(updateContest);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var contest = await _unitOfWork.ContestRepo.GetByIdAsync(updateContest.Id);
         if (contest == null) throw new Exception("Khong tim thay Contest");
 
@@ -357,11 +350,12 @@ public class ContestService : IContestService
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
         var result = _mapper.Map<List<ContestViewModel>>(contest);
-        foreach( var item in result)
+        foreach (var item in result)
         {
             item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
             item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
         }
+
         return result;
     }
 
@@ -410,10 +404,10 @@ public class ContestService : IContestService
         return await _unitOfWork.ContestRepo.IsExistIdAsync(id);
     }
 
-
     #endregion
 
     #region Validate
+
     public async Task<ValidationResult> ValidateContestRequest(ContestRequest contest)
     {
         return await _validatorFactory.ContestRequestValidator.ValidateAsync(contest);
@@ -423,5 +417,6 @@ public class ContestService : IContestService
     {
         return await _validatorFactory.UpdateContestRequestValidator.ValidateAsync(contestUpdate);
     }
+
     #endregion
 }

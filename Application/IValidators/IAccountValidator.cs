@@ -9,5 +9,4 @@ public interface IAccountValidator
     IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
     IValidator<CreateAccountRequest> CreateAccountValidator { get; }
-
 }

@@ -1,15 +1,12 @@
 ﻿using Application.BaseModels;
 using Application.IService;
-using Domain.Models;
-using Domain.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-
 [ApiController]
 [Route("api/address/")]
-public class AddressController  : ControllerBase
+public class AddressController : ControllerBase
 {
     private readonly IDistrictService _districtService;
 
@@ -17,7 +14,7 @@ public class AddressController  : ControllerBase
     {
         _districtService = districtService;
     }
-    
+
     #region Get All Award
 
     [HttpGet]
@@ -43,7 +40,7 @@ public class AddressController  : ControllerBase
     }
 
     #endregion
-    
+
     #region Get All Award
 
     [HttpGet("{id}")]

@@ -1,9 +1,6 @@
-﻿using System.Resources;
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Resources;
-using Application.SendModels.Topic;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -68,7 +65,7 @@ public class ResourcesController : Controller
         try
         {
             var result = await _resourcesService.GetListResources();
-            
+
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

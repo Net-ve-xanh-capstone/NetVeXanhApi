@@ -26,7 +26,8 @@ public class EducationalLevelRepository : GenericRepository<EducationalLevel>, I
 
     public async Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
     {
-        return await DbSet.Where(x => x.ContestId == contestId && x.Status != EducationalLevelStatus.Delete.ToString())
+        return await DbSet.Include(x => x.Round).ThenInclude(x => x.Schedule).ThenInclude(x => x.Account).Where(x =>
+                x.ContestId == contestId && x.Status != EducationalLevelStatus.Delete.ToString())
             .ToListAsync();
     }
 

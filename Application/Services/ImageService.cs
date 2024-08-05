@@ -1,11 +1,9 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Image;
-using Application.SendModels.Topic;
 using AutoMapper;
 using Domain.Models;
 using FluentValidation.Results;
-using Infracstructures;
 using Infracstructures.ViewModels.ImageViewModels;
 
 namespace Application.Services;
@@ -77,12 +75,15 @@ public class ImageService : IImageService
     }
 
     #endregion
+
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.ImageRepo.IsExistIdAsync(id);
     }
+
     #region Validate
+
     public async Task<ValidationResult> ValidateImageRequest(ImageRequest image)
     {
         return await _validatorFactory.ImageRequestValidator.ValidateAsync(image);

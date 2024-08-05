@@ -1,8 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Painting;
-using Application.SendModels.Schedule;
 using Application.ViewModels.PaintingViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures.SendModels.Painting;
 
@@ -22,6 +20,14 @@ public interface IPaintingService
         ListModels listPaintingModel);
 
     Task<(List<PaintingViewModel>, int)> ListPaintingByAccountId(Guid accountId, ListModels listPaintingModel);
+    Task<PaintingTrackingViewModel> PaintingTracking(Guid id);
+    Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
+
+    Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
+    Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);
+    Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting);
+    Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting);
+    Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting);
 
     #region Competitor
 
@@ -39,12 +45,4 @@ public interface IPaintingService
     public Task<bool> StaffSubmitPaintingForFinalRound(StaffCreatePaintingFinalRoundRequest request);
 
     #endregion
-    Task<PaintingTrackingViewModel> PaintingTracking(Guid id);
-    Task<PaintingViewModel> GetPaintingByAccountContest(Guid contestId, Guid AccountId);
-
-    Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
-    Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);
-    Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting);
-    Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting);
-    Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting);
 }

@@ -1,14 +1,11 @@
-﻿using Application.BaseModels;
-using Application.IService;
+﻿using Application.IService;
 using Application.SendModels.Resources;
-using Application.SendModels.Topic;
 using Application.ViewModels.ResourcesViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -32,10 +29,8 @@ public class ResourcesService : IResourcesService
     {
         var validationResult = await ValidateResourceRequest(resources);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var newResources = _mapper.Map<Resources>(resources);
         newResources.Status = ResourcesStatus.Active.ToString();
         await _unitOfWork.ResourcesRepo.AddAsync(newResources);
@@ -51,7 +46,7 @@ public class ResourcesService : IResourcesService
     {
         var list = await _unitOfWork.ResourcesRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Resource nao");
-        
+
         return _mapper.Map<List<ResourcesViewModel>>(list);
     }
 
@@ -74,10 +69,8 @@ public class ResourcesService : IResourcesService
     {
         var validationResult = await ValidateResourceUpdateRequest(updateResources);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var Resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(updateResources.Id);
         if (Resources == null) throw new Exception("Khong tim thay Resource");
         _mapper.Map(updateResources, Resources);
@@ -99,13 +92,14 @@ public class ResourcesService : IResourcesService
     }
 
     #endregion
-    
+
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.ResourcesRepo.IsExistIdAsync(id);
     }
 
     #region Validate
+
     public async Task<ValidationResult> ValidateResourceRequest(ResourcesRequest resource)
     {
         return await _validatorFactory.ResourcesRequestValidator.ValidateAsync(resource);
@@ -115,5 +109,6 @@ public class ResourcesService : IResourcesService
     {
         return await _validatorFactory.ResourcesUpdateRequestValidator.ValidateAsync(resourceUpdate);
     }
+
     #endregion
 }

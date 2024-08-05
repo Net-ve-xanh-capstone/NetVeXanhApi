@@ -1,7 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Category;
 using Application.ViewModels.CategoryViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

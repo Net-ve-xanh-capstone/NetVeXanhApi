@@ -7,6 +7,7 @@ namespace WebAPI.Validation.PaintingCollectionValidation;
 public class PaintingCollectionRequestValidator : AbstractValidator<PaintingCollectionRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public PaintingCollectionRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -25,7 +26,8 @@ public class PaintingCollectionRequestValidator : AbstractValidator<PaintingColl
                     RuleFor(x => x.CollectionId)
                         .MustAsync(async (collectionId, cancellation) =>
                         {
-                            return await _validationServiceManager.CollectionValidationService.IsExistedId(collectionId);
+                            return await _validationServiceManager.CollectionValidationService.IsExistedId(
+                                collectionId);
                         })
                         .WithMessage("CollectionId không tồn tại.");
                 });
@@ -45,7 +47,8 @@ public class PaintingCollectionRequestValidator : AbstractValidator<PaintingColl
                     RuleFor(x => x.PaintingId)
                         .MustAsync(async (paintingId, cancellation) =>
                         {
-                            return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
+                            return await _validationServiceManager.PaintingValidationService
+                                .IsExistedId(paintingId);
                         })
                         .WithMessage("PaintingId không tồn tại.");
                 });
@@ -54,9 +57,9 @@ public class PaintingCollectionRequestValidator : AbstractValidator<PaintingColl
         RuleFor(x => new { x.PaintingId, x.CollectionId })
             .MustAsync(async (x, cancellation) =>
             {
-                return !await _validationServiceManager.PaintingCollectionValidationService.IsPaintingInCollection(x.PaintingId, x.CollectionId);
+                return !await _validationServiceManager.PaintingCollectionValidationService.IsPaintingInCollection(
+                    x.PaintingId, x.CollectionId);
             })
             .WithMessage("Đã có painting trong collection.");
-
     }
 }

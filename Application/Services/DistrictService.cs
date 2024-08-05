@@ -11,7 +11,7 @@ public class DistrictService : IDistrictService
     {
         _unitOfWork = unitOfWork;
     }
-    
+
     public Task<List<District>> GetAll()
     {
         return _unitOfWork.DistrictRepo.GetAllAsync();

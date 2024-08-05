@@ -1,7 +1,6 @@
 ﻿using Application.IService;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -30,6 +29,7 @@ public class AwardScheduleService : IAwardScheduleService
         if (awardSchedule == null) throw new Exception("Khong tim thay");
         return _mapper.Map<AwardScheduleModels>(awardSchedule);
     }
+
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {

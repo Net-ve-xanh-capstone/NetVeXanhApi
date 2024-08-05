@@ -1,7 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Collection;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +26,6 @@ public class CollectionController : Controller
     {
         try
         {
-            
             var result = await _collectionService.AddCollection(collection);
             return Ok(new BaseResponseModel
             {
@@ -81,6 +79,7 @@ public class CollectionController : Controller
                 };
                 return BadRequest(response);
             }
+
             var result = await _collectionService.UpdateCollection(updateCollection);
             if (!result) return NotFound();
             return Ok(new BaseResponseModel

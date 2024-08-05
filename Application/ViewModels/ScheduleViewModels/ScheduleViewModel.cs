@@ -8,7 +8,7 @@ public class ScheduleViewModel
     public string? Round { get; set; }
     public string? Year { get; set; }
     public Guid? ExaminerId { get; set; }
-    public string ExaminerName { get; set; }
+    public string? ExaminerName { get; set; }
     public string? Status { get; set; }
     public DateTime EndDate { get; set; }
 }

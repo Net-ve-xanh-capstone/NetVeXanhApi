@@ -7,6 +7,7 @@ namespace WebAPI.Validation.ResourceValidation;
 public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ResourcesRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -57,7 +58,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

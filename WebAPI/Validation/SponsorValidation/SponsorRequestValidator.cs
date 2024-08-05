@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using FluentValidation;
 using Infracstructures.SendModels.Sponsor;
 
@@ -10,6 +8,7 @@ namespace WebAPI.Validation.SponsorValidation;
 public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public SponsorRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -32,7 +31,7 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
             .WithMessage("Số điện thoại không hợp lệ.");
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -50,9 +49,10 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
                 });
         });
     }
+
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

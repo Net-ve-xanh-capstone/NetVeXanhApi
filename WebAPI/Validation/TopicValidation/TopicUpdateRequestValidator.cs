@@ -1,8 +1,5 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Topic;
-using Application.Services.ValidationService;
 using FluentValidation;
 
 namespace WebAPI.Validation.TopicValidation;
@@ -10,6 +7,7 @@ namespace WebAPI.Validation.TopicValidation;
 public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public TopicUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -18,7 +16,8 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
             .NotEmpty().WithMessage("Id không được để trống.");
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Tên không được để trống."); ;
+            .NotEmpty().WithMessage("Tên không được để trống.");
+        ;
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -38,7 +37,7 @@ public class TopicUpdateRequestValidator : AbstractValidator<TopicUpdateRequest>
 
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

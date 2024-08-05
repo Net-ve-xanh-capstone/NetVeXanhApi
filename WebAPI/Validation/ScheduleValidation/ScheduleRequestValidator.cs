@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Schedule;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.ScheduleValidation;
 public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ScheduleRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -17,7 +16,7 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
             .MaximumLength(500).WithMessage("Mô tả không được vượt quá 500 ký tự");
 
         RuleFor(x => x.RoundId)
-        .NotEmpty().WithMessage("RoundId không được để trống.");
+            .NotEmpty().WithMessage("RoundId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.RoundId.ToString()), () =>
         {
@@ -40,12 +39,13 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
 
         RuleFor(review => review.ListExaminer)
             .NotEmpty().WithMessage("Danh sách giám khảo không được để trống")
-            .Must(list => list != null && list.Count > 0).WithMessage("Danh sách giám khảo phải có ít nhất một giám khảo")
+            .Must(list => list != null && list.Count > 0)
+            .WithMessage("Danh sách giám khảo phải có ít nhất một giám khảo")
             .Must(list => list.All(id => id != Guid.Empty)).WithMessage("Danh sách giám khảo không được chứa ID trống");
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

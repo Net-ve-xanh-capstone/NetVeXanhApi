@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.AccountSendModels;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +15,7 @@ public class AccountController : ControllerBase
 
     public AccountController(IAccountService accountService)
     {
+        
         _accountService = accountService;
     }
 
@@ -186,7 +185,7 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.GetAllExaminer();
-   
+
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -216,7 +215,7 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.GetAllStaff();
-            
+
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

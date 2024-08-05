@@ -15,9 +15,8 @@ public class WardConfiguration : IEntityTypeConfiguration<Ward>
 
         builder.Property(u => u.Id)
             .HasDefaultValueSql("NEWID()");
-        
+
         //Name
         builder.Property(u => u.Name).IsRequired().HasMaxLength(50);
-        
     }
 }

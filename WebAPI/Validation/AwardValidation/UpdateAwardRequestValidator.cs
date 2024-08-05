@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Award;
 using Domain.Enums;
 using FluentValidation;
@@ -10,6 +8,7 @@ namespace WebAPI.Validation.AwardValidation;
 public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdateAwardRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -17,7 +16,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
 
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -36,7 +35,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
         });
 
         RuleFor(x => x.Rank)
-            .IsEnumName(typeof(RankAward), caseSensitive: true)
+            .IsEnumName(typeof(RankAward), true)
             .WithMessage("Giải không đúng định dạng.");
 
         RuleFor(x => x.Quantity)
@@ -64,7 +63,8 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         {
                             try
                             {
-                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
+                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(
+                                    levelId);
                             }
                             catch (Exception)
                             {
@@ -77,11 +77,9 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
         });
 
 
-
-
         //CurrentUserId
         RuleFor(x => x.CurrentUserId)
-         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -98,6 +96,5 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
-
     }
 }

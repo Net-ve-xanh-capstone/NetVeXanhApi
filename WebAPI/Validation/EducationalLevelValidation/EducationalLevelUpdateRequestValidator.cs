@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.EducationalLevel;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.EducationalLevelValidation;
 public class EducationalLevelUpdateRequestValidator : AbstractValidator<EducationalLevelUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public EducationalLevelUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -26,7 +25,8 @@ public class EducationalLevelUpdateRequestValidator : AbstractValidator<Educatio
                     RuleFor(x => x.Id)
                         .MustAsync(async (levelId, cancellation) =>
                         {
-                            return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
+                            return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(
+                                levelId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });

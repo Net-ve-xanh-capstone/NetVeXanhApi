@@ -8,7 +8,6 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -39,10 +38,8 @@ public class TopicService : ITopicService
     {
         var validationResult = await ValidateTopicRequest(topic);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var newTopic = _mapper.Map<Topic>(topic);
         newTopic.Status = TopicStatus.Active.ToString();
         await _unitOfWork.TopicRepo.AddAsync(newTopic);
@@ -98,10 +95,8 @@ public class TopicService : ITopicService
     {
         var validationResult = await ValidateTopicUpdateRequest(updateTopic);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(updateTopic.Id);
         if (Topic == null) throw new Exception("Khong tim thay Topic");
 
@@ -127,6 +122,7 @@ public class TopicService : ITopicService
 
 
     #region Validate
+
     public async Task<ValidationResult> ValidateTopicRequest(TopicRequest topic)
     {
         return await _validatorFactory.TopicRequestValidator.ValidateAsync(topic);
@@ -136,5 +132,6 @@ public class TopicService : ITopicService
     {
         return await _validatorFactory.TopicUpdateRequestValidator.ValidateAsync(topicUpdate);
     }
+
     #endregion
 }

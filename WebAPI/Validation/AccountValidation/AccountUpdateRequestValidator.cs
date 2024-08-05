@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.AccountSendModels;
 using FluentValidation;
 
@@ -10,12 +8,13 @@ namespace WebAPI.Validation.AccountValidation;
 public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public AccountUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
 
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -55,9 +54,10 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
 
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
+
     private bool BeAValidAge(DateTime birthday)
     {
         var age = DateTime.Today.Year - birthday.Year;

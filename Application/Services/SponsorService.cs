@@ -1,13 +1,11 @@
 ﻿using Application.BaseModels;
 using Application.IService;
-using Application.SendModels.Topic;
 using Application.ViewModels.SponsorViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Infracstructures.SendModels.Sponsor;
 
 namespace Application.Services;
@@ -33,10 +31,8 @@ public class SponsorService : ISponsorService
     {
         var validationResult = await ValidateSponsorRequest(sponsor);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var newSponsor = _mapper.Map<Sponsor>(sponsor);
         newSponsor.Status = SponsorStatus.Active.ToString();
         await _unitOfWork.SponsorRepo.AddAsync(newSponsor);
@@ -92,10 +88,8 @@ public class SponsorService : ISponsorService
     {
         var validationResult = await ValidateSponsorUpdateRequest(updateSponsor);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var sponsor = await _unitOfWork.SponsorRepo.GetByIdAsync(updateSponsor.Id);
         if (sponsor == null) throw new Exception("Khong tim thay Sponsor");
 
@@ -128,6 +122,7 @@ public class SponsorService : ISponsorService
     {
         return await _validatorFactory.SponsorRequestValidator.ValidateAsync(sponsor);
     }
+
     public async Task<ValidationResult> ValidateSponsorUpdateRequest(SponsorUpdateRequest updateSponsor)
     {
         return await _validatorFactory.SponsorUpdateRequestValidator.ValidateAsync(updateSponsor);

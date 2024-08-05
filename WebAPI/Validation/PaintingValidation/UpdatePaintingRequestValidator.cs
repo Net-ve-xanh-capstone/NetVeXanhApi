@@ -7,6 +7,7 @@ namespace WebAPI.Validation.PaintingValidation;
 public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdatePaintingRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -24,7 +25,8 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
                     RuleFor(x => x.Id)
                         .MustAsync(async (paintingId, cancellation) =>
                         {
-                            return await _validationServiceManager.PaintingValidationService.IsExistedId(paintingId);
+                            return await _validationServiceManager.PaintingValidationService
+                                .IsExistedId(paintingId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -44,14 +46,11 @@ public class UpdatePaintingRequestValidator : AbstractValidator<UpdatePaintingRe
                     RuleFor(x => x.RoundTopicId)
                         .MustAsync(async (roundtopicId, cancellation) =>
                         {
-                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId.Value);
+                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(
+                                roundtopicId.Value);
                         })
                         .WithMessage("RoundTopicId không tồn tại.");
                 });
         });
-
-
-
     }
-
 }

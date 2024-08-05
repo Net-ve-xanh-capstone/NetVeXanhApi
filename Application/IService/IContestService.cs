@@ -1,7 +1,6 @@
 ﻿using Application.SendModels.Contest;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

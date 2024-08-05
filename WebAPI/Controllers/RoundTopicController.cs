@@ -1,8 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.RoundTopic;
-using Application.SendModels.Topic;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +46,7 @@ public class RoundTopicController : ControllerBase
     }
 
     #endregion
-    
+
     #region Get List
 
     [HttpGet("getallroundtopic")]
@@ -77,7 +75,7 @@ public class RoundTopicController : ControllerBase
     }
 
     #endregion
-    
+
     #region Get List
 
     [HttpGet("roundtopic/roundid/{id}")]

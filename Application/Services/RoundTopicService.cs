@@ -1,12 +1,10 @@
 ﻿using Application.IService;
 using Application.SendModels.RoundTopic;
-using Application.SendModels.Topic;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -24,16 +22,82 @@ public class RoundTopicService : IRoundTopicService
         _validatorFactory = validatorFactory;
     }
 
+    #region Get All Round Topic
+
+    public async Task<List<ListRoundTopicViewModel>> GetAll()
+    {
+        var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
+        return _mapper.Map<List<ListRoundTopicViewModel>>(list);
+    }
+
+    #endregion
+
+    #region Get List Round Topic For Competitor
+
+    public async Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
+    {
+        var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
+
+        var yearOld = DateTime.Today.Year - competitor.Birthday.Value.Year;
+
+        var list = new List<RoundTopic>();
+
+        if (2 <= yearOld && yearOld <= 5)
+        {
+            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
+            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng A"));
+            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
+            list = round.RoundTopic.ToList();
+        }
+        else if (6 <= yearOld && yearOld <= 11)
+        {
+            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
+            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng B"));
+            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
+            list = round.RoundTopic.ToList();
+        }
+        else
+        {
+            throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
+        }
+
+        return _mapper.Map<List<RoundTopicViewModel>>(list);
+    }
+
+    #endregion
+
+    #region Add Topic To Round
+
+    public async Task<bool> AddTopicToRound(RoundTopicRequest roundTopicRequest)
+    {
+        var validationResult = await ValidateRoundTopicRequest(roundTopicRequest);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        var listRoundTopic = new List<RoundTopic>();
+        foreach (var topic in roundTopicRequest.ListTopicId)
+        {
+            var roundtopic = new RoundTopic();
+            roundtopic.TopicId = topic;
+            roundtopic.RoundId = roundTopicRequest.RoundId;
+            listRoundTopic.Add(roundtopic);
+        }
+
+        await _unitOfWork.RoundTopicRepo.AddRangeAsync(listRoundTopic);
+
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
+    #endregion
+
     #region Delete Topic In Round
 
     public async Task<bool> DeleteTopicInRound(RoundTopicDeleteRequest roundTopicDeleteRequest)
     {
         var validationResult = await ValidateRoundTopicDeleteRequest(roundTopicDeleteRequest);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var roundtopic =
             await _unitOfWork.RoundTopicRepo.GetByRoundIdTopicId(roundTopicDeleteRequest.RoundId,
                 roundTopicDeleteRequest.TopicId);
@@ -51,74 +115,9 @@ public class RoundTopicService : IRoundTopicService
 
     #endregion
 
-    #region Get All Round Topic
-
-    public async Task<List<ListRoundTopicViewModel>> GetAll()
-    {
-        var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
-        return _mapper.Map<List<ListRoundTopicViewModel>>(list);
-    }
-    #endregion
-
-    #region Get List Round Topic For Competitor
-    public async Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
-    {
-        var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
-
-        var yearOld = DateTime.Today.Year - competitor.Birthday.Value.Year;
-
-        var list = new List<RoundTopic>();
-
-        if (2 <= yearOld && yearOld <= 5)
-        {
-            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
-            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng A"));
-            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
-            list = round.RoundTopic.ToList();
-        }
-        else if(6 <= yearOld && yearOld <= 11)
-        {
-            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
-            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng B"));
-            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
-            list = round.RoundTopic.ToList();
-        }
-        else
-        {
-            throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
-        }
-        return _mapper.Map<List<RoundTopicViewModel>>(list);
-    }
-    #endregion
-
-    #region Add Topic To Round
-
-    public async Task<bool> AddTopicToRound(RoundTopicRequest roundTopicRequest)
-    {
-        var validationResult = await ValidateRoundTopicRequest(roundTopicRequest);
-        if (!validationResult.IsValid)
-        {
-            // Handle validation failure
-            throw new ValidationException(validationResult.Errors);
-        }
-        var listRoundTopic = new List<RoundTopic>();
-        foreach (var topic in roundTopicRequest.ListTopicId)
-        {
-            var roundtopic = new RoundTopic();
-            roundtopic.TopicId = topic;
-            roundtopic.RoundId = roundTopicRequest.RoundId;
-            listRoundTopic.Add(roundtopic);
-        }
-
-        await _unitOfWork.RoundTopicRepo.AddRangeAsync(listRoundTopic);
-
-        return await _unitOfWork.SaveChangesAsync() > 0;
-    }
-
-    #endregion
-
 
     #region Validate
+
     public async Task<ValidationResult> ValidateRoundTopicRequest(RoundTopicRequest roundtopic)
     {
         return await _validatorFactory.RoundTopicRequestValidator.ValidateAsync(roundtopic);
@@ -128,5 +127,6 @@ public class RoundTopicService : IRoundTopicService
     {
         return await _validatorFactory.RoundTopicDeleteRequestValidator.ValidateAsync(roundtopicDelete);
     }
+
     #endregion
 }

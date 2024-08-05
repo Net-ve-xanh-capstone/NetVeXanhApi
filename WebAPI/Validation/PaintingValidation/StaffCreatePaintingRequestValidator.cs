@@ -8,6 +8,7 @@ namespace WebAPI.Validation.PaintingValidation;
 public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreatePaintingRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public StaffCreatePaintingRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -70,7 +71,8 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
                     RuleFor(x => x.RoundTopicId)
                         .MustAsync(async (roundtopicId, cancellation) =>
                         {
-                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
+                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(
+                                roundtopicId);
                         })
                         .WithMessage("RoundTopicId không tồn tại.");
                 });
@@ -95,18 +97,18 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
         });
-
     }
+
     private bool BeAValidAge(DateTime birthday)
     {
         var age = DateTime.Today.Year - birthday.Year;
         if (birthday.Date > DateTime.Today.AddYears(-age)) age--;
         return age >= 0 && age <= 120; // Giới hạn tuổi từ 0 đến 120
     }
+
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
-
 }

@@ -1,8 +1,5 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Award;
-using Application.Services;
 using Domain.Enums;
 using FluentValidation;
 
@@ -11,12 +8,13 @@ namespace WebAPI.Validation.AwardValidation;
 public class AwardRequestValidator : AbstractValidator<AwardRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public AwardRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
 
         RuleFor(x => x.Rank)
-            .IsEnumName(typeof(RankAward), caseSensitive: true)
+            .IsEnumName(typeof(RankAward), true)
             .WithMessage("Giải không đúng định dạng.");
 
         RuleFor(x => x.Quantity)
@@ -44,14 +42,15 @@ public class AwardRequestValidator : AbstractValidator<AwardRequest>
                     RuleFor(x => x.EducationalLevelId)
                         .MustAsync(async (levelId, cancellation) =>
                         {
-                            return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(levelId);
+                            return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(
+                                levelId);
                         })
                         .WithMessage("EducationalLevelId không tồn tại.");
                 });
         });
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

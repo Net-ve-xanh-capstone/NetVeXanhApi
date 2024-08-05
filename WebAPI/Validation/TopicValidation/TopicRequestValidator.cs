@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Topic;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.TopicValidation;
 public class TopicRequestValidator : AbstractValidator<TopicRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public TopicRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;

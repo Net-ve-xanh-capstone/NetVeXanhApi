@@ -7,7 +7,6 @@ using Application.ViewModels.AuthenticationViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -184,7 +183,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
     #endregion
-    
+
     #region Generate Account Code
 
     private async Task<string> GenerateAccountCode(Role role)

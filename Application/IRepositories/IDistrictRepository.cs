@@ -4,5 +4,4 @@ namespace Application.IRepositories;
 
 public interface IDistrictRepository : IGenericRepository<District>
 {
-    
 }

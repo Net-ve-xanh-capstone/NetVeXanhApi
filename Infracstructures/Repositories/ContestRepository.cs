@@ -49,12 +49,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ThenInclude(x => x.Award.Where(x => x.Status != AwardStatus.Inactive.ToString()))
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
-        if (contest != null)
-            // Lọc các RoundTopic có Topic.Status == "Active"
-            foreach (var educationalLevel in contest.EducationalLevel)
-            foreach (var round in educationalLevel.Round)
-                round.RoundTopic = round.RoundTopic.Where(rt => rt.Topic.Status == TopicStatus.Active.ToString())
-                    .ToList();
         return contest;
     }
 

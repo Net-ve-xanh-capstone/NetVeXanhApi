@@ -10,6 +10,7 @@ using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures.SendModels.Painting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services;
 
@@ -45,7 +46,7 @@ public class PaintingService : IPaintingService
             throw new ValidationException(validationResult.Errors);
         }
         var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
-        if (account.Address == null)
+        if (account.Address.IsNullOrEmpty())
         {
             throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ !");
         }
@@ -82,7 +83,7 @@ public class PaintingService : IPaintingService
             throw new ValidationException(validationResult.Errors);
         }
         var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
-        if (account.Address == null)
+        if (account.Address.IsNullOrEmpty())
         {
             throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ !");
         }

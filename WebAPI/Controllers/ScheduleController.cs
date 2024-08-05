@@ -287,12 +287,12 @@ public class ScheduleController : Controller
 
     #region Get Schedule for examiner by examiner Id for Web
 
-    [HttpGet("contest/{contestId}/examiner/{examinerId}/")]
-    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid contestId, Guid examinerId)
+    [HttpGet("examiner/{examinerId}/")]
+    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId)
     {
         try
         {
-            var result = await _scheduleService.GetScheduleForWeb(contestId, examinerId);
+            var result = await _scheduleService.GetScheduleForWeb(examinerId);
             if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
             return Ok(new BaseResponseModel
             {

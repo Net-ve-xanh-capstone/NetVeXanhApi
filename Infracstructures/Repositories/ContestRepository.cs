@@ -19,6 +19,11 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .Include(x => x.Account)
             .ToListAsync();
     }
+    
+    public async Task<Contest?> GetContestThisYear()
+    {
+        return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
+    }
 
     public override async Task<Contest?> GetByIdAsync(Guid id)
     {

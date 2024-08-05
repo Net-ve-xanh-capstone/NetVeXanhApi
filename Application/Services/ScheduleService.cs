@@ -307,9 +307,11 @@ public class ScheduleService : IScheduleService
         return _mapper.Map<List<ScheduleViewModel>>(schedule);
     }
 
-    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid contestId, Guid examinerId)
+    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId)
     {
-        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
+        var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
+        if (contest == null) throw new Exception("Khong tim thay");
+        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contest!.Id);
         foreach (var level in educationalLevel)
         foreach (var round in level.Round)
         foreach (var schedule in round.Schedule)

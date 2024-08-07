@@ -19,7 +19,12 @@ public class TopicController : Controller
     }
 
     #region Create Topic
-
+    /// <summary>
+    /// Tạo Topic
+    /// </summary>
+    /// <param name="topicRequest">Mô tả request gửi.</param>
+    /// <response code="200">Tạo thành công.</response>
+    /// <response code="400">Validation không thành công.</response>
     [HttpPost]
     public async Task<IActionResult> CreateTopic(TopicRequest topicRequest)
     {

@@ -8,4 +8,5 @@ public interface IMailService
     Task SendEmail(MailModel request);
     Task SendAccountInformation(Account account, string password);
     Task PassPreliminaryRound(Account account);
+    Task SendScheduleToExaminer(Account account);
 }

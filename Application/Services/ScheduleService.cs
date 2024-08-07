@@ -18,10 +18,12 @@ public class ScheduleService : IScheduleService
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IMailService _mailService;
 
     public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
-        IExcelService excelService)
+        IExcelService excelService, IMailService mailService)
     {
+        _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -177,6 +179,12 @@ public class ScheduleService : IScheduleService
 
             //Change ScheduleID in Paiting
             result[i].ForEach(item => item.ScheduleId = newSchedule.Id);
+        }
+
+        var listExaminer = await _unitOfWork.AccountRepo.GetByIdsAsync(schedule.ListExaminer);
+        foreach (var account in listExaminer)
+        {
+            await _mailService.SendScheduleToExaminer(account);
         }
 
         return await _unitOfWork.SaveChangesAsync() > 0;

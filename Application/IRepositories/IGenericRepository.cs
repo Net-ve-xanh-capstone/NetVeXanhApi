@@ -27,4 +27,6 @@ public interface IGenericRepository<TModel> where TModel : class
     Task DeleteAsync(TModel model);
     Task DeleteRangeAsync(List<TModel> models);
     Task<bool> IsExistIdAsync(Guid id);
+
+    Task<List<TModel>> GetByIdsAsync(List<Guid> ids);
 }

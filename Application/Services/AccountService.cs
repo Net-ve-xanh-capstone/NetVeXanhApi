@@ -2,15 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.AccountSendModels;
-using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -109,6 +106,7 @@ public class AccountService : IAccountService
             .ToList();
         return (result, totalPages);
     }
+
     public async Task<List<AccountViewModel>> GetAllStaff()
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
@@ -116,7 +114,7 @@ public class AccountService : IAccountService
             .Where(x => x.Role == Role.Staff.ToString()).ToList();
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
-        
+
         return result;
     }
 
@@ -159,10 +157,8 @@ public class AccountService : IAccountService
     {
         var validationResult = await ValidateAccountUpdateRequest(updateAccount);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
 
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(updateAccount.Id);
         if (account == null) throw new Exception("Không tìm thấy tài khoản");
@@ -195,9 +191,9 @@ public class AccountService : IAccountService
         return _mapper.Map<List<ContestRewardViewModel>>(listContestAward);
     }
 
-    
 
     #region Validate
+
     public async Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account)
     {
         return await _validatorFactory.AccountUpdateRequestValidator.ValidateAsync(account);
@@ -207,5 +203,6 @@ public class AccountService : IAccountService
     {
         return await _validatorFactory.SubAccountRequestValidator.ValidateAsync(accountUpdate);
     }
+
     #endregion
 }

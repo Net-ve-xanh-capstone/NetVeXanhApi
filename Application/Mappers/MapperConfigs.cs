@@ -12,7 +12,7 @@ public partial class MapperConfigs : Profile
 
         // Create mapping between Pagination
         CreateMap(typeof(Pagination<>), typeof(Pagination<>));
-        
+
         AddAccountMapperConfig();
 
         AddAwardMapperConfig();

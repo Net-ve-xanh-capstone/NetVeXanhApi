@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Application.IService.IValidationService;
+﻿using Application.IService.IValidationService;
 
-namespace Application.Services.ValidationService
+namespace Application.Services.ValidationService;
+
+public class PostValidationService : IPostValidationService
 {
-    public class PostValidationService : IPostValidationService
-    {
-        private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-        public PostValidationService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-        //Check Id is Exist
-        public async Task<bool> IsExistedId(Guid id)
-        {
-            return await _unitOfWork.PostRepo.IsExistIdAsync(id);
-        }
+    public PostValidationService(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
+
+    //Check Id is Exist
+    public async Task<bool> IsExistedId(Guid id)
+    {
+        return await _unitOfWork.PostRepo.IsExistIdAsync(id);
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Application.SendModels.EducationalLevel;
 using Application.ViewModels.ContestViewModels;
-
 using Application.ViewModels.EducationalLevelViewModels;
-
+using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
 using Domain.Models;
 
@@ -31,5 +30,8 @@ public partial class MapperConfigs : Profile
         CreateMap<EducationalLevel, EducationalLevelInContest>()
             .ForMember(x => x.Award, x => x.MapFrom(x => x.Award))
             .ForMember(x => x.Round, x => x.MapFrom(x => x.Round));
+
+        CreateMap<EducationalLevel, ScheduleWebViewModel>()
+            .ForPath(x => x.ScheduleViewModels, x => x.MapFrom(x => x.Round.SelectMany(x => x.Schedule)));
     }
 }

@@ -8,7 +8,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _context;
 
 
-    public UnitOfWork(AppDbContext context, 
+    public UnitOfWork(AppDbContext context,
         IAccountRepository accountRepository,
         IAwardRepository awardRepository,
         IAwardScheduleRepository awardScheduleRepository,
@@ -91,7 +91,7 @@ public class UnitOfWork : IUnitOfWork
     public IReportRepository ReportRepo { get; }
 
     public IRoundTopicRepository RoundTopicRepo { get; }
-    
+
     public IDistrictRepository DistrictRepo { get; }
 
     public async Task<int> SaveChangesAsync()

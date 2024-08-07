@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Application.SendModels.Authentication;
 
 public class CreateAccountRequest

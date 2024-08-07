@@ -1,7 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
-using Application.IValidators;
 using Application.SendModels.Contest;
 using FluentValidation;
 
@@ -10,6 +7,7 @@ namespace WebAPI.Validation.ContestValidation;
 public class UpdateContestValidator : AbstractValidator<UpdateContest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdateContestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -27,7 +25,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
                     RuleFor(x => x.Id)
                         .MustAsync(async (contestId, cancellation) =>
                         {
-                             return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
+                            return await _validationServiceManager.ContestValidationService.IsExistedId(contestId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });
@@ -47,7 +45,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
                     RuleFor(x => x.CurrentUserId)
                         .MustAsync(async (userId, cancellation) =>
                         {
-                             return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
+                            return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
                         .WithMessage("CurrentUserId không tồn tại.");
                 });
@@ -73,7 +71,7 @@ public class UpdateContestValidator : AbstractValidator<UpdateContest>
 
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

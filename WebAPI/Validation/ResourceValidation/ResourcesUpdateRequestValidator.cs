@@ -7,6 +7,7 @@ namespace WebAPI.Validation.ResourceValidation;
 public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ResourcesUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -24,7 +25,8 @@ public class ResourcesUpdateRequestValidator : AbstractValidator<ResourcesUpdate
                     RuleFor(x => x.Id)
                         .MustAsync(async (resourceId, cancellation) =>
                         {
-                            return await _validationServiceManager.ResourceValidationService.IsExistedId(resourceId);
+                            return await _validationServiceManager.ResourceValidationService
+                                .IsExistedId(resourceId);
                         })
                         .WithMessage("Id không tồn tại.");
                 });

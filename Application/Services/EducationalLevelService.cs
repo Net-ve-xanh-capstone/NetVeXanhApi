@@ -1,17 +1,13 @@
-﻿using System.Reflection.Emit;
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.EducationalLevel;
-using Application.SendModels.Topic;
 using Application.ViewModels.EducationalLevelViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -42,10 +38,8 @@ public class EducationalLevelService : IEducationalLevelService
     {
         var validationResult = await ValidateLevelRequest(educationalLevel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
 
         var a = await _unitOfWork.ContestRepo.GetStartEndTimeByContestId(educationalLevel.ContestId);
 
@@ -276,10 +270,8 @@ public class EducationalLevelService : IEducationalLevelService
     {
         var validationResult = await ValidateLevelUpdateRequest(updateEducationalLevel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
         if (EducationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
         _mapper.Map(updateEducationalLevel, EducationalLevel);
@@ -319,6 +311,7 @@ public class EducationalLevelService : IEducationalLevelService
     }
 
     #region Validate
+
     public async Task<ValidationResult> ValidateLevelRequest(EducationalLevelRequest level)
     {
         return await _validatorFactory.EducationalLevelRequestValidator.ValidateAsync(level);
@@ -328,5 +321,6 @@ public class EducationalLevelService : IEducationalLevelService
     {
         return await _validatorFactory.EducationalLevelUpdateRequestValidator.ValidateAsync(levelUpdate);
     }
+
     #endregion
 }

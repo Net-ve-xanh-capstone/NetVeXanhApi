@@ -1,7 +1,5 @@
 ﻿using Application.BaseModels;
 using Application.IService;
-using Application.SendModels.Topic;
-using Application.Services;
 using Domain.Models;
 using FluentValidation;
 using Infracstructures.SendModels.Sponsor;

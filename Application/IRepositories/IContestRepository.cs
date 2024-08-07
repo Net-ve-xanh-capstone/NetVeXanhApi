@@ -17,10 +17,12 @@ public interface IContestRepository : IGenericRepository<Contest>
     Task<Contest?> GetContestByIdForRoundTopic(Guid id);
 
     Task<bool> CheckContestExist(DateTime startTime);
-    
+
     public Task<List<Contest>> EndContest();
     public Task<List<Contest>> StartContest();
     Task<List<Guid>> GetCollectionsWithStaffAccountsAsync();
     Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync();
     Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList);
+
+    Task<Contest?> GetContestThisYear();
 }

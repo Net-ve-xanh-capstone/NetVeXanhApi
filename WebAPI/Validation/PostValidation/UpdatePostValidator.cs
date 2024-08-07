@@ -8,12 +8,13 @@ namespace WebAPI.Validation.PostValidation;
 public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdatePostValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -47,7 +48,8 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                     RuleFor(x => x.CategoryId)
                         .MustAsync(async (categoryId, cancellation) =>
                         {
-                            return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
+                            return await _validationServiceManager.CategoryValidationService
+                                .IsExistedId(categoryId);
                         })
                         .WithMessage("CategoryId không tồn tại.");
                 });
@@ -55,7 +57,7 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -73,22 +75,19 @@ public class UpdatePostValidator : AbstractValidator<PostUpdateRequest>
                 });
         });
 
-        // Validate DeleteImages
-        RuleFor(x => x.DeleteImages)
-            .NotNull().WithMessage("Danh sách DeleteImages không được để null.")
-            .Must(images => images == null || images.All(image => image != Guid.Empty)).WithMessage("Mỗi GUID trong DeleteImages phải là một GUID hợp lệ.");
-
         // Validate NewImages
         RuleFor(x => x.NewImages)
             .NotNull().WithMessage("Danh sách NewImages không được để null.")
-            .Must(images => images == null || images.Any()).WithMessage("Danh sách NewImages phải chứa ít nhất một mục.")
+            .Must(images => images == null || images.Any())
+            .WithMessage("Danh sách NewImages phải chứa ít nhất một mục.")
             .ForEach(image => image
-                .SetValidator(new ImageRequestValidator())); // Giả định rằng bạn có một ImageRequestValidator để kiểm tra từng hình ảnh
+                .SetValidator(
+                    new ImageRequestValidator())); // Giả định rằng bạn có một ImageRequestValidator để kiểm tra từng hình ảnh
     }
 
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

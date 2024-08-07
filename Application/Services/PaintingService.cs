@@ -10,6 +10,7 @@ using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
 using Infracstructures.SendModels.Painting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services;
 
@@ -44,6 +45,11 @@ public class PaintingService : IPaintingService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         }
+        var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
+        if (account.Address.IsNullOrEmpty())
+        {
+            throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ !");
+        }
         var painting = _mapper.Map<Painting>(request);
         var rt = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(rt!.RoundId);
@@ -76,7 +82,11 @@ public class PaintingService : IPaintingService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         }
-
+        var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
+        if (account.Address.IsNullOrEmpty())
+        {
+            throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ !");
+        }
         var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
         if (check)

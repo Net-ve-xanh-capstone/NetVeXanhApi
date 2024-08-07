@@ -8,6 +8,7 @@ namespace WebAPI.Validation.PostValidation;
 public class PostRequestValidator : AbstractValidator<PostRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public PostRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -38,7 +39,8 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
                     RuleFor(x => x.CategoryId)
                         .MustAsync(async (categoryId, cancellation) =>
                         {
-                            return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
+                            return await _validationServiceManager.CategoryValidationService
+                                .IsExistedId(categoryId);
                         })
                         .WithMessage("CategoryId không tồn tại.");
                 });
@@ -49,11 +51,12 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
             .NotNull().WithMessage("Danh sách hình ảnh không được để null.")
             .Must(images => images != null && images.Any()).WithMessage("Danh sách hình ảnh phải chứa ít nhất một mục.")
             .ForEach(image => image
-                .SetValidator(new ImageRequestValidator())); // Giả định rằng bạn có một ImageRequestValidator để kiểm tra từng hình ảnh
+                .SetValidator(
+                    new ImageRequestValidator())); // Giả định rằng bạn có một ImageRequestValidator để kiểm tra từng hình ảnh
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {
@@ -75,7 +78,7 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
 
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

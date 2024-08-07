@@ -1,8 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.PaintingCollection;
-using Application.SendModels.Topic;
-using Application.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 

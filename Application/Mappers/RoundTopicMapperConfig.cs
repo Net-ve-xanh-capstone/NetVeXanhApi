@@ -17,9 +17,8 @@ public partial class MapperConfigs : Profile
 
         CreateMap<RoundTopic, RoundTopicInContestViewModel>()
             .ForMember(x => x.Topic, x => x.MapFrom(x => x.Topic));
-        
+
         CreateMap<RoundTopic, ListRoundTopicViewModel>()
             .ForMember(x => x.Name, x => x.MapFrom(x => x.Topic.Name));
-        
     }
 }

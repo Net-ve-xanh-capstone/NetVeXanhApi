@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Round;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.RoundValidation;
 public class RoundRequestValidator : AbstractValidator<RoundRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public RoundRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -33,7 +32,7 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
             .NotEmpty().WithMessage("Danh sách dối tượng không được để trống");
 
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

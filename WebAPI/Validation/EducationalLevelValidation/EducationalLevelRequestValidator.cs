@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.EducationalLevel;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.EducationalLevelValidation;
 public class EducationalLevelRequestValidator : AbstractValidator<EducationalLevelRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public EducationalLevelRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;

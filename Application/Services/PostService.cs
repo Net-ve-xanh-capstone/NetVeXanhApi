@@ -1,14 +1,12 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Post;
-using Application.SendModels.Topic;
 using Application.ViewModels.PostViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 
 namespace Application.Services;
 
@@ -20,7 +18,8 @@ public class PostService : IPostService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
-    public PostService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService, IValidatorFactory validatorFactory)
+    public PostService(IUnitOfWork unitOfWork, IMapper mapper, IImageService imageService,
+        IValidatorFactory validatorFactory)
     {
         _imageService = imageService;
         _unitOfWork = unitOfWork;
@@ -34,10 +33,8 @@ public class PostService : IPostService
     {
         var validationResult = await ValidatePostRequest(post);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var newPost = _mapper.Map<Post>(post);
         var newImages = _mapper.Map<List<Image>>(post.Images);
         newPost.Images = newImages;
@@ -144,10 +141,8 @@ public class PostService : IPostService
     {
         var validationResult = await ValidatePostUpdateRequest(updatePost);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var post = await _unitOfWork.PostRepo.GetByIdAsync(updatePost.Id);
         if (post == null) throw new Exception("Khong tim thay Post");
         _mapper.Map(updatePost, post);
@@ -155,16 +150,15 @@ public class PostService : IPostService
         if (updatePost.NewImages != null)
         {
             var newImages = _mapper.Map<List<Image>>(updatePost.NewImages);
-            foreach (var image in newImages) post.Images.Add(image);
-        }
-
-        if (updatePost.DeleteImages != null)
-            foreach (var image in updatePost.DeleteImages)
+            await _unitOfWork.ImageRepo.DeleteRangeAsync(post.Images.ToList());
+            foreach (var image in newImages)
             {
-                var deleteImage = post.Images.FirstOrDefault(x => x.Id == image);
-                post.Images.Remove(deleteImage);
+                image.PostId = post.Id;
+                post.Images.Add(image);
             }
 
+            _unitOfWork.PostRepo.Update(post);
+        }
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -209,6 +203,7 @@ public class PostService : IPostService
     }
 
     #region Validate
+
     public async Task<ValidationResult> ValidatePostRequest(PostRequest post)
     {
         return await _validatorFactory.PostRequestValidator.ValidateAsync(post);
@@ -218,5 +213,6 @@ public class PostService : IPostService
     {
         return await _validatorFactory.UpdatePostRequestValidator.ValidateAsync(postUpdate);
     }
+
     #endregion
 }

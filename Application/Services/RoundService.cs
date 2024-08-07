@@ -2,7 +2,6 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Round;
-using Application.SendModels.Topic;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
@@ -10,7 +9,6 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -42,10 +40,8 @@ public class RoundService : IRoundService
     {
         var validationResult = await ValidateRoundRequest(round);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var listNewRound = new List<Round>();
         foreach (var id in round.listLevel)
         {
@@ -56,6 +52,7 @@ public class RoundService : IRoundService
             newRound.UpdatedTime = _currentTime.GetCurrentTime();
             listNewRound.Add(newRound);
         }
+
         await _unitOfWork.RoundRepo.AddRangeAsync(listNewRound);
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -68,10 +65,10 @@ public class RoundService : IRoundService
     {
         var list = await _unitOfWork.RoundRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Round nao");
-        
+
         return _mapper.Map<List<RoundViewModel>>(list);
     }
-    
+
     #endregion
 
     #region Get By Id
@@ -92,10 +89,8 @@ public class RoundService : IRoundService
     {
         var validationResult = await ValidateRoundUpdateRequest(updateRound);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(updateRound.Id);
         if (round == null) throw new Exception("Khong tim thay Round");
         _mapper.Map(updateRound, round);
@@ -153,16 +148,17 @@ public class RoundService : IRoundService
 
     #endregion
 
-    #region Get 
+    #region Get
+
     public async Task<List<RoundViewModel>> GetListRoundForCompetitor()
     {
         var today = _currentTime.GetCurrentTime();
         var result = await _unitOfWork.RoundRepo.GetRoundsOfThisYear();
         return _mapper.Map<List<RoundViewModel>>(result);
     }
+
     #endregion
 
-    //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.RoundRepo.IsExistIdAsync(id);
@@ -170,6 +166,7 @@ public class RoundService : IRoundService
 
 
     #region Validate
+
     public async Task<ValidationResult> ValidateRoundRequest(RoundRequest round)
     {
         return await _validatorFactory.RoundRequestValidator.ValidateAsync(round);
@@ -179,5 +176,6 @@ public class RoundService : IRoundService
     {
         return await _validatorFactory.RoundUpdateRequestValidator.ValidateAsync(roundUpdate);
     }
+
     #endregion
 }

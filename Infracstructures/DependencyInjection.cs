@@ -113,7 +113,7 @@ public static class DependencyInjection
         //RoundTopic
         services.AddTransient<IRoundTopicRepository, RoundTopicRepository>();
         services.AddTransient<IRoundTopicService, RoundTopicService>();
-        
+
         //District
         services.AddTransient<IDistrictRepository, DistrictRepository>();
         services.AddTransient<IDistrictService, DistrictService>();
@@ -140,6 +140,7 @@ public static class DependencyInjection
         services.AddScoped<ISponsorValidationService, SponsorValidationService>();
         services.AddScoped<ITopicValidationService, TopicValidationService>();
         services.AddScoped<IExcelService, ExcelService>();
+
         #endregion
 
         #region Config validators
@@ -216,9 +217,9 @@ public static class DependencyInjection
         var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
 
         services.AddSingleton(new JobSchedule(
-            jobType: typeof(SchedulerTriggerJob),
-            cronExpression: "0 10 0 * * ?",
-            timeZone: vietnamTimeZone
+            typeof(SchedulerTriggerJob),
+            "0 10 0 * * ?",
+            vietnamTimeZone
         ));
 
         #endregion

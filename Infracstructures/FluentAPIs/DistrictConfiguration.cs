@@ -15,11 +15,11 @@ public class DistrictConfiguration : IEntityTypeConfiguration<District>
 
         builder.Property(u => u.Id)
             .HasDefaultValueSql("NEWID()");
-        
+
         //Name
         builder.Property(u => u.Name).IsRequired().HasMaxLength(50);
         builder.HasIndex(x => x.Name).IsUnique();
-        
+
         //Relation
         builder.HasMany(u => u.Wards).WithOne(u => u.District).HasForeignKey(u => u.DistrictId)
             .OnDelete(DeleteBehavior.ClientSetNull);

@@ -1,7 +1,5 @@
-﻿using Application.BaseModels;
-using Application.SendModels.Resources;
+﻿using Application.SendModels.Resources;
 using Application.ViewModels.ResourcesViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

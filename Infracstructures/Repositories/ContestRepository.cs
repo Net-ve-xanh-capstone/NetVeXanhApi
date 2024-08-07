@@ -16,8 +16,13 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account)
+            .Include(x => x.Account).OrderBy(x => x.CreatedTime)
             .ToListAsync();
+    }
+    
+    public async Task<Contest?> GetContestThisYear()
+    {
+        return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
     }
 
     public override async Task<Contest?> GetByIdAsync(Guid id)
@@ -49,12 +54,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ThenInclude(x => x.Award.Where(x => x.Status != AwardStatus.Inactive.ToString()))
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
-        if (contest != null)
-            // Lọc các RoundTopic có Topic.Status == "Active"
-            foreach (var educationalLevel in contest.EducationalLevel)
-            foreach (var round in educationalLevel.Round)
-                round.RoundTopic = round.RoundTopic.Where(rt => rt.Topic.Status == TopicStatus.Active.ToString())
-                    .ToList();
         return contest;
     }
 
@@ -105,7 +104,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<List<Guid>> Get3NearestContestId()
     {
         var result = await DbSet
-            .Where(x=>x.Status == ContestStatus.Complete.ToString())
+            .Where(x => x.Status == ContestStatus.Complete.ToString())
             .OrderBy(x => x.CreatedTime).Select(x => x.Id).Take(3).ToListAsync();
         return result;
     }
@@ -126,39 +125,40 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<List<Contest>> EndContest()
     {
-        return await DbSet.Include(src => src.EducationalLevel).Where(src => src.EndTime <= DateTime.Now && src.Status == ContestStatus.InProcess.ToString()).ToListAsync();
+        return await DbSet.Include(src => src.EducationalLevel)
+            .Where(src => src.EndTime <= DateTime.Now && src.Status == ContestStatus.InProcess.ToString())
+            .ToListAsync();
     }
 
     public async Task<List<Contest>> StartContest()
     {
-        return await DbSet.Include(src => src.EducationalLevel).Where(src => src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
+        return await DbSet.Include(src => src.EducationalLevel).Where(src =>
+            src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
 
     public async Task<List<Guid>> GetCollectionsWithStaffAccountsAsync()
     {
         var paintingIds = await DbSet
-        .Include(c => c.EducationalLevel)
+            .Include(c => c.EducationalLevel)
             .ThenInclude(el => el.Award) // Include Awards for each EducationalLevel
             .ThenInclude(a => a.Painting) // Include Paintings for each Award
-        .SelectMany(c => c.EducationalLevel
-            .SelectMany(el => el.Award
-                .SelectMany(a => a.Painting
-                    .Select(p => p.Id))))
-        .ToListAsync();
+            .SelectMany(c => c.EducationalLevel
+                .SelectMany(el => el.Award
+                    .SelectMany(a => a.Painting
+                        .Select(p => p.Id))))
+            .ToListAsync();
 
         return paintingIds;
     }
 
     public async Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync()
     {
-        var mostRecentContest = await DbSet.Where(x=>x.Status == ContestStatus.Complete.ToString())
+        var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
             .OrderByDescending(c => c.CreatedTime)
             .FirstOrDefaultAsync();
 
         if (mostRecentContest == null)
-        {
             return new List<AccountAwardViewModel>(); // Hoặc xử lý trường hợp không có cuộc thi nào.
-        }
 
         var accounts = await DbSet
             .Where(c => c.Id == mostRecentContest.Id)
@@ -176,14 +176,15 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
         return accounts;
     }
+
     public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
     {
         var listContest = await DbSet
-            .Where(x => contestIdList.Contains((Guid)x.Id))
+            .Where(x => contestIdList.Contains(x.Id))
             .Include(c => c.EducationalLevel) // Bao gồm EducationalLevels
-                .ThenInclude(el => el.Award) // Bao gồm Awards cho mỗi EducationalLevel
-                    .ThenInclude(a => a.Painting) // Bao gồm Painting cho mỗi Award
-                        .ThenInclude(p => p.Account) // Bao gồm Account cho mỗi Painting
+            .ThenInclude(el => el.Award) // Bao gồm Awards cho mỗi EducationalLevel
+            .ThenInclude(a => a.Painting) // Bao gồm Painting cho mỗi Award
+            .ThenInclude(p => p.Account) // Bao gồm Account cho mỗi Painting
             .ToListAsync();
 
         var filteredContests = listContest
@@ -195,13 +196,15 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
                     {
                         EducationalLevel = el,
                         Awards = el.Award
-                            .Where(a => a.Rank == RankAward.FirstPrize.ToString() || a.Rank == RankAward.SecondPrize.ToString())
+                            .Where(a => a.Rank == RankAward.FirstPrize.ToString() ||
+                                        a.Rank == RankAward.SecondPrize.ToString())
                             .ToList()
                     })
                     .Where(el => el.Awards.Any()) // Giữ lại các cấp học nếu có giải thưởng đã lọc
                     .ToList()
             })
-            .Where(x => x.EducationalLevel.Any()) // Giữ lại các cuộc thi nếu có ít nhất một cấp học với giải thưởng đã lọc
+            .Where(x => x.EducationalLevel
+                .Any()) // Giữ lại các cuộc thi nếu có ít nhất một cấp học với giải thưởng đã lọc
             .Select(x => new Contest
             {
                 Id = x.Contest.Id,

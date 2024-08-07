@@ -7,6 +7,7 @@ namespace WebAPI.Validation.RoundTopicValidation;
 public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public RoundTopicRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -33,7 +34,8 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
 
         RuleFor(x => x.ListTopicId)
             .NotNull().WithMessage("Danh sách tranh không được để trống.")
-            .Must(paintings => paintings != null && paintings.Any()).WithMessage("Danh sách tranh phải chứa ít nhất một mục.");
+            .Must(paintings => paintings != null && paintings.Any())
+            .WithMessage("Danh sách tranh phải chứa ít nhất một mục.");
 
         When(x => x.ListTopicId != null && x.ListTopicId.Any(), () =>
         {
@@ -41,7 +43,8 @@ public class RoundTopicRequestValidator : AbstractValidator<RoundTopicRequest>
             {
                 topic.RuleFor(p => p)
                     .NotEmpty().WithMessage("Chủ đề không được trống.")
-                    .Must(topicId => Guid.TryParse(topicId.ToString(), out _)).WithMessage("Mỗi GUID của chủ đề phải là một GUID hợp lệ.")
+                    .Must(topicId => Guid.TryParse(topicId.ToString(), out _))
+                    .WithMessage("Mỗi GUID của chủ đề phải là một GUID hợp lệ.")
                     .DependentRules(() =>
                     {
                         topic.RuleFor(p => p)

@@ -1,12 +1,10 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Painting;
-using Application.SendModels.Topic;
-using Application.Services;
 using Domain.Models;
+using FluentValidation;
 using Infracstructures.SendModels.Painting;
 using Microsoft.AspNetCore.Mvc;
-using FluentValidation;
 
 namespace WebAPI.Controllers;
 
@@ -71,12 +69,13 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.SubmitPaintingForPreliminaryRound(paintingRequest);
-            if (!result) return NotFound(new BaseFailedResponseModel
-            {
-                Status = NotFound().StatusCode,
-                Message = "Painting not found",
-                Result = false
-            });
+            if (!result)
+                return NotFound(new BaseFailedResponseModel
+                {
+                    Status = NotFound().StatusCode,
+                    Message = "Painting not found",
+                    Result = false
+                });
 
             return Ok(new BaseResponseModel
             {
@@ -107,6 +106,7 @@ public class PaintingController : Controller
             });
         }
     }
+
     #endregion
 
     #region Staff Submit Painting For Preliminary Round
@@ -223,7 +223,7 @@ public class PaintingController : Controller
     }
 
     #endregion
-    
+
     #region Update Painting
 
     [HttpPut("satffupdate")]
@@ -639,6 +639,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By Account Contest
+
     [HttpGet("getpaintingbyaccountcontest")]
     public async Task<IActionResult> GetPaintingByAccountContest([FromQuery] Guid contestId, [FromQuery] Guid accountId)
     {

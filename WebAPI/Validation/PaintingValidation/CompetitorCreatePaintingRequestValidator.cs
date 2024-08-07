@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Painting;
 using FluentValidation;
 
@@ -9,12 +7,13 @@ namespace WebAPI.Validation.PaintingValidation;
 public class CompetitorCreatePaintingRequestValidator : AbstractValidator<CompetitorCreatePaintingRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public CompetitorCreatePaintingRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
         // Validate AccountId
         RuleFor(x => x.AccountId)
-        .NotEmpty().WithMessage("AccountId không được để trống.");
+            .NotEmpty().WithMessage("AccountId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.AccountId.ToString()), () =>
         {
@@ -31,7 +30,7 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                         .WithMessage("AccountId không tồn tại.");
                 });
         });
-        
+
 
         // Validate Image
         RuleFor(c => c.Image)
@@ -61,7 +60,8 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
                     RuleFor(x => x.RoundTopicId)
                         .MustAsync(async (roundtopicId, cancellation) =>
                         {
-                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(roundtopicId);
+                            return await _validationServiceManager.RoundTopicValidationService.IsExistedId(
+                                roundtopicId);
                         })
                         .WithMessage("RoundTopicId không tồn tại.");
                 });
@@ -69,13 +69,15 @@ public class CompetitorCreatePaintingRequestValidator : AbstractValidator<Compet
         RuleFor(x => new { x.AccountId, x.RoundTopicId })
             .MustAsync(async (x, cancellation) =>
             {
-                return !await _validationServiceManager.PaintingValidationService.IsExistedPaintingInContest(x.AccountId, x.RoundTopicId);
+                return !await _validationServiceManager.PaintingValidationService.IsExistedPaintingInContest(
+                    x.AccountId, x.RoundTopicId);
             })
             .WithMessage("Không thể nộp(lưu) vì đã có bài dự thi.");
     }
+
     private bool BeAValidUrl(string url)
     {
-        return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult)
-            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+        return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+               && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
     }
 }

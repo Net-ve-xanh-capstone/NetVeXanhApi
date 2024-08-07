@@ -14,6 +14,8 @@ public interface IScheduleService
     Task<(List<ScheduleRatingViewModel>, int)> GetListSchedule(ListModels listModels);
     Task<ScheduleRatingViewModel?> GetScheduleById(Guid id);
     Task<List<ScheduleViewModel?>> GetScheduleByExaminerId(Guid id);
+    Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId);
+
     Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting);
     Task<bool> RatingFirstPrize(RatingRequest ratingPainting);
     Task<bool> RatingSecondPrize(RatingRequest ratingPainting);

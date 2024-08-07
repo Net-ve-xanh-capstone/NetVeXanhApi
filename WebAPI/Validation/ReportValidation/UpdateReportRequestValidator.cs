@@ -7,12 +7,13 @@ namespace WebAPI.Validation.ReportValidation;
 public class UpdateReportRequestValidator : AbstractValidator<UpdateReportRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdateReportRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -40,7 +41,7 @@ public class UpdateReportRequestValidator : AbstractValidator<UpdateReportReques
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

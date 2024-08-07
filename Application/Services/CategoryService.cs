@@ -2,15 +2,12 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Category;
-using Application.SendModels.Topic;
 using Application.ViewModels.CategoryViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
@@ -41,10 +38,8 @@ public class CategoryService : ICategoryService
     {
         var validationResult = await ValidateCategoryRequest(addCategoryViewModel);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var category = _mapper.Map<Category>(addCategoryViewModel);
 
         category.Status = CategoryStatus.Unused.ToString();
@@ -78,10 +73,8 @@ public class CategoryService : ICategoryService
     {
         var validationResult = await ValidateCategoryUpdateRequest(updateCategory);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(updateCategory.Id);
         if (category == null) throw new Exception("Khong tim thay Category");
 
@@ -191,7 +184,9 @@ public class CategoryService : ICategoryService
     {
         return await _unitOfWork.CategoryRepo.IsExistIdAsync(id);
     }
+
     #region Validate
+
     public async Task<ValidationResult> ValidateCategoryRequest(CategoryRequest category)
     {
         return await _validatorFactory.CategoryRequestValidator.ValidateAsync(category);
@@ -201,5 +196,6 @@ public class CategoryService : ICategoryService
     {
         return await _validatorFactory.UpdateCategoryRequestValidator.ValidateAsync(categoryUpdate);
     }
+
     #endregion
 }

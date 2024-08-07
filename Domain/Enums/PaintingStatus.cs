@@ -12,6 +12,6 @@ public enum PaintingStatus
 
     // For Final Round
 
-    FinalRound,// Status of painting in round 2
+    FinalRound, // Status of painting in round 2
     HasPrizes // status when painting has prize
 }

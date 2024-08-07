@@ -6,9 +6,9 @@ namespace Infracstructures.ScheduleTrigger;
 
 public class QuartzHostedService : IHostedService
 {
-    private readonly ISchedulerFactory _schedulerFactory;
     private readonly IJobFactory _jobFactory;
     private readonly IEnumerable<JobSchedule> _jobSchedules;
+    private readonly ISchedulerFactory _schedulerFactory;
 
     public QuartzHostedService(
         ISchedulerFactory schedulerFactory,

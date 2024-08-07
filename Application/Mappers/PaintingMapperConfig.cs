@@ -23,6 +23,26 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Painting, PaintingViewModel>()
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src =>
+                src.Award == null ? "Không có giải" :
+                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+            ))
+            .ForPath(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == PaintingStatus.Draft.ToString() ? "Bản nháp" :
+                src.Status == PaintingStatus.Submitted.ToString() ? "Đã nộp" :
+                src.Status == PaintingStatus.Delete.ToString() ? "Đã xóa" :
+                src.Status == PaintingStatus.Accepted.ToString() ? "Đã chấp nhận" :
+                src.Status == PaintingStatus.Rejected.ToString() ? "Đã từ chối" :
+                src.Status == PaintingStatus.Pass.ToString() ? "Qua Vòng 1" :
+                src.Status == PaintingStatus.NotPass.ToString() ? "Không qua vòng 1" :
+                src.Status == PaintingStatus.FinalRound.ToString() ? "Vòng chung kết" :
+                src.Status == PaintingStatus.HasPrizes.ToString() ? "Có giải thưởng" :
+                "Trạng thái không xác định"
+            ))
             .ForPath(dest => dest.RoundId, opt => opt.MapFrom(src => src.RoundTopic.RoundId))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
             .ForPath(dest => dest.Birthday, opt => opt.MapFrom(src =>
@@ -31,47 +51,46 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
-            .ForPath(dest => dest.OwnerRole, opt => opt.MapFrom(src => src.Account.Id == src.CreatedBy ? "Competitor" : "Staff"))
+            .ForPath(dest => dest.OwnerRole,
+                opt => opt.MapFrom(src => src.Account.Id == src.CreatedBy ? "Competitor" : "Staff"))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
+            .ForPath(dest => dest.SubmitTime, opt => opt.MapFrom(src => src.SubmittedTimestamp))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))
-            .ForPath(dest => dest.ContestName,opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
-            .ForPath(dest => dest.ContestId, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
+            .ForPath(dest => dest.ContestName,
+                opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
+            .ForPath(dest => dest.ContestId,
+                opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
         CreateMap<Painting, PaintingTrackingViewModel>()
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
-             .ForPath(dest => dest.History.Created.Time, opt =>
-                opt.MapFrom(src => src.CreatedTime.HasValue ? src.CreatedTime : (DateTime?)null))
+            .ForPath(dest => dest.History.Created.Time, opt =>
+                opt.MapFrom(src => src.CreatedTime.HasValue ? src.CreatedTime : null))
             .ForPath(dest => dest.History.Created.Message, opt =>
                 opt.MapFrom(src => src.CreatedTime.HasValue ? "Đã tạo" : null))
-
             .ForPath(dest => dest.History.Updated.Time, opt =>
-                opt.MapFrom(src => src.UpdatedTime.HasValue ? src.UpdatedTime : (DateTime?)null))
+                opt.MapFrom(src => src.UpdatedTime.HasValue ? src.UpdatedTime : null))
             .ForPath(dest => dest.History.Updated.Message, opt =>
                 opt.MapFrom(src => src.UpdatedTime.HasValue ? "Đã sửa" : null))
-
             .ForPath(dest => dest.History.Reviewed.Time, opt =>
-                opt.MapFrom(src => src.ReviewedTimestamp.HasValue ? src.ReviewedTimestamp : (DateTime?)null))
+                opt.MapFrom(src => src.ReviewedTimestamp.HasValue ? src.ReviewedTimestamp : null))
             .ForPath(dest => dest.History.Reviewed.Message, opt =>
             {
                 opt.MapFrom(src =>
                     src.ReviewedTimestamp.HasValue
-                        ? (src.Status == PaintingStatus.Rejected.ToString() ? "Không được duyệt" : "Đã được duyệt")
+                        ? src.Status == PaintingStatus.Rejected.ToString() ? "Không được duyệt" : "Đã được duyệt"
                         : null);
             })
             .ForPath(dest => dest.History.FinalDecision.Time, opt =>
-                opt.MapFrom(src => src.FinalDecisionTimestamp.HasValue ? src.FinalDecisionTimestamp : (DateTime?)null))
-            .ForPath(dest => dest.History.FinalDecision.Message, opt =>
-            {
-                opt.MapFrom(src => GetFinalDecisionMessage(src.FinalDecisionTimestamp, src.Status));
-            })
+                opt.MapFrom(src => src.FinalDecisionTimestamp.HasValue ? src.FinalDecisionTimestamp : null))
+            .ForPath(dest => dest.History.FinalDecision.Message,
+                opt => { opt.MapFrom(src => GetFinalDecisionMessage(src.FinalDecisionTimestamp, src.Status)); })
             .ForPath(dest => dest.History.Submitted.Time, opt =>
-                opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? src.SubmittedTimestamp : (DateTime?)null))
+                opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? src.SubmittedTimestamp : null))
             .ForPath(dest => dest.History.Submitted.Message, opt =>
                 opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? "Đã nộp bài" : null));
-
 
 
         CreateMap<PaintingViewModel, Painting>()
@@ -94,7 +113,7 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        
+
         CreateMap<StaffUpdatePaintingRequest, Painting>()
             .ForPath(x => x.Account.Birthday, x => x.MapFrom(x => x.Birthday))
             .ForPath(x => x.Account.Phone, x => x.MapFrom(x => x.Phone))
@@ -110,28 +129,30 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.OwnerRole, opt => opt.MapFrom(src => src.Account.Role))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
-            .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
+            .ForPath(dest => dest.ContestName,
+                opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
             .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
                 src.Award == null ? "Không có giải" :
                 src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
                 src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
                 src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
-                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" : 
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
                 src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
             ));
         CreateMap<Painting, CompetitorViewModel>()
-            .ForPath(dest => dest.Id, opt => opt.MapFrom(src =>  src.Account.Id))
-            .ForPath(dest => dest.Prize, opt => opt.MapFrom(src =>  src.Award.Rank))
-            .ForPath(dest => dest.Phone, opt => opt.MapFrom(src =>  src.Account.Phone))
-            .ForPath(dest => dest.Code, opt => opt.MapFrom(src =>  src.Account.Code))
-            .ForPath(dest => dest.Address, opt => opt.MapFrom(src =>  src.Account.Address))
-            .ForPath(dest => dest.Email, opt => opt.MapFrom(src =>  src.Account.Email))
-            .ForPath(dest => dest.FullName, opt => opt.MapFrom(src =>  src.Account.FullName))
-            .ForPath(dest => dest.Age, opt => opt.MapFrom(src =>  CalculateAge(src.Account.Birthday!.Value)))
-            .ForPath(dest => dest.Gender, opt => opt.MapFrom(src => 
+            .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))
+            .ForPath(dest => dest.Prize, opt => opt.MapFrom(src => src.Award.Rank))
+            .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
+            .ForPath(dest => dest.Code, opt => opt.MapFrom(src => src.Account.Code))
+            .ForPath(dest => dest.Address, opt => opt.MapFrom(src => src.Account.Address))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
+            .ForPath(dest => dest.FullName, opt => opt.MapFrom(src => src.Account.FullName))
+            .ForPath(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Account.Birthday!.Value)))
+            .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Account.Gender! == true ? "Nữ" :
                 src.Account.Gender! == false ? "Nam" : null));
     }
+
     public static string GetFinalDecisionMessage(DateTime? finalDecisionTimestamp, string status)
     {
         if (!finalDecisionTimestamp.HasValue)

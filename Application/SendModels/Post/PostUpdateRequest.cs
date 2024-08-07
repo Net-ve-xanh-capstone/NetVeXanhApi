@@ -10,9 +10,5 @@ public class PostUpdateRequest
     public string? Description { get; set; }
     public Guid CategoryId { get; set; }
     public Guid CurrentUserId { get; set; }
-
-
-    public List<Guid>? DeleteImages { get; set; }
-
     public List<ImageRequest>? NewImages { get; set; }
 }

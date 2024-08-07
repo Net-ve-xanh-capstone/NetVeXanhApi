@@ -2,7 +2,6 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Schedule;
-using Application.SendModels.Topic;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
@@ -10,20 +9,21 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Infracstructures;
-using Quartz;
 
 namespace Application.Services;
 
 public class ScheduleService : IScheduleService
 {
-    private readonly IMapper _mapper;
     private readonly IExcelService _excelService;
+    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IMailService _mailService;
 
-    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory, IExcelService excelService)
+    public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
+        IExcelService excelService, IMailService mailService)
     {
+        _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -63,10 +63,8 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateScheduleUpdateRequest(updateSchedule);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(updateSchedule.Id);
         if (schedule == null) throw new Exception("Khong tim thay Schedule");
         _mapper.Map(updateSchedule, schedule);
@@ -89,30 +87,55 @@ public class ScheduleService : IScheduleService
 
     #endregion
 
+    public async Task<bool> IsExistedId(Guid id)
+    {
+        return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
+    }
+
+    public async Task<(byte[], string)> GetListCompetitorPass(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
+        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(roundId);
+        var name = "";
+        if (round!.Name == "Vòng Chung Kết")
+            name = "FinalRound";
+        else
+            name = "PreliminaryRound";
+
+        if (round!.EducationalLevel.Description == "Mầm Non")
+            name = name + "_A";
+        else
+            name = name + "_B";
+        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorViewModel>>(list), name);
+        return (result, name);
+    }
+
+    public async Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId)
+    {
+        var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
+        var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
+        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
+        return _mapper.Map<List<CompetitorViewModel>>(list);
+    }
+
     #region Create
 
     public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get Paintings Of Preliminary round
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId);
         var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
         if (round.Status != RoundStatus.Complete.ToString())
-        {
             throw new Exception("Bạn Không Thể Lên Lịch Chấm Khi Cuộc Thi Chưa Kết Thúc");
-        }
         var award = round?.EducationalLevel.Award
             .FirstOrDefault(a => a.Rank == RankAward.Preliminary.ToString());
 
         if (listPainting == null || listPainting!.Count < award!.Quantity)
-        {
             throw new Exception("Số Lượng Tranh Không Đủ !");
-        }
 
         if (award == null) throw new Exception("Award not found.");
 
@@ -158,6 +181,12 @@ public class ScheduleService : IScheduleService
             result[i].ForEach(item => item.ScheduleId = newSchedule.Id);
         }
 
+        var listExaminer = await _unitOfWork.AccountRepo.GetByIdsAsync(schedule.ListExaminer);
+        foreach (var account in listExaminer)
+        {
+            await _mailService.SendScheduleToExaminer(account);
+        }
+
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -167,14 +196,12 @@ public class ScheduleService : IScheduleService
         {
             var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
             if (round.Status != RoundStatus.Complete.ToString())
-            {
                 throw new Exception("Bạn Không Thể Lên Lịch Chấm Khi Cuộc Thi Chưa Kết Thúc");
-            }
-            
+
             //Get Paintings Of Preliminary round
             var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId);
             var result = SplitList(listPainting, schedule.ListExaminer.Count);
-            
+
             //Get all award of educationLevel
             var award = round?.EducationalLevel.Award
                 .Where(a => a.Rank != RankAward.Preliminary.ToString())
@@ -288,6 +315,22 @@ public class ScheduleService : IScheduleService
         return _mapper.Map<List<ScheduleViewModel>>(schedule);
     }
 
+    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId)
+    {
+        var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
+        if (contest == null) throw new Exception("Khong tim thay");
+        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contest!.Id);
+        foreach (var level in educationalLevel)
+        foreach (var round in level.Round)
+        foreach (var schedule in round.Schedule)
+            if (schedule.ExaminerId != examinerId)
+                round.Schedule.Remove(schedule);
+
+        if (educationalLevel == null) throw new Exception("Khong tim thay");
+
+        return _mapper.Map<List<ScheduleWebViewModel>>(educationalLevel);
+    }
+
     #endregion
 
     #region Rating
@@ -296,24 +339,22 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
         if (schedules.Painting.Any(p => p.Status != PaintingStatus.Accepted.ToString())) return false;
-        
+
         if (ratingPainting.Paintings.Except(schedules.Painting.Select(p => p.Id)).ToList().Any())
             throw new Exception("Have ID not Exist In schedule");
-        
+
         //Get painting have status is FinalRound
         var listPass = schedules.Painting.Where(p => ratingPainting.Paintings.Contains(p.Id)).ToList();
         var listNotPass = schedules.Painting.Where(p => !ratingPainting.Paintings.Contains(p.Id)).ToList();
 
         //Get Award from Award schedule
         var awardSchedule = schedules.AwardSchedule.FirstOrDefault();
-        
+
         listPass.ForEach(p => p.Status = PaintingStatus.Pass.ToString());
         listPass.ForEach(p => p.AwardId = awardSchedule!.AwardId);
         listNotPass.ForEach(p => p.Status = PaintingStatus.NotPass.ToString());
@@ -333,10 +374,8 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -378,10 +417,8 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -423,10 +460,8 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -468,10 +503,8 @@ public class ScheduleService : IScheduleService
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
-        {
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        }
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
@@ -510,12 +543,9 @@ public class ScheduleService : IScheduleService
     }
 
     #endregion
-    //Check Id is Exist
-    public async Task<bool> IsExistedId(Guid id)
-    {
-        return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
-    }
+
     #region Validate
+
     public async Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule)
     {
         return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
@@ -525,42 +555,11 @@ public class ScheduleService : IScheduleService
     {
         return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
     }
+
     public async Task<ValidationResult> ValidateRatingRequest(RatingRequest painting)
     {
         return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
     }
-    #endregion
-    public async Task<(byte[], string)> GetListCompetitorPass(Guid roundId)
-    {
-        var round = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
-        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(roundId);
-        string name = $"";
-        if (round!.Name == "Vòng Chung Kết")
-        {
-            name = "FinalRound";
-        }
-        else
-        {
-            name = $"PreliminaryRound";
-        }
 
-        if (round!.EducationalLevel.Description == "Mầm Non")
-        {
-            name = name + "_A";
-        }
-        else
-        {
-            name = name + "_B";
-        }
-        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorViewModel>>(list), name);
-        return (result, name);
-    }
-    
-    public async Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId)
-    {
-        var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
-        var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
-        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
-        return _mapper.Map<List<CompetitorViewModel>>(list);
-    }
+    #endregion
 }

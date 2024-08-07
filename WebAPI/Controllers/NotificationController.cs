@@ -104,7 +104,7 @@ public class NotificationController : Controller
     }
 
     #endregion
-    
+
     #region Send Result Final Round
 
     [HttpPut("sendresultfinalround/{id}")]
@@ -132,7 +132,7 @@ public class NotificationController : Controller
     }
 
     #endregion
-    
+
     #region Send Result Preliminary Round
 
     [HttpPut("sendresultpreliminaryround/{id}")]

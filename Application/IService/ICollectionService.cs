@@ -1,8 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Collection;
 using Application.ViewModels.CollectionViewModels;
-using Application.ViewModels.PaintingViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

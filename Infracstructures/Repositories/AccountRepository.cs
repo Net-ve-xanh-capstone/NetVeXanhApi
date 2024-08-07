@@ -21,6 +21,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Role == Role.Competitor.ToString());
     }
+
     public async Task<Account?> Login(string username)
     {
         return await DbSet.FirstOrDefaultAsync(a =>
@@ -70,21 +71,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     {
         var listAccount = await DbSet.ToListAsync();
 
-        if (listAccount == null || !listAccount.Any())
-        {
-            return 1;
-        }
+        if (listAccount == null || !listAccount.Any()) return 1;
 
         // Lọc danh sách các tài khoản có code và bắt đầu với roleCode
         var filteredAccounts = listAccount.Where(a => a.Code != null && a.Code.StartsWith(roleCode)).ToList();
 
         // Kiểm tra xem danh sách filteredAccounts có phần tử nào không
-        if (!filteredAccounts.Any())
-        {
-            return 1;
-        }
+        if (!filteredAccounts.Any()) return 1;
 
-        int maxNumber = filteredAccounts
+        var maxNumber = filteredAccounts
             .Select(a =>
             {
                 // Dùng biểu thức chính quy để lấy phần số từ mã
@@ -100,12 +95,13 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     public async Task<int> CompetitorCountByContest(Guid contestId)
     {
         return await DbSet
-            .Where(p => p.Painting.Any(x=>x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId ))
+            .Where(p => p.Painting.Any(x => x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId))
             .Distinct()
             .CountAsync();
     }
 
     #region Validate
+
     public async Task<bool> IsExistCompetitor(Guid id)
     {
         return await DbSet.AnyAsync(x => x.Id == id && x.Role == Role.Competitor.ToString());
@@ -117,18 +113,20 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
     }
 
 
-
     public async Task<bool> IsExistPhone(string phone)
     {
         return await DbSet.AnyAsync(x => x.Phone == phone);
     }
+
     public async Task<bool> IsExistEmail(string email)
     {
         return await DbSet.AnyAsync(x => x.Email == email);
     }
+
     public async Task<bool> IsExistUsername(string username)
     {
         return await DbSet.AnyAsync(x => x.Username == username);
     }
+
     #endregion
 }

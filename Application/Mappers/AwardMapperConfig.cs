@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using Application.SendModels.Award;
+﻿using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
-using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -29,7 +27,5 @@ public partial class MapperConfigs : Profile
                 });
             });
         CreateMap<Award, AwardInLevelViewModel>();
-
     }
-    
 }

@@ -1,7 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Report;
 using Application.ViewModels.ReportViewModels;
-using FluentValidation;
 using FluentValidation.Results;
 
 namespace Application.IService;

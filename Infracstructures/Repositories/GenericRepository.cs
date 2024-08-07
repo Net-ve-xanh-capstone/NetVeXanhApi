@@ -112,8 +112,19 @@ public class GenericRepository<TModel> : IGenericRepository<TModel> where TModel
         DbSet.Remove(model);
     }
 
+    public virtual async Task DeleteRangeAsync(List<TModel> models)
+    {
+        DbSet.RemoveRange(models);
+    }
+
     public async Task<bool> IsExistIdAsync(Guid id)
     {
         return await DbSet.FindAsync(id) != null;
+    }
+    
+    
+    public virtual async Task<List<TModel>> GetByIdsAsync(List<Guid> ids)
+    {
+        return await DbSet.Where(e => ids.Contains((Guid)e.GetType().GetProperty("Id").GetValue(e, null))).ToListAsync();
     }
 }

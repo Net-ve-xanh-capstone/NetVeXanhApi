@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Application.IService.IValidationService;
 
-namespace Application.IService.IValidationService
+public interface IContestValidationService
 {
-    public interface IContestValidationService
-    {
-        Task<bool> IsExistedId(Guid id);
-    }
+    Task<bool> IsExistedId(Guid id);
 }

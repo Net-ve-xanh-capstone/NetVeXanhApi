@@ -1,6 +1,4 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Category;
 using FluentValidation;
 
@@ -9,6 +7,7 @@ namespace WebAPI.Validation.CategoryValidation;
 public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public UpdateCategoryRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
@@ -28,7 +27,8 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
                         {
                             try
                             {
-                                return await _validationServiceManager.CategoryValidationService.IsExistedId(categoryId);
+                                return await _validationServiceManager.CategoryValidationService
+                                    .IsExistedId(categoryId);
                             }
                             catch (Exception)
                             {
@@ -46,7 +46,7 @@ public class UpdateCategoryRequestValidator : AbstractValidator<UpdateCategoryRe
 
         //CurrentUserId
         RuleFor(x => x.CurrentUserId)
-        .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

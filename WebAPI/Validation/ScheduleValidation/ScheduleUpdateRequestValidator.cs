@@ -1,8 +1,5 @@
 ﻿using Application;
-using Application.IService;
-using Application.IService.IValidationService;
 using Application.SendModels.Schedule;
-using Application.Services.ValidationService;
 using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
@@ -10,12 +7,13 @@ namespace WebAPI.Validation.ScheduleValidation;
 public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
+
     public ScheduleUpdateRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
         // Validate Id
         RuleFor(x => x.Id)
-        .NotEmpty().WithMessage("Id không được để trống.");
+            .NotEmpty().WithMessage("Id không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.Id.ToString()), () =>
         {
@@ -42,7 +40,7 @@ public class ScheduleUpdateRequestValidator : AbstractValidator<ScheduleUpdateRe
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
-         .NotEmpty().WithMessage("CurrentUserId không được để trống.");
+            .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
         {

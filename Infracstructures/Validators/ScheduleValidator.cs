@@ -17,8 +17,9 @@ public class ScheduleValidator : IScheduleValidator
         ScheduleForFinalRequestValidator = scheduleforfinalvalidator;
     }
 
-    public IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
     public IValidator<RatingRequest> RatingRequestValidator { get; }
+
+    public IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
     public IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
 
     public IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }

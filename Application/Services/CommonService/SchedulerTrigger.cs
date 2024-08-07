@@ -1,6 +1,5 @@
 ﻿using Application.IService.ICommonService;
 using Domain.Enums;
-using Infracstructures;
 
 namespace Application.Services.CommonService;
 
@@ -21,14 +20,15 @@ public class SchedulerTrigger : ISchedulerTrigger
         await Round();
         await _unitOfWork.SaveChangesAsync();*/
     }
-    
+
     public async Task OutDateSchedule()
     {
         var end = await _unitOfWork.ScheduleRepo.SchedulerTrigger();
         if (end.Any())
         {
             end.ForEach(src => src.Status = ScheduleStatus.OutOfDate.ToString());
-            end.ToList().ForEach(src => src.AwardSchedule.ToList().ForEach(aw => aw.Status = AwardScheduleStatus.OutOfDate.ToString()));
+            end.ToList().ForEach(src =>
+                src.AwardSchedule.ToList().ForEach(aw => aw.Status = AwardScheduleStatus.OutOfDate.ToString()));
             end.ToList().ForEach(src => src.Painting.ToList().ForEach(aw => aw.ScheduleId = null));
             _unitOfWork.ScheduleRepo.UpdateRange(end);
         }
@@ -40,7 +40,8 @@ public class SchedulerTrigger : ISchedulerTrigger
         if (end.Any())
         {
             end.ToList().ForEach(src => src.Status = ContestStatus.Complete.ToString());
-            end.ToList().ForEach(src => src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.Complete.ToString()));
+            end.ToList().ForEach(src =>
+                src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.Complete.ToString()));
             _unitOfWork.ContestRepo.UpdateRange(end);
         }
 
@@ -48,7 +49,8 @@ public class SchedulerTrigger : ISchedulerTrigger
         if (start.Any())
         {
             start.ToList().ForEach(src => src.Status = ContestStatus.InProcess.ToString());
-            end.ToList().ForEach(src => src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.InProcess.ToString()));
+            end.ToList().ForEach(src =>
+                src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.InProcess.ToString()));
             _unitOfWork.ContestRepo.UpdateRange(start);
         }
     }
@@ -61,6 +63,7 @@ public class SchedulerTrigger : ISchedulerTrigger
             end.ToList().ForEach(src => src.Status = RoundStatus.Complete.ToString());
             _unitOfWork.RoundRepo.UpdateRange(end);
         }
+
         var start = await _unitOfWork.RoundRepo.StartRound();
         if (start.Any())
         {
@@ -68,5 +71,4 @@ public class SchedulerTrigger : ISchedulerTrigger
             _unitOfWork.RoundRepo.UpdateRange(start);
         }
     }
-    
 }

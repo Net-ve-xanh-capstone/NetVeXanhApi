@@ -4,16 +4,15 @@ using Application.SendModels.Notification;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
-using Infracstructures;
 using Infracstructures.ViewModels.NotificationViewModels;
 
 namespace Application.Services;
 
 public class NotificationService : INotificationService
 {
+    private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMailService _mailService;
 
     public NotificationService(IUnitOfWork unitOfWork, IMapper mapper, IMailService mailService)
     {
@@ -58,7 +57,7 @@ public class NotificationService : INotificationService
     }
 
     #endregion
-    
+
     #region Is Read
 
     public async Task<bool> ReadNotification(Guid id)
@@ -81,10 +80,7 @@ public class NotificationService : INotificationService
         {
             var paintings = await _unitOfWork.PaintingRepo.GetAllPaintingOfRound(id);
             var pass = paintings.Where(src => src.Status.Equals(PaintingStatus.HasPrizes.ToString())).ToList();
-            foreach (var p in pass)
-            {
-                await _mailService.PassPreliminaryRound(p.Account);
-            }
+            foreach (var p in pass) await _mailService.PassPreliminaryRound(p.Account);
             return true;
         }
         catch (Exception e)
@@ -95,7 +91,7 @@ public class NotificationService : INotificationService
     }
 
     #endregion
-    
+
     #region Send result Round 1
 
     public async Task<bool> SendResultPreliminaryRound(Guid id)
@@ -104,10 +100,7 @@ public class NotificationService : INotificationService
         {
             var paintings = await _unitOfWork.PaintingRepo.GetAllPaintingOfRound(id);
             var pass = paintings.Where(src => src.Status.Equals(PaintingStatus.Pass.ToString())).ToList();
-            foreach (var p in pass)
-            {
-                await _mailService.PassPreliminaryRound(p.Account);
-            }
+            foreach (var p in pass) await _mailService.PassPreliminaryRound(p.Account);
             return true;
         }
         catch (Exception e)
@@ -124,5 +117,4 @@ public class NotificationService : INotificationService
     {
         return await _unitOfWork.NotificationRepo.IsExistIdAsync(id);
     }
-
 }

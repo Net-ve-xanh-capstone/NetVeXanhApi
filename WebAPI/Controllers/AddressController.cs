@@ -1,14 +1,12 @@
 ﻿using Application.BaseModels;
 using Application.IService;
-using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-
 [ApiController]
 [Route("api/address/")]
-public class AddressController  : ControllerBase
+public class AddressController : ControllerBase
 {
     private readonly IDistrictService _districtService;
 
@@ -16,7 +14,7 @@ public class AddressController  : ControllerBase
     {
         _districtService = districtService;
     }
-    
+
     #region Get All Award
 
     [HttpGet]
@@ -28,7 +26,7 @@ public class AddressController  : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Get District Success",
                 Result = district
             });
         }
@@ -36,20 +34,13 @@ public class AddressController  : ControllerBase
         {
             return Ok(new BaseFailedResponseModel
             {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Award>(),
-                    TotalPage = 0
-                },
                 Errors = ex
             });
         }
     }
 
     #endregion
-    
+
     #region Get All Award
 
     [HttpGet("{id}")]
@@ -61,7 +52,7 @@ public class AddressController  : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Get Ward Success",
                 Result = district
             });
         }
@@ -69,13 +60,6 @@ public class AddressController  : ControllerBase
         {
             return Ok(new BaseFailedResponseModel
             {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = new
-                {
-                    List = new List<Award>(),
-                    TotalPage = 0
-                },
                 Errors = ex
             });
         }

@@ -55,7 +55,7 @@ public class AwardService : IAwardService
     public async Task<(List<AwardViewModel>, int)> GetListAward(ListModels listAwardModel)
     {
         var awardList = await _unitOfWork.AwardRepo.GetAllAsync();
-        if (awardList.Count == 0) throw new Exception("Khong co Award");
+        if (awardList.Count == 0) throw new Exception("Không có Award");
         var result = _mapper.Map<List<AwardViewModel>>(awardList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);

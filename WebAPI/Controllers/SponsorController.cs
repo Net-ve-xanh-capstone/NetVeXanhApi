@@ -30,19 +30,22 @@ public class SponsorController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create sponsor Success",
+                Message = "Tạo nhà tài trợ thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -71,12 +74,12 @@ public class SponsorController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Sponsor Success",
+                Message = "Lấy danh sách nhà tài trợ thành công",
                 Result = new
                 {
                     List = list,
@@ -114,7 +117,7 @@ public class SponsorController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Sponsor Success",
+                Message = "Lấy danh sách nhà tài trợ thành công",
                 Result = result
             });
         }
@@ -140,11 +143,11 @@ public class SponsorController : Controller
         try
         {
             var result = await _sponsorService.GetSponsorById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Sponsor not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy nhà tài trợ" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Sponsor Success",
+                Message = "Lấy chi tiết nhà tài trợ thành công",
                 Result = result
             });
         }
@@ -170,23 +173,26 @@ public class SponsorController : Controller
         try
         {
             var result = await _sponsorService.UpdateSponsor(updatesponsor);
-            if (!result) return NotFound(new { Success = false, Message = "Sponsor not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy nhà tài trợ" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa nhà tài trợ thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -216,7 +222,7 @@ public class SponsorController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa nhà tài trợ thành công"
             });
         }
         catch (Exception ex)

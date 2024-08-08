@@ -47,6 +47,7 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Examiner.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy giám khảo nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
@@ -62,6 +63,7 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Examiner.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy giám khảo nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
         return result;
@@ -72,6 +74,7 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Competitor.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy thí sinh nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
@@ -87,6 +90,7 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Competitor.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy thí sinh nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
         return result;
@@ -97,7 +101,9 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Staff.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy nhân viên nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
+
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -112,6 +118,7 @@ public class AccountService : IAccountService
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Staff.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy nhân viên nào.");
         var result = _mapper.Map<List<AccountViewModel>>(accountList);
 
 

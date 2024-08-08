@@ -15,6 +15,13 @@ public class Painting : BaseModel
     public Guid AccountId { get; set; }
     public Guid? ScheduleId { get; set; }
     public string Code { get; set; }
+    public Guid Reviewer {  get; set; }
+    public string? ReviewReason { get; set; }
+    public string? JudgementReason { get; set; }
+
+
+
+
 
 
     //Relation

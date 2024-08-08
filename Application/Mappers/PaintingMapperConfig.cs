@@ -54,6 +54,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.OwnerRole,
                 opt => opt.MapFrom(src => src.Account.Id == src.CreatedBy ? "Competitor" : "Staff"))
             .ForPath(dest => dest.TopicId, opt => opt.MapFrom(src => src.RoundTopic.Topic.Id))
+            .ForPath(dest => dest.SubmitTime, opt => opt.MapFrom(src => src.SubmittedTimestamp))
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForPath(dest => dest.Level, opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Level))

@@ -26,7 +26,7 @@ public class AddressController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get District Success",
+                Message = "Lấy danh sách Quận/ Huyện thành công",
                 Result = district
             });
         }
@@ -52,7 +52,7 @@ public class AddressController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Ward Success",
+                Message = "Lấy danh sách Phường thành công",
                 Result = district
             });
         }

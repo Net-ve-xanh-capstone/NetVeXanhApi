@@ -29,19 +29,22 @@ public class PaintingCollectionController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Painting Collection Success",
+                Message = "Thêm tranh vào bộ sưu tập thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -71,7 +74,7 @@ public class PaintingCollectionController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa tranh khỏi bộ sưu tập thành công"
             });
         }
         catch (Exception ex)

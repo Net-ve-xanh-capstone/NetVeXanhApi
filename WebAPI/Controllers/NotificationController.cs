@@ -27,7 +27,7 @@ public class NotificationController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Notification Success",
+                Message = "Lấy 5 thông báo thành công",
                 Result = new
                 {
                     List = list
@@ -59,7 +59,7 @@ public class NotificationController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Notification Success",
+                Message = "Lấy chi tiết thông báo thành công",
                 Result = result
             });
         }
@@ -116,7 +116,7 @@ public class NotificationController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Send Success",
+                Message = "Gửi kết quả thành công",
                 Result = result
             });
         }
@@ -144,7 +144,7 @@ public class NotificationController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Send Success",
+                Message = "Gửi kết quả thành công",
                 Result = result
             });
         }

@@ -26,7 +26,7 @@ public class AwardScheduleService : IAwardScheduleService
     public async Task<AwardScheduleModels> GetById(Guid id)
     {
         var awardSchedule = await _unitOfWork.AwardScheduleRepo.GetByIdAsync(id);
-        if (awardSchedule == null) throw new Exception("Khong tim thay");
+        if (awardSchedule == null) throw new Exception("Không tìm thấy ");
         return _mapper.Map<AwardScheduleModels>(awardSchedule);
     }
 

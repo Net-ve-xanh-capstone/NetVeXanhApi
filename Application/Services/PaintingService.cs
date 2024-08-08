@@ -312,13 +312,15 @@ public class PaintingService : IPaintingService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         }
+
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(request.Id);
         if (painting == null) return null;
 
-        if (painting.Status != PaintingStatus.Submitted.ToString()) return null;
+        if (painting.Status != PaintingStatus.Submitted.ToString()) throw new Exception("Tranh đang không trong trạng thái có thể chấm");
 
         if (request.IsPassed)
             painting.Status = PaintingStatus.Accepted.ToString();
+            //painting.Reason = request.Reason;
         else
             painting.Status = PaintingStatus.Rejected.ToString();
         painting.ReviewedTimestamp = DateTime.Now;

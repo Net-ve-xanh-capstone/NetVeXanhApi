@@ -48,6 +48,11 @@ internal class RoundConfiguration : IEntityTypeConfiguration<Round>
         //EducationalLevel
         builder.Property(u => u.EducationalLevelId);
 
+        //RoundNumber
+        builder.Property(u => u.RoundNumber);
+
+
+        //Relation
         builder.HasMany(u => u.Schedule).WithOne(u => u.Round).HasForeignKey(u => u.RoundId)
             .OnDelete(DeleteBehavior.ClientSetNull);
     }

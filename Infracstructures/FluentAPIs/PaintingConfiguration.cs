@@ -63,6 +63,15 @@ public class PaintingConfiguration : IEntityTypeConfiguration<Painting>
         //Code
         builder.Property(u => u.Code);
 
+        //Reviewer
+        builder.Property(u => u.Reviewer);
+
+        //ReviewReason
+        builder.Property(u => u.ReviewReason);
+
+        //JudgementReason
+        builder.Property(u => u.JudgementReason);
+
         //Relation
 
         builder.HasOne(u => u.Account)

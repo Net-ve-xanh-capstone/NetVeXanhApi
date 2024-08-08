@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infracstructures.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate1 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,6 +73,18 @@ namespace Infracstructures.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_District", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "JudgingCriteria",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JudgingCriteria", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,6 +284,8 @@ namespace Infracstructures.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: ""),
                     Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ContestId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MinAge = table.Column<int>(type: "int", nullable: true),
+                    MaxAge = table.Column<int>(type: "int", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "False"),
@@ -374,6 +388,7 @@ namespace Infracstructures.Migrations
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: ""),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true, defaultValue: ""),
                     EducationalLevelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoundNumber = table.Column<int>(type: "int", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "False"),
@@ -388,6 +403,32 @@ namespace Infracstructures.Migrations
                         column: x => x.EducationalLevelId,
                         principalTable: "EducationalLevel",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoundJudgingCriteria",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RoundId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    JudgingCriteriaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoundJudgingCriteria", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoundJudgingCriteria_JudgingCriteria_JudgingCriteriaId",
+                        column: x => x.JudgingCriteriaId,
+                        principalTable: "JudgingCriteria",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RoundJudgingCriteria_Round_RoundId",
+                        column: x => x.RoundId,
+                        principalTable: "Round",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -488,6 +529,9 @@ namespace Infracstructures.Migrations
                     AccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ScheduleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Reviewer = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReviewReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JudgementReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -660,6 +704,16 @@ namespace Infracstructures.Migrations
                 column: "EducationalLevelId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RoundJudgingCriteria_JudgingCriteriaId",
+                table: "RoundJudgingCriteria",
+                column: "JudgingCriteriaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoundJudgingCriteria_RoundId",
+                table: "RoundJudgingCriteria",
+                column: "RoundId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoundTopic_RoundId",
                 table: "RoundTopic",
                 column: "RoundId");
@@ -707,6 +761,9 @@ namespace Infracstructures.Migrations
                 name: "Resources");
 
             migrationBuilder.DropTable(
+                name: "RoundJudgingCriteria");
+
+            migrationBuilder.DropTable(
                 name: "Ward");
 
             migrationBuilder.DropTable(
@@ -720,6 +777,9 @@ namespace Infracstructures.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sponsor");
+
+            migrationBuilder.DropTable(
+                name: "JudgingCriteria");
 
             migrationBuilder.DropTable(
                 name: "District");

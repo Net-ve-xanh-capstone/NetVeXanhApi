@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infracstructures.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240808125216_InitialCreate1")]
-    partial class InitialCreate1
+    [Migration("20240808130503_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -410,6 +410,12 @@ namespace Infracstructures.Migrations
                     b.Property<string>("Level")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MinAge")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -452,6 +458,21 @@ namespace Infracstructures.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Image", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.JudgingCriteria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JudgingCriteria");
                 });
 
             modelBuilder.Entity("Domain.Models.Notification", b =>
@@ -532,12 +553,21 @@ namespace Infracstructures.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("JudgementReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ReviewReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("ReviewedTimestamp")
                         .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Reviewer")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("RoundTopicId")
                         .IsRequired()
@@ -769,6 +799,9 @@ namespace Infracstructures.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("RoundNumber")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -789,6 +822,31 @@ namespace Infracstructures.Migrations
                     b.HasIndex("EducationalLevelId");
 
                     b.ToTable("Round", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.RoundJudgingCriteria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("JudgingCriteriaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoundId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JudgingCriteriaId");
+
+                    b.HasIndex("RoundId");
+
+                    b.ToTable("RoundJudgingCriteria");
                 });
 
             modelBuilder.Entity("Domain.Models.RoundTopic", b =>
@@ -1139,6 +1197,25 @@ namespace Infracstructures.Migrations
                     b.Navigation("EducationalLevel");
                 });
 
+            modelBuilder.Entity("Domain.Models.RoundJudgingCriteria", b =>
+                {
+                    b.HasOne("Domain.Models.JudgingCriteria", "JudgingCriteria")
+                        .WithMany("RoundJudgingCriteria")
+                        .HasForeignKey("JudgingCriteriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Round", "Round")
+                        .WithMany("RoundJudgingCriteria")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JudgingCriteria");
+
+                    b.Navigation("Round");
+                });
+
             modelBuilder.Entity("Domain.Models.RoundTopic", b =>
                 {
                     b.HasOne("Domain.Models.Round", "Round")
@@ -1228,6 +1305,11 @@ namespace Infracstructures.Migrations
                     b.Navigation("Round");
                 });
 
+            modelBuilder.Entity("Domain.Models.JudgingCriteria", b =>
+                {
+                    b.Navigation("RoundJudgingCriteria");
+                });
+
             modelBuilder.Entity("Domain.Models.Painting", b =>
                 {
                     b.Navigation("PaintingCollection");
@@ -1240,6 +1322,8 @@ namespace Infracstructures.Migrations
 
             modelBuilder.Entity("Domain.Models.Round", b =>
                 {
+                    b.Navigation("RoundJudgingCriteria");
+
                     b.Navigation("RoundTopic");
 
                     b.Navigation("Schedule");

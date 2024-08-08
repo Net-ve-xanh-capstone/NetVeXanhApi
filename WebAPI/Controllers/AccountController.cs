@@ -20,7 +20,10 @@ public class AccountController : ControllerBase
     }
 
     #region Get All Competitor
-
+    /// <summary>
+    /// Lấy danh sách người dự thi có phân trang
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("getallcompetitorwithpagination")]
     public async Task<IActionResult> GetAllCompetitorWithPagination([FromQuery] ListModels listCompetitorModel)
     {
@@ -36,7 +39,7 @@ public class AccountController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách người dự thi thành công",
                 Result = new
                 {
                     List = list,
@@ -63,7 +66,10 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Examiner
-
+    /// <summary>
+    /// Lấy danh sách giám khảo có phân trang
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("getallexaminerwithpagination")]
     public async Task<IActionResult> GetAllExaminerWithPagination([FromQuery] ListModels listCompetitorModel)
     {
@@ -106,7 +112,10 @@ public class AccountController : ControllerBase
     #endregion
 
     #region get all staff
-
+    /// <summary>
+    /// Lấy danh sách staff có phân trang
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("getallstaffwithpagination")]
     public async Task<IActionResult> GetAllStaffWithPagination([FromQuery] ListModels listCompetitorModel)
     {

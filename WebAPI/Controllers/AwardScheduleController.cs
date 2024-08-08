@@ -24,11 +24,11 @@ public class AwardScheduleController : Controller
         try
         {
             var result = await _awardSchedule.GetListByScheduleId(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy lịch chấm" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Award Success",
+                Message = "Lấy danh sách lịch chấm thành công",
                 Result = result
             });
         }
@@ -37,7 +37,7 @@ public class AwardScheduleController : Controller
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Get Schedule Award Fail",
+                Message = "Lấy danh sách lịch chấm thất bại",
                 Result = new List<AwardSchedule>(),
                 Errors = ex
             });
@@ -57,7 +57,7 @@ public class AwardScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Schedule Success",
+                Message = "Lấy thông tin lịch chấm thành công",
                 Result = result
             });
         }

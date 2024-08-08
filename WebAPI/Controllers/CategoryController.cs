@@ -29,19 +29,22 @@ public class CategoryController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Category Success",
+                Message = "Tạo mới danh mục thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -70,18 +73,21 @@ public class CategoryController : ControllerBase
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa danh mục thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -111,7 +117,7 @@ public class CategoryController : ControllerBase
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa danh mục thành công"
             });
         }
         catch (Exception ex)
@@ -129,6 +135,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category
+    /// <summary>
+    /// Lấy category có phân trang
+    /// </summary>
 
     [HttpGet("getcategory")]
     public async Task<IActionResult> ListCategory([FromQuery] ListModels listCategoryModel)
@@ -140,12 +149,12 @@ public class CategoryController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = new
                 {
                     List = list,
@@ -172,7 +181,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List All Category
-
+    /// <summary>
+    /// Lấy category không phân trang
+    /// </summary>
     [HttpGet("getallcategory")]
     public async Task<IActionResult> ListAllCategory()
     {
@@ -182,7 +193,7 @@ public class CategoryController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = result
             });
         }
@@ -205,6 +216,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category Unused With Pagination
+    /// <summary>
+    /// Lấy danh sách danh mục đã sử dụng
+    /// </summary>
 
     [HttpGet("getcategoryunused")]
     public async Task<IActionResult> ListCategoryUnused([FromQuery] ListModels listCategoryModel)
@@ -216,12 +230,12 @@ public class CategoryController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = new
                 {
                     List = list,
@@ -248,6 +262,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category Used With Pagination
+    /// <summary>
+    /// Lấy danh sách danh mục đã sử dụng có phân trang
+    /// </summary>
 
     [HttpGet("getcategoryused")]
     public async Task<IActionResult> ListCategoryUsed([FromQuery] ListModels listCategoryModel)
@@ -259,12 +276,12 @@ public class CategoryController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = new
                 {
                     List = list,
@@ -301,7 +318,7 @@ public class CategoryController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = result
             });
         }
@@ -324,7 +341,10 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List All Category Used
-
+    /// <summary>
+    /// Lấy danh mục đã được sử dụng
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("getallcategoryused")]
     public async Task<IActionResult> ListAllCategoryUsed()
     {
@@ -334,7 +354,7 @@ public class CategoryController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Category Success",
+                Message = "Lấy danh sách danh mục thành công",
                 Result = result
             });
         }

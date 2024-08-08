@@ -29,19 +29,22 @@ public class RoundController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Round Success",
+                Message = "Tạo vòng thi mới thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -69,7 +72,7 @@ public class RoundController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Round Success",
+                Message = "Lấy danh sách các vòng thi thành công",
                 Result = result
             });
         }
@@ -99,11 +102,11 @@ public class RoundController : Controller
         try
         {
             var result = await _roundService.GetRoundById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Round not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy vòng thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Round Success",
+                Message = "Lấy chi tiết vòng thi thành công",
                 Result = result
             });
         }
@@ -129,25 +132,29 @@ public class RoundController : Controller
         try
         {
             var result = await _roundService.UpdateRound(updateRound);
-            if (!result) return NotFound(new { Success = false, Message = "Round not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy vòng thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa vòng thi thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
+
         catch (Exception ex)
         {
             return BadRequest(new BaseFailedResponseModel
@@ -175,7 +182,7 @@ public class RoundController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa vòng thi thành công"
             });
         }
         catch (Exception ex)
@@ -203,7 +210,7 @@ public class RoundController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic In Round Success",
+                Message = "Lấy danh sách chủ đề trong vòng thi thành công",
                 Result = new
                 {
                     List = list,
@@ -242,12 +249,12 @@ public class RoundController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Round Success",
+                Message = "Lấy danh sách vòng thi theo đối tượng thành công",
                 Result = new
                 {
                     List = list,
@@ -281,11 +288,11 @@ public class RoundController : Controller
         try
         {
             var result = await _roundService.GetListRoundForCompetitor();
-            if (!result.Any()) return NotFound(new { Success = false, Message = "Round not found" });
+            if (!result.Any()) return NotFound(new { Success = false, Message = "Không tìm thấy vòng thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Round Success",
+                Message = "Lấy danh sách các vòng thi thành công",
                 Result = result
             });
         }

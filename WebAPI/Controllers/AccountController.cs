@@ -34,7 +34,7 @@ public class AccountController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
@@ -80,12 +80,12 @@ public class AccountController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách giám khảo thành công",
                 Result = new
                 {
                     List = list,
@@ -126,12 +126,12 @@ public class AccountController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách nhân viên thành công",
                 Result = new
                 {
                     List = list,
@@ -168,7 +168,7 @@ public class AccountController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách thí sinh thành công",
                 Result = result
             });
         }
@@ -198,7 +198,7 @@ public class AccountController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách giám khảo thành công",
                 Result = result
             });
         }
@@ -228,7 +228,7 @@ public class AccountController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách nhân viên thành công",
                 Result = result
             });
         }
@@ -258,12 +258,12 @@ public class AccountController : ControllerBase
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy danh sách tài khoản bị khóa thành công",
                 Result = new
                 {
                     List = list,
@@ -301,12 +301,12 @@ public class AccountController : ControllerBase
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "Account Dont Exist"
+                    Message = "Tài khoản không tồn tại"
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy thông tin tài khoản thành công",
                 Result = result
             });
         }
@@ -335,12 +335,12 @@ public class AccountController : ControllerBase
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "Account Dont Exist"
+                    Message = "Tài khoản không tồn tại"
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy thông tin người dự thi thành công",
                 Result = result
             });
         }
@@ -369,12 +369,12 @@ public class AccountController : ControllerBase
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "Account Dont Exist"
+                    Message = "Tài khoản không tồn tại"
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Account Success",
+                Message = "Lấy thông tin tài khoản thành công",
                 Result = result
             });
         }
@@ -399,23 +399,26 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.UpdateAccount(updateAccount);
-            if (result == null) return NotFound(new { Success = false, Message = "Account not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Tài khoản không tồn tại" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa thông tin tài khoản thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Validation failed",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -440,12 +443,12 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.InactiveAccount(id);
-            if (result == null) return NotFound();
+            if (result == null) return NotFound(new { Success = false, Message = "Tài khoản không tồn tại" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Inactive Successfully"
+                Message = "Khóa tài khoản thành công"
             });
         }
         catch (Exception ex)
@@ -470,12 +473,12 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.ActiveAccount(id);
-            if (result == null) return NotFound();
+            if (result == null) return NotFound(new { Success = false, Message = "Tài khoản không tồn tại" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Active Successfully"
+                Message = "Mở khóa tài khoản thành công"
             });
         }
         catch (Exception ex)
@@ -500,11 +503,12 @@ public class AccountController : ControllerBase
         try
         {
             var result = await _accountService.ListAccountHaveAwardIn3NearestContest();
+
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Get List Account Success"
+                Message = "Lấy thông tin tài khoản có giải trong 3 năm thành công"
             });
         }
         catch (Exception ex)

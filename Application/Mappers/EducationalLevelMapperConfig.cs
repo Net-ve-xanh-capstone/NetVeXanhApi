@@ -1,4 +1,5 @@
 ﻿using Application.SendModels.EducationalLevel;
+using Application.ViewModels.AwardViewModels;
 using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.EducationalLevelViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -11,6 +12,11 @@ public partial class MapperConfigs : Profile
 {
     partial void AddEducationalLevelMapperConfig()
     {
+        //Map For List Award        
+        CreateMap<EducationalLevel, ListAwardViewModels>()
+            .ForPath(des => des.AwardViewModels, opt => opt.MapFrom(src => src.Award));
+
+        
         CreateMap<EducationalLevel, EducationalLevelRequest>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
         CreateMap<EducationalLevel, EducationalLevelUpdateRequest>().ReverseMap()

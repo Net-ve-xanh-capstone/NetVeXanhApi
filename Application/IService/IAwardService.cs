@@ -13,6 +13,8 @@ public interface IAwardService
     Task<bool> UpdateAward(UpdateAwardRequest updateAward);
     Task<AwardViewModel> GetAwardById(Guid awardId);
 
+    Task<List<ListAwardViewModels>?> GetAwardsByContestId(Guid contestId);
+
     Task<bool> IsExistedId(Guid id);
 
     Task<ValidationResult> ValidateAwardRequest(AwardRequest award);

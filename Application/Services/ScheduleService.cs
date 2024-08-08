@@ -170,6 +170,9 @@ public class ScheduleService : IScheduleService
                 quantityAward -= newAwardSchedule.Quantity;
             }
 
+            
+            
+            
             newSchedule.AwardSchedule = new List<AwardSchedule>();
             newSchedule.AwardSchedule.Add(newAwardSchedule);
 

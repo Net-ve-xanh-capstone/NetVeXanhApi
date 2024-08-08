@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application.BaseModels;
+using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Contest;
 using Application.ViewModels.AccountViewModels;
@@ -357,6 +358,29 @@ public class ContestService : IContestService
         }
 
         return result;
+    }
+
+    #endregion
+    
+    #region Get All Contest
+
+    public async Task<(List<ContestViewModel?>, int)> GetAllContest_v2(ListModels listModel)
+    {
+        var contest = await _unitOfWork.ContestRepo.GetAllAsync();
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        var result = _mapper.Map<List<ContestViewModel>>(contest);
+        foreach (var item in result)
+        {
+            item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
+            item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
+        }
+        
+        var totalPages = (int)Math.Ceiling((double)result.Count / listModel.PageSize);
+        int? itemsToSkip = (listModel.PageNumber - 1) * listModel.PageSize;
+        result = result.Skip((int)itemsToSkip)
+            .Take(listModel.PageSize)
+            .ToList();
+        return (result, totalPages);
     }
 
     #endregion

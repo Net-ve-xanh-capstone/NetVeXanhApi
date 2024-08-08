@@ -4,6 +4,7 @@ using Application.IService.ICommonService;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -68,15 +69,21 @@ public class AwardService : IAwardService
 
     #endregion
 
+    #region Get List Award By ContestId
+    public async Task<List<ListAwardViewModels>?> GetAwardsByContestId(Guid contestId)
+    {
+        var list = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
+        return _mapper.Map<List<ListAwardViewModels>>(list);
+    }
+    #endregion
+
     #region Delete Award
 
     public async Task<bool> DeleteAward(Guid awardId)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
         if (award == null) throw new Exception("Khong tim thay Award");
-
         award.Status = AwardStatus.Inactive.ToString();
-
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -97,8 +104,7 @@ public class AwardService : IAwardService
     }
 
     #endregion
-
-
+    
     #region Get Award By Id
 
     public async Task<AwardViewModel> GetAwardById(Guid awardId)
@@ -110,11 +116,13 @@ public class AwardService : IAwardService
 
     #endregion
 
-    //Check Id is Exist
+    #region IsExisted
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.AwardRepo.IsExistIdAsync(id);
     }
+
+    #endregion
 
     #region Validate
 

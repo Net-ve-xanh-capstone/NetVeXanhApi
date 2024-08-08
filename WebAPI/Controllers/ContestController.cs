@@ -2,6 +2,7 @@
 using Application.IRepositories;
 using Application.IService;
 using Application.SendModels.Contest;
+using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -180,6 +181,49 @@ public class ContestController : Controller
                 Status = Ok().StatusCode,
                 Message = ex.Message,
                 Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #region Get All Contest v2
+
+    [HttpGet("getallcontest_2")]
+    public async Task<IActionResult> GetAllContest_v2([FromQuery] ListModels listModel)
+    {
+        try
+        {
+            var (list, totalPage) = await _contestService.GetAllContest_v2(listModel);
+            if (totalPage < listModel.PageNumber)
+                return NotFound(new BaseResponseModel
+                {
+                    Status = NotFound().StatusCode,
+                    Message = "Over number page"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Success",
+                Result = new
+                {
+                    List = list,
+                    TotalPage = totalPage
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new
+                {
+                    List = new List<Contest>(),
+                    TotalPage = 0
+                },
                 Errors = ex
             });
         }

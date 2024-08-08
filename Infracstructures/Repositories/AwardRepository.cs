@@ -28,4 +28,10 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
             .Select(x => x.Id)
             .ToListAsync();
     }
+
+    public async Task<List<Award>?> GetAwardsByContestId(Guid contestId)
+    {
+        return await DbSet.Include(src => src.EducationalLevel)
+            .Where(src => src.EducationalLevel.ContestId == contestId).ToListAsync();
+    }
 }

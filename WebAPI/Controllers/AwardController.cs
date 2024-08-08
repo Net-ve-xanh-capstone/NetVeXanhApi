@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/awards/")]
 public class AwardController : Controller
 {
@@ -172,6 +171,35 @@ public class AwardController : Controller
                     List = new List<Award>(),
                     TotalPage = 0
                 },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #region Get List Award By Contest Id
+    [HttpGet("contest/{contestId}")]
+    public async Task<IActionResult> GetAllAward(Guid contestId)
+    {
+        try
+        {
+            var result = await _awardService.GetAwardsByContestId(contestId);
+            if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Topic Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
                 Errors = ex
             });
         }

@@ -28,7 +28,7 @@ public class AwardConfiguration : IEntityTypeConfiguration<Award>
         builder.Property(u => u.UpdatedBy);
 
         //Status
-        builder.Property(u => u.Status).HasDefaultValue("False");
+        builder.Property(u => u.Status);
 
         //Rank
         builder.Property(u => u.Rank);
@@ -50,5 +50,10 @@ public class AwardConfiguration : IEntityTypeConfiguration<Award>
         builder.HasOne(u => u.EducationalLevel)
             .WithMany(u => u.Award)
             .HasForeignKey(u => u.EducationalLevelId).OnDelete(DeleteBehavior.ClientSetNull);
+
+        //Round
+        builder.HasOne(u => u.Round)
+            .WithMany(u => u.Award)
+            .HasForeignKey(u => u.RoundId).OnDelete(DeleteBehavior.ClientSetNull);
     }
 }

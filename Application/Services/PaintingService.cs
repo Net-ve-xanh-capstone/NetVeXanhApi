@@ -320,10 +320,10 @@ public class PaintingService : IPaintingService
 
         if (request.IsPassed)
             painting.Status = PaintingStatus.Accepted.ToString();
-            //painting.Reason = request.Reason;
         else
             painting.Status = PaintingStatus.Rejected.ToString();
         painting.ReviewedTimestamp = DateTime.Now;
+        painting.ReviewReason = request.Reason;
 
         await _unitOfWork.SaveChangesAsync();
 
@@ -352,6 +352,7 @@ public class PaintingService : IPaintingService
         else
             painting.Status = PaintingStatus.NotPass.ToString();
 
+        painting.JudgementReason = request.Reason;
         painting.FinalDecisionTimestamp = DateTime.Now;
 
         await _unitOfWork.SaveChangesAsync();

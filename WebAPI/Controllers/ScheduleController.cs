@@ -48,7 +48,7 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Schedule Success",
+                Message = "Tạo lịch chấm thành công",
                 Result = result
             });
         }
@@ -96,7 +96,7 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Schedule Success",
+                Message = "Tạo lịch chấm thành công",
                 Result = result
             });
         }
@@ -126,12 +126,12 @@ public class ScheduleController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy danh sách lịch chấm thành công",
                 Result = new
                 {
                     List = list,
@@ -161,11 +161,11 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetScheduleById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy chi tiết lịch chấm thành công",
                 Result = result
             });
         }
@@ -191,11 +191,11 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetListSchedule(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy danh sách lịch chấm theo cuộc thi thành công",
                 Result = result
             });
         }
@@ -221,23 +221,26 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.UpdateSchedule(updateSchedule);
-            if (!result) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa lịch chấm thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -268,7 +271,7 @@ public class ScheduleController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa lịch chấm thành công"
             });
         }
         catch (Exception ex)
@@ -293,11 +296,11 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetScheduleForWeb(examinerId);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy danh sách lịch chấm theo giám khảo thành công",
                 Result = result
             });
         }
@@ -323,11 +326,11 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetScheduleByExaminerId(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy danh sách lịch chấm theo giám khảo thành công",
                 Result = result
             });
         }
@@ -366,11 +369,11 @@ public class ScheduleController : Controller
         try
         {
             var result = await _scheduleService.GetListCompetitorFinalRound(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Schedule not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Schedule Success",
+                Message = "Lấy danh sách lịch chấm thành công",
                 Result = result
             });
         }
@@ -405,19 +408,22 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Rating Success",
+                Message = "Chấm điểm thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -447,19 +453,22 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Rating Success",
+                Message = "Chấm điểm thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -489,19 +498,22 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Rating Success",
+                Message = "Chấm điểm thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -531,19 +543,22 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Rating Success",
+                Message = "Chấm điểm thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -573,19 +588,22 @@ public class ScheduleController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Rating Success",
+                Message = "Chấm điểm thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)

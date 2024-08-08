@@ -32,25 +32,28 @@ public class AwardController : Controller
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "Rank is not Exist!"
+                    Message = "Giải không tồn tại. Vui lòng kiểm tra lại!"
                 });
             var result = await _awardService.AddAward(award);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Award Success",
+                Message = "Tạo Giải mới thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -79,18 +82,21 @@ public class AwardController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa Giải thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -119,7 +125,7 @@ public class AwardController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa Giải thành công"
             });
         }
         catch (Exception ex)
@@ -148,12 +154,12 @@ public class AwardController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Lấy danh sách giải thành công",
                 Result = new
                 {
                     List = list,
@@ -190,7 +196,7 @@ public class AwardController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Award Success",
+                Message = "Trang vượt quá số lượng trang cho phép.",
                 Result = result
             });
         }

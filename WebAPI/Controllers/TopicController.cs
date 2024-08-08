@@ -34,19 +34,22 @@ public class TopicController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Topic Success",
+                Message = "Tạo chủ đề thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -75,12 +78,12 @@ public class TopicController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy danh sách chủ đè thành công",
                 Result = new
                 {
                     List = list,
@@ -117,7 +120,7 @@ public class TopicController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy danh sách chủ đề thành công",
                 Result = result
             });
         }
@@ -143,11 +146,11 @@ public class TopicController : Controller
         try
         {
             var result = await _topicService.GetTopicById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy chủ đề" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy chi tiết chủ đề thành công",
                 Result = result
             });
         }
@@ -173,23 +176,26 @@ public class TopicController : Controller
         try
         {
             var result = await _topicService.UpdateTopic(updateTopic);
-            if (!result) return NotFound(new { Success = false, Message = "Topic not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy chủ đề" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa chủ đề thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -219,7 +225,7 @@ public class TopicController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa chủ đề thành công"
             });
         }
         catch (Exception ex)

@@ -29,7 +29,7 @@ public class RoundTopicController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy danh sách chủ đề thành công",
                 Result = result
             });
         }
@@ -58,7 +58,7 @@ public class RoundTopicController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy danh sách chủ đề thành công",
                 Result = result
             });
         }
@@ -87,7 +87,7 @@ public class RoundTopicController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Lấy danh sách chủ đề thành công",
                 Result = result
             });
         }
@@ -116,19 +116,22 @@ public class RoundTopicController : ControllerBase
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Add RoundTopic Success",
+                Message = "Thêm chủ đề vào vòng thi thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -157,18 +160,21 @@ public class RoundTopicController : ControllerBase
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa chủ đề trong vòng thi thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)

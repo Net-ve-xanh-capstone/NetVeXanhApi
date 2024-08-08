@@ -29,19 +29,22 @@ public class PostController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Post Success",
+                Message = "Tạo bài viết thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -69,7 +72,7 @@ public class PostController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy 10 bài viết thành công",
                 Result = result
             });
         }
@@ -99,12 +102,12 @@ public class PostController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy danh sách bài viết thành công",
                 Result = new
                 {
                     List = list,
@@ -138,11 +141,11 @@ public class PostController : Controller
         try
         {
             var result = await _postService.GetPostById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Post not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài viết" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy chi tiết bài viết thành công",
                 Result = result
             });
         }
@@ -168,23 +171,26 @@ public class PostController : Controller
         try
         {
             var result = await _postService.UpdatePost(updatePost);
-            if (!result) return NotFound(new { Success = false, Message = "Post not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy bài viết" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa thông tin bài viết thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -214,7 +220,7 @@ public class PostController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa bài viết thành công"
             });
         }
         catch (Exception ex)
@@ -243,12 +249,12 @@ public class PostController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy danh sách bài viết theo người tạo thành công",
                 Result = new
                 {
                     List = list,
@@ -286,12 +292,12 @@ public class PostController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy danh sách bài viết theo danh mục thành công",
                 Result = new
                 {
                     List = list,
@@ -330,12 +336,12 @@ public class PostController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Post Success",
+                Message = "Lấy danh sách bài viết theo danh mục thành công",
                 Result = new
                 {
                     List = list,

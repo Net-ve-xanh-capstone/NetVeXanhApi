@@ -29,19 +29,22 @@ public class EducationalLevelController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create EducationalLevel Success",
+                Message = "Tạo đối tượng thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -70,12 +73,12 @@ public class EducationalLevelController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get EducationalLevel Success",
+                Message = "Lấy danh sách đối tượng thành công",
                 Result = new
                 {
                     List = list,
@@ -113,7 +116,7 @@ public class EducationalLevelController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get EducationalLevel Success",
+                Message = "Lấy danh sách đối tượng thành công",
                 Result = result
             });
         }
@@ -139,11 +142,10 @@ public class EducationalLevelController : Controller
         try
         {
             var result = await _educationalLevelService.GetEducationalLevelById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "EducationalLevel not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get EducationalLevel Success",
+                Message = "Lấy thông tin đối tượng thành công",
                 Result = result
             });
         }
@@ -174,12 +176,12 @@ public class EducationalLevelController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get EducationalLevel Success",
+                Message = "Lấy danh sách đối tượng theo cuộc thi thành công",
                 Result = new
                 {
                     List = list,
@@ -209,23 +211,25 @@ public class EducationalLevelController : Controller
         try
         {
             var result = await _educationalLevelService.UpdateEducationalLevel(updateEducationalLevel);
-            if (!result) return NotFound(new { Success = false, Message = "EducationalLevel not found" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa đối tượng thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -250,12 +254,11 @@ public class EducationalLevelController : Controller
         try
         {
             var result = await _educationalLevelService.DeleteEducationalLevel(id);
-            if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa đối tượng thành công"
             });
         }
         catch (Exception ex)

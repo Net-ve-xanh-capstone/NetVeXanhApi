@@ -16,8 +16,13 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account)
+            .Include(x => x.Account).OrderBy(x => x.CreatedTime)
             .ToListAsync();
+    }
+    
+    public async Task<Contest?> GetContestThisYear()
+    {
+        return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
     }
 
     public override async Task<Contest?> GetByIdAsync(Guid id)
@@ -49,12 +54,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ThenInclude(x => x.Award.Where(x => x.Status != AwardStatus.Inactive.ToString()))
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
-        if (contest != null)
-            // Lọc các RoundTopic có Topic.Status == "Active"
-            foreach (var educationalLevel in contest.EducationalLevel)
-            foreach (var round in educationalLevel.Round)
-                round.RoundTopic = round.RoundTopic.Where(rt => rt.Topic.Status == TopicStatus.Active.ToString())
-                    .ToList();
         return contest;
     }
 

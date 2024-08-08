@@ -28,23 +28,26 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.DraftPaintingForPreliminaryRound(paintingrequest);
-            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Draft Painting Success",
+                Message = "Lưu nháp bài dự thi thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -73,26 +76,29 @@ public class PaintingController : Controller
                 return NotFound(new BaseFailedResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Painting not found",
+                    Message = "Không tìm thấy bài dự thi",
                     Result = false
                 });
 
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Submit Painting Success",
+                Message = "Nộp bài dự thi thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -118,23 +124,26 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.StaffSubmitPaintingForPreliminaryRound(staffCreatePainting);
-            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Submit Painting Success",
+                Message = "Nộp bài dự thi thành công",
                 Result = result
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -160,13 +169,27 @@ public class PaintingController : Controller
         {
             //Chưa validate
             var result = await _paintingService.StaffSubmitPaintingForFinalRound(request);
-            if (!result) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (!result) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
 
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Create Painting For Final Round Success",
+                Message = "Tạo bài dự thi cho vòng chung kết thành công",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -196,18 +219,21 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa bài dự thi thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -237,18 +263,21 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Update Successfully"
+                Message = "Chỉnh sửa bài dự thi thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -278,7 +307,7 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Xóa bài dự thi thành công"
             });
         }
         catch (Exception ex)
@@ -308,18 +337,21 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Review Successfully"
+                Message = "Duyệt bài thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -349,18 +381,21 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Delete Successfully"
+                Message = "Chấm bài thành công"
             });
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -385,11 +420,11 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.GetPaintingByCode(code);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy chi tiết bài dự thi theo mã thành công",
                 Result = result
             });
         }
@@ -415,11 +450,11 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.GetPaintingById(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy chi tiết bài dự thi thành công",
                 Result = result
             });
         }
@@ -445,11 +480,11 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.PaintingTracking(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy thông tin của bài dự thi thành công",
                 Result = result
             });
         }
@@ -479,12 +514,12 @@ public class PaintingController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy danh sách bài dự thi thành công",
                 Result = new
                 {
                     List = list,
@@ -521,7 +556,7 @@ public class PaintingController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy 16 bài dự thi thắng giải thành công",
                 Result = result
             });
         }
@@ -552,12 +587,12 @@ public class PaintingController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy danh sách bài dự thi theo tài khoản thành công",
                 Result = new
                 {
                     List = list,
@@ -596,12 +631,12 @@ public class PaintingController : Controller
                 return NotFound(new BaseResponseModel
                 {
                     Status = NotFound().StatusCode,
-                    Message = "Over number page"
+                    Message = "Trang vượt quá số lượng trang cho phép."
                 });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Filter Painting Success",
+                Message = "Lấy danh sách bài dự thi thành công",
                 Result = new
                 {
                     List = list,
@@ -611,13 +646,16 @@ public class PaintingController : Controller
         }
         catch (ValidationException ex)
         {
-            var errors = ex.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Xác thực không thành công",
-                Result = false,
-                Errors = errors
+                Message = combinedErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -646,11 +684,11 @@ public class PaintingController : Controller
         try
         {
             var result = await _paintingService.GetPaintingByAccountContest(contestId, accountId);
-            if (result == null) return NotFound(new { Success = false, Message = "Painting not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Painting Success",
+                Message = "Lấy danh sách bài dự thi theo tài khoản trong cuộc thi thành công",
                 Result = result
             });
         }

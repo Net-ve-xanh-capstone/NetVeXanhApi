@@ -18,10 +18,12 @@ public class ScheduleService : IScheduleService
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly IMailService _mailService;
 
     public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
-        IExcelService excelService)
+        IExcelService excelService, IMailService mailService)
     {
+        _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -182,6 +184,12 @@ public class ScheduleService : IScheduleService
             result[i].ForEach(item => item.ScheduleId = newSchedule.Id);
         }
 
+        var listExaminer = await _unitOfWork.AccountRepo.GetByIdsAsync(schedule.ListExaminer);
+        foreach (var account in listExaminer)
+        {
+            await _mailService.SendScheduleToExaminer(account);
+        }
+
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -310,9 +318,11 @@ public class ScheduleService : IScheduleService
         return _mapper.Map<List<ScheduleViewModel>>(schedule);
     }
 
-    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid contestId, Guid examinerId)
+    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId)
     {
-        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
+        var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
+        if (contest == null) throw new Exception("Khong tim thay");
+        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contest!.Id);
         foreach (var level in educationalLevel)
         foreach (var round in level.Round)
         foreach (var schedule in round.Schedule)

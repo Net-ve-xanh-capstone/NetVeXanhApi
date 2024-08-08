@@ -39,6 +39,12 @@ public class EducationalLevelConfiguration : IEntityTypeConfiguration<Educationa
         //Level
         builder.Property(u => u.Level);
 
+        //MinAge
+        builder.Property(u => u.MinAge);
+
+        //MaxAge
+        builder.Property(u => u.MaxAge);
+
 
         //Relation
         builder.HasMany(u => u.Round).WithOne(u => u.EducationalLevel).HasForeignKey(u => u.EducationalLevelId)

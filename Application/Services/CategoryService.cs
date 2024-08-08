@@ -56,7 +56,7 @@ public class CategoryService : ICategoryService
     public async Task<bool> DeleteCategory(Guid categoryId)
     {
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryId);
-        if (category == null) throw new Exception("Khong tim thay Category");
+        if (category == null) throw new Exception("Không tìm thấy danh mục");
         if (category.Status == CategoryStatus.Unused.ToString())
             await _unitOfWork.CategoryRepo.DeleteAsync(category);
         else
@@ -76,7 +76,7 @@ public class CategoryService : ICategoryService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(updateCategory.Id);
-        if (category == null) throw new Exception("Khong tim thay Category");
+        if (category == null) throw new Exception("Không tìm thấy danh mục");
 
         _mapper.Map(updateCategory, category);
 
@@ -91,7 +91,7 @@ public class CategoryService : ICategoryService
     public async Task<(List<CategoryViewModel>, int)> ListCategory(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Category nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy danh mục nào phù hợp");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
@@ -109,7 +109,7 @@ public class CategoryService : ICategoryService
     public async Task<List<CategoryViewModel>> ListAllCategory()
     {
         var list = await _unitOfWork.CategoryRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Category nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy danh mục nào phù hợp");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
 
         return result;
@@ -122,7 +122,7 @@ public class CategoryService : ICategoryService
     public async Task<(List<CategoryViewModel>, int)> ListCategoryUnused(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUnused();
-        if (list.Count == 0) throw new Exception("Khong co Category nao dang khong duoc su dung");
+        if (list.Count == 0) throw new Exception("Không có danh mục nào đang không được sử dụng");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
@@ -141,7 +141,7 @@ public class CategoryService : ICategoryService
     public async Task<(List<CategoryViewModel>, int)> ListCategoryUsed(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUsed();
-        if (list.Count == 0) throw new Exception("Khong co Category nao dang duoc su dung");
+        if (list.Count == 0) throw new Exception("Không có danh mục nào đang được sử dụng");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
@@ -159,7 +159,7 @@ public class CategoryService : ICategoryService
     public async Task<List<CategoryViewModel>> ListAllCategoryUnused()
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUnused();
-        if (list.Count == 0) throw new Exception("Khong co Category nao dang khong duoc su dung");
+        if (list.Count == 0) throw new Exception("Không có danh mục nào đang không được sử dụng");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
         return result;
     }
@@ -172,7 +172,7 @@ public class CategoryService : ICategoryService
     public async Task<List<CategoryViewModel>> ListAllCategoryUsed()
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUsed();
-        if (list.Count == 0) throw new Exception("Khong co Category nao dang duoc su dung");
+        if (list.Count == 0) throw new Exception("Không có danh mục nào đang được sử dụng");
         var result = _mapper.Map<List<CategoryViewModel>>(list);
         return result;
     }

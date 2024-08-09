@@ -11,7 +11,7 @@ public class ReportRepository : GenericRepository<Report>, IReportRepository
     {
     }
 
-    public override async Task<Report?> GetByIdAsync(Guid id)
+    public override async Task<Report?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status != ReportStatus.Inactive.ToString());
     }

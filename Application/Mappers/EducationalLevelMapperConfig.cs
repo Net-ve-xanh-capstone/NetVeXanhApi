@@ -1,9 +1,11 @@
-﻿using Application.SendModels.EducationalLevel;
+﻿using Application.SendModels.Contest;
+using Application.SendModels.EducationalLevel;
 using Application.ViewModels.AwardViewModels;
 using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.EducationalLevelViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 
 namespace Application.Mappers;
@@ -12,9 +14,13 @@ public partial class MapperConfigs : Profile
 {
     partial void AddEducationalLevelMapperConfig()
     {
-        //Map For List Award        
+        /*//Map For List Award        
         CreateMap<EducationalLevel, ListAwardViewModels>()
-            .ForPath(des => des.AwardViewModels, opt => opt.MapFrom(src => src.Award));
+            .ForPath(des => des.AwardViewModels, opt => opt.MapFrom(src => src.Award));*/
+
+        CreateMap<CreateEducationalLevelSendModel, EducationalLevel>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => EducationalLevelStatus.NotStarted.ToString()))
+            .ForPath(dest => dest.Round, opt => opt.MapFrom(src => src.Round));
 
         
         CreateMap<EducationalLevel, EducationalLevelRequest>().ReverseMap()
@@ -34,7 +40,6 @@ public partial class MapperConfigs : Profile
             .ForMember(x => x.ContestId, x => x.MapFrom(x => x.ContestId));
 
         CreateMap<EducationalLevel, EducationalLevelInContest>()
-            .ForMember(x => x.Award, x => x.MapFrom(x => x.Award))
             .ForMember(x => x.Round, x => x.MapFrom(x => x.Round));
 
         CreateMap<EducationalLevel, ScheduleWebViewModel>()

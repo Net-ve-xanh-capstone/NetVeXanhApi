@@ -16,25 +16,16 @@ public class EducationalLevelRepository : GenericRepository<EducationalLevel>, I
         return await DbSet.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()).ToListAsync();
     }
 
-    public override async Task<EducationalLevel?> GetByIdAsync(Guid id)
+    public override async Task<EducationalLevel?> GetByIdAsync(Guid? id)
     {
-        return await DbSet.Include(x => x.Round)
-            .ThenInclude(x => x.Schedule)
-            .Include(x => x.Award)
-            .FirstOrDefaultAsync(x => x.Id == id && x.Status != EducationalLevelStatus.Delete.ToString());
+        return await DbSet.Include(src => src.Contest).Include(src => src.Round).FirstOrDefaultAsync(src => src.Id == id);
     }
 
-    public async Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
+    public Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
     {
-        return await DbSet.Include(x => x.Award).Include(x => x.Round).ThenInclude(x => x.Schedule).ThenInclude(x => x.Account).Where(x =>
-                x.ContestId == contestId && x.Status != EducationalLevelStatus.Delete.ToString())
-            .ToListAsync();
+        throw new NotImplementedException();
     }
 
-    /*public async Task<List<EducationalLevel>> GetListEducationalLevel(Guid contestId)
-    {
-        return await DbSet.Where(x => x.ContestId == contestId).ToListAsync();
-    }*/
     public async Task<List<Guid>> GetLevelIdByListContestId(List<Guid> contestIdList)
     {
         return await DbSet

@@ -10,7 +10,7 @@ public class DistrictRepository : GenericRepository<District>, IDistrictReposito
     {
     }
 
-    public override async Task<District?> GetByIdAsync(Guid id)
+    public override async Task<District?> GetByIdAsync(Guid? id)
     {
         return await DbSet.Include(src => src.Wards).FirstAsync(src => src.Id == id);
     }

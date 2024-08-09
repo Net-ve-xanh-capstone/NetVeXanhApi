@@ -33,67 +33,34 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         .WithMessage("Id không tồn tại.");
                 });
         });
-
-        RuleFor(x => x.Rank)
-            .IsEnumName(typeof(RankAward), true)
-            .WithMessage("Giải không đúng định dạng.");
-
+        
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(1).WithMessage("Quantity phải lớn hơn hoặc bằng 1.");
 
         RuleFor(x => x)
-            .Must(model => model.Cash == 0 && model.Artifact == "Không có thông tin")
+            .Must(model => model.Cash != 0 || model.Artifact != "Không có thông tin")
             .WithMessage("Chỉ 1 trong 2 cash hoặc artifact được trống");
 
         RuleFor(x => x.Cash)
             .GreaterThanOrEqualTo(0).WithMessage("Cash phải lớn hơn hoặc bằng 0.");
 
-        //Level Id
-        RuleFor(x => x.EducationalLevelId)
-            .NotEmpty().WithMessage("EducationalLevelId không được để trống.");
-        When(x => !string.IsNullOrEmpty(x.EducationalLevelId.ToString()), () =>
-        {
-            RuleFor(x => x.EducationalLevelId)
-                .Must(userId => Guid.TryParse(userId.ToString(), out _))
-                .WithMessage("EducationalLevelId phải là một GUID hợp lệ.")
-                .DependentRules(() =>
-                {
-                    RuleFor(x => x.EducationalLevelId)
-                        .MustAsync(async (levelId, cancellation) =>
-                        {
-                            try
-                            {
-                                return await _validationServiceManager.EducationalLevelValidationService.IsExistedId(
-                                    levelId);
-                            }
-                            catch (Exception)
-                            {
-                                // Xử lý lỗi kiểm tra ID
-                                return false; // Giả sử ID không tồn tại khi có lỗi
-                            }
-                        })
-                        .WithMessage("EducationalLevelId không tồn tại.");
-                });
-        });
-
-
         //CurrentUserId
-        RuleFor(x => x.CurrentUserId)
+        RuleFor(x => x.UpdatedBy)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
-        When(x => !string.IsNullOrEmpty(x.CurrentUserId.ToString()), () =>
+        When(x => !string.IsNullOrEmpty(x.UpdatedBy.ToString()), () =>
         {
-            RuleFor(x => x.CurrentUserId)
+            RuleFor(x => x.UpdatedBy)
                 .Must(userId => Guid.TryParse(userId.ToString(), out _))
                 .WithMessage("CurrentUserId phải là một GUID hợp lệ.")
                 .DependentRules(() =>
                 {
-                    RuleFor(x => x.CurrentUserId)
+                    RuleFor(x => x.UpdatedBy)
                         .MustAsync(async (userId, cancellation) =>
                         {
                             return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
-                        .WithMessage("CurrentUserId không tồn tại.");
+                        .WithMessage("UpdatedBy không tồn tại.");
                 });
         });
     }

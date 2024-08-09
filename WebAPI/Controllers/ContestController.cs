@@ -22,11 +22,11 @@ public class ContestController : Controller
     #region Create Contest
 
     [HttpPost]
-    public async Task<IActionResult> CreateContest(ContestRequest contest)
+    public async Task<IActionResult> CreateContest(CreateContestSendModel contest)
     {
         try
         {
-            var result = await _contestService.AddContest(contest);
+            var result = await _contestService.CreateContest(contest);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

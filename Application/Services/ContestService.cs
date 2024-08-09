@@ -33,7 +33,7 @@ public class ContestService : IContestService
         _validatorFactory = validatorFactory;
     }
 
-    #region Add Contest
+    /*#region Add Contest
 
     public async Task<bool> AddContest(ContestRequest addContestViewModel)
     {
@@ -46,8 +46,8 @@ public class ContestService : IContestService
 
         var contest = _mapper.Map<Contest>(addContestViewModel);
 
-        if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime))
-            throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
+        if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
+            throw new Exception("Thời gian bị trùng lặp");
 
         contest.Status = ContestStatus.NotStarted.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();
@@ -262,6 +262,32 @@ public class ContestService : IContestService
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
+    #endregion*/
+
+    #region Create Contest
+
+    public async Task<bool> CreateContest(CreateContestSendModel model)
+    {
+        var contest = _mapper.Map<Contest>(model);
+        foreach (var educationalLevel in contest.EducationalLevel)
+        {
+            educationalLevel.CreatedBy = contest.CreatedBy;
+            foreach (var round in educationalLevel.Round)
+            {
+                round.CreatedBy = contest.CreatedBy;
+                foreach (var award in round.Award)
+                {
+                    award.CreatedBy = contest.CreatedBy;
+                }
+            }
+        }
+        if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
+            throw new Exception("Thời gian bị trùng lặp");
+
+        await _unitOfWork.ContestRepo.AddAsync(contest);
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
     #endregion
 
     #region Delete Contest
@@ -285,10 +311,11 @@ public class ContestService : IContestService
             {
                 round.Status = RoundStatus.Delete.ToString();
                 foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
+                foreach (var award in round.Award)
+                {
+                    award.Status = AwardStatus.Inactive.ToString();
+                }
             }
-
-            //award
-            foreach (var award in level.Award) award.Status = AwardStatus.Inactive.ToString();
 
             level.Status = EducationalLevelStatus.Delete.ToString();
         }

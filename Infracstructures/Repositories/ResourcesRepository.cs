@@ -11,7 +11,7 @@ public class ResourcesRepository : GenericRepository<Resources>, IResourcesRepos
     {
     }
 
-    public override async Task<Resources?> GetByIdAsync(Guid id)
+    public override async Task<Resources?> GetByIdAsync(Guid? id)
     {
         return await DbSet
             .Include(x => x.Contest)

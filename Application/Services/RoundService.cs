@@ -36,24 +36,43 @@ public class RoundService : IRoundService
 
     #region Create
 
-    public async Task<bool> CreateRound(RoundRequest round)
+    public async Task<bool> CreateRound(CreateRoundSendModel model)
     {
-        var validationResult = await ValidateRoundRequest(round);
-        if (!validationResult.IsValid)
-            // Handle validation failure
-            throw new ValidationException(validationResult.Errors);
-        var listNewRound = new List<Round>();
-        foreach (var id in round.listLevel)
+        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(model.EducationalLevelId);
+        var newRound = _mapper.Map<Round>(model);
+
+        // Kiểm tra trùng lặp thời gian với các vòng thi hiện có
+        if (educationalLevel!.Round.Any(r =>
+                (model.StartTime >= r.StartTime && model.StartTime <= r.EndTime) ||
+                (model.EndTime >= r.StartTime && model.EndTime <= r.EndTime) ||
+                (model.StartTime <= r.StartTime && model.EndTime >= r.EndTime)))
         {
-            var newRound = _mapper.Map<Round>(round);
-            newRound.Status = RoundStatus.NotStarted.ToString();
-            newRound.EducationalLevelId = id;
-            newRound.CreatedTime = _currentTime.GetCurrentTime();
-            newRound.UpdatedTime = _currentTime.GetCurrentTime();
-            listNewRound.Add(newRound);
+            throw new Exception("Thời gian bắt đầu và kết thúc bị trùng với vòng thi khác.");
         }
 
-        await _unitOfWork.RoundRepo.AddRangeAsync(listNewRound);
+        // Kiểm tra thời gian bắt đầu và kết thúc của vòng thi mới có nằm trong khoảng thời gian của cuộc thi không
+        if (model.StartTime < educationalLevel!.Contest.StartTime ||
+            model.EndTime > educationalLevel.Contest.EndTime)
+        {
+            throw new Exception(
+                "Thời gian bắt đầu và kết thúc của vòng thi không nằm trong khoảng thời gian của cuộc thi.");
+        }
+
+        foreach (var award in newRound.Award)
+        {
+            award.CreatedBy = newRound.CreatedBy;
+        }
+
+        var listOldRound = educationalLevel!.Round.Where(src => src.RoundNumber >= model.RoundNumber).ToList();
+
+
+        foreach (var round in listOldRound)
+        {
+            round.RoundNumber += 1;
+        }
+
+        educationalLevel.Round.Add(newRound);
+        _unitOfWork.EducationalLevelRepo.Update(educationalLevel);
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 

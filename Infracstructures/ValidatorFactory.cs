@@ -29,7 +29,7 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<TopicUpdateRequest> topicUpdateRequestValidator,
         IValidator<AccountUpdateRequest> accountUpdateRequestValidator,
         IValidator<SubAccountRequest> subAccountRequestValidator,
-        IValidator<AwardRequest> awardRequestValidator,
+        IValidator<CreateAwardSendModel> awardRequestValidator,
         IValidator<UpdateAwardRequest> updateAwardRequestValidator,
         IValidator<CategoryRequest> categoryRequestValidator,
         IValidator<UpdateCategoryRequest> updateCategoryRequestValidator,
@@ -112,7 +112,7 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<TopicUpdateRequest> TopicUpdateRequestValidator { get; }
     public IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     public IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
-    public IValidator<AwardRequest> AwardRequestValidator { get; }
+    public IValidator<CreateAwardSendModel> AwardRequestValidator { get; }
     public IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
     public IValidator<CategoryRequest> CategoryRequestValidator { get; }
     public IValidator<UpdateCategoryRequest> UpdateCategoryRequestValidator { get; }

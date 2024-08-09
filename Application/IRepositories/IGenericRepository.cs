@@ -9,8 +9,7 @@ public interface IGenericRepository<TModel> where TModel : class
     Task<List<TModel>> GetAllAsync();
     Task<List<TModel>> GetAllAsync(Func<IQueryable<TModel>, IIncludableQueryable<TModel, object>>? include = null);
 
-    Task<TModel?> GetByIdAsync(Guid id);
-
+    Task<TModel?> GetByIdAsync(Guid? id);
     Task AddAsync(TModel model);
 
     void AddAttach(TModel model);

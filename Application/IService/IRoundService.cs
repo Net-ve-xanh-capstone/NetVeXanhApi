@@ -8,7 +8,7 @@ namespace Application.IService;
 
 public interface IRoundService
 {
-    public Task<bool> CreateRound(RoundRequest Round);
+    public Task<bool> CreateRound(CreateRoundSendModel model);
     public Task<List<RoundViewModel>> GetListRoundForCompetitor();
     public Task<List<RoundViewModel>> GetListRound(ListModels listModels);
     public Task<RoundViewModel?> GetRoundById(Guid id);

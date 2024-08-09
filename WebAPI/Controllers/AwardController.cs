@@ -23,17 +23,11 @@ public class AwardController : Controller
     #region Create Award
 
     [HttpPost]
-    public async Task<IActionResult> CreateAward(AwardRequest award)
+    public async Task<IActionResult> CreateAward(CreateAwardSendModel createAward)
     {
         try
         {
-            if (!Enum.IsDefined(typeof(RankAward), award.Rank))
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "Giải không tồn tại. Vui lòng kiểm tra lại!"
-                });
-            var result = await _awardService.AddAward(award);
+            var result = await _awardService.AddAward(createAward);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

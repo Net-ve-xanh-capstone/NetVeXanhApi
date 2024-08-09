@@ -25,53 +25,23 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
     }
 
-    public override async Task<Contest?> GetByIdAsync(Guid id)
-    {
-        return await DbSet
-            .Include(x => x.Resources)
-            .ThenInclude(x => x.Sponsor)
-            .Include(x => x.EducationalLevel)
-            .ThenInclude(x => x.Round)
-            .ThenInclude(x => x.RoundTopic)
-            .ThenInclude(x => x.Topic)
-            .Include(x => x.EducationalLevel)
-            .ThenInclude(x => x.Award)
-            .Include(x => x.Account)
-            .FirstOrDefaultAsync(x => x.Id == id && x.Status != ContestStatus.Delete.ToString());
-        ;
-    }
-
     public async Task<Contest?> GetAllContestInformationAsync(Guid contestId)
     {
         var contest = await DbSet
-            .Include(x => x.Resources.Where(x => x.Status != ResourcesStatus.Inactive.ToString()))
-            .ThenInclude(x => x.Sponsor)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
-            .ThenInclude(x => x.Round.Where(x => x.Status != RoundStatus.Delete.ToString()))
-            .ThenInclude(x => x.RoundTopic)
-            .ThenInclude(x => x.Topic)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
-            .ThenInclude(x => x.Award.Where(x => x.Status != AwardStatus.Inactive.ToString()))
+            .Include(x => x.Resources.Where(r => r.Status != ResourcesStatus.Inactive.ToString()))
+            .ThenInclude(r => r.Sponsor)
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round.Where(r => r.Status != RoundStatus.Delete.ToString()))
+            .ThenInclude(r => r.Award.Where(a => a.Status != AwardStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round)
+            .ThenInclude(r => r.RoundTopic)
+            .ThenInclude(rt => rt.Topic)
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
         return contest;
     }
 
-    public async Task<Contest?> GetNearestContestInformationAsync()
-    {
-        return await DbSet
-            .Include(x => x.Resources.Where(x => x.Status != ResourcesStatus.Inactive.ToString()))
-            .ThenInclude(x => x.Sponsor)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
-            .ThenInclude(x => x.Round)
-            .ThenInclude(x => x.RoundTopic)
-            .ThenInclude(x => x.Topic)
-            .Include(x => x.EducationalLevel.Where(x => x.Status != EducationalLevelStatus.Delete.ToString()))
-            .ThenInclude(x => x.Award)
-            .Include(x => x.Account)
-            .OrderBy(x => x.CreatedTime)
-            .FirstOrDefaultAsync(x => x.Status != ContestStatus.Delete.ToString());
-    }
 
     public async Task<List<ContestNameYearViewModel>> Get5RecentYearAsync()
     {
@@ -101,6 +71,11 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return round != null ? (round.StartTime, round.EndTime) : (DateTime.MinValue, DateTime.MinValue);
     }
 
+    public Task<Contest?> GetNearestContestInformationAsync()
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<List<Guid>> Get3NearestContestId()
     {
         var result = await DbSet
@@ -117,12 +92,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return result;
     }
 
-    public Task<bool> CheckContestExist(DateTime startTime)
-    {
-        return DbSet.AnyAsync(src =>
-            src.StartTime.Year == startTime.Year && src.Status != ContestStatus.Delete.ToString());
-    }
-
     public async Task<List<Contest>> EndContest()
     {
         return await DbSet.Include(src => src.EducationalLevel)
@@ -135,25 +104,9 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return await DbSet.Include(src => src.EducationalLevel).Where(src =>
             src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
-
-    public async Task<List<Guid>> GetCollectionsWithStaffAccountsAsync()
-    {
-        var paintingIds = await DbSet
-            .Include(c => c.EducationalLevel)
-            .ThenInclude(el => el.Award) // Include Awards for each EducationalLevel
-            .ThenInclude(a => a.Painting) // Include Paintings for each Award
-            .SelectMany(c => c.EducationalLevel
-                .SelectMany(el => el.Award
-                    .SelectMany(a => a.Painting
-                        .Select(p => p.Id))))
-            .ToListAsync();
-
-        return paintingIds;
-    }
-
     public async Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync()
     {
-        var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
+        /*var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
             .OrderByDescending(c => c.CreatedTime)
             .FirstOrDefaultAsync();
 
@@ -174,12 +127,14 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .Distinct() // Loại bỏ các đối tượng trùng lặp nếu cần
             .ToListAsync();
 
-        return accounts;
+        return accounts;*/
+        throw new NotImplementedException();
     }
 
     public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
     {
-        var listContest = await DbSet
+        throw new NotImplementedException();
+        /*var listContest = await DbSet
             .Where(x => contestIdList.Contains(x.Id))
             .Include(c => c.EducationalLevel) // Bao gồm EducationalLevels
             .ThenInclude(el => el.Award) // Bao gồm Awards cho mỗi EducationalLevel
@@ -220,6 +175,22 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             })
             .ToList();
 
-        return filteredContests;
+        return filteredContests;*/
     }
+
+
+    #region Check
+
+    public async Task<bool> CheckContestDuplicate(DateTime startTime, DateTime endTime)
+    {
+        return await DbSet.AnyAsync(src =>
+            src.Status != ContestStatus.Delete.ToString() &&
+            ((startTime >= src.StartTime && startTime <= src.EndTime) ||
+             (endTime >= src.StartTime && endTime <= src.EndTime) ||
+             (startTime <= src.StartTime && endTime >= src.EndTime)));
+    }
+
+    #endregion
+    
+    
 }

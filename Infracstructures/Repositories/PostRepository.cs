@@ -42,7 +42,7 @@ public class PostRepository : GenericRepository<Post>, IPostRepository
             .ToListAsync();
     }
 
-    public override async Task<Post?> GetByIdAsync(Guid id)
+    public override async Task<Post?> GetByIdAsync(Guid? id)
     {
         var a = await DbSet
             .Include(x => x.Category)

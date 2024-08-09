@@ -27,7 +27,7 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
         return collections;
     }
 
-    public override async Task<Collection?> GetByIdAsync(Guid id)
+    public override async Task<Collection?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == CollectionStatus.Active.ToString());
     }

@@ -10,6 +10,11 @@ public partial class MapperConfigs : Profile
 {
     partial void AddContestMapperConfig()
     {
+
+        CreateMap<CreateContestSendModel, Contest>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ContestStatus.NotStarted.ToString()))
+            .ForPath(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel));
+        
         CreateMap<Contest, ContestViewModel>()
             .ForMember(dest => dest.AccountFullName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
@@ -51,6 +56,7 @@ public partial class MapperConfigs : Profile
         CreateMap<Contest, FilterPaintingContestViewModel>();
 
 
+        /*
         CreateMap<Contest, ContestRewardViewModel>()
             .ForMember(dest => dest.ListAccount, opt => opt.MapFrom(src =>
                 src.EducationalLevel
@@ -60,6 +66,6 @@ public partial class MapperConfigs : Profile
                     .Distinct() // Loại bỏ các Account trùng lặp
                     .ToList()
             ));
-        /*.ForMember(dest => dest.AwardContestReward, opt => opt.MapFrom(src => src.EducationalLevel.SelectMany(level => level.Award)));*/
+        /*.ForMember(dest => dest.AwardContestReward, opt => opt.MapFrom(src => src.EducationalLevel.SelectMany(level => level.Award)));#1#*/
     }
 }

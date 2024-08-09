@@ -7,7 +7,7 @@ namespace Application.IService;
 
 public interface IAwardService
 {
-    Task<bool> AddAward(AwardRequest addAwardViewModel);
+    Task<bool> AddAward(CreateAwardSendModel addCreateAwardViewModel);
     Task<(List<AwardViewModel>, int)> GetListAward(ListModels listAwardModel);
     Task<bool> DeleteAward(Guid awardId);
     Task<bool> UpdateAward(UpdateAwardRequest updateAward);
@@ -17,6 +17,6 @@ public interface IAwardService
 
     Task<bool> IsExistedId(Guid id);
 
-    Task<ValidationResult> ValidateAwardRequest(AwardRequest award);
+    Task<ValidationResult> ValidateAwardRequest(CreateAwardSendModel createAward);
     Task<ValidationResult> ValidateTopicUpdateRequest(UpdateAwardRequest awardUpdate);
 }

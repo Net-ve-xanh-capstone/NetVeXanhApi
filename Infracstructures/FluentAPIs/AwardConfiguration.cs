@@ -46,11 +46,6 @@ public class AwardConfiguration : IEntityTypeConfiguration<Award>
         builder.Property(u => u.Description).HasDefaultValue("");
 
         //Relation
-        //EducationLevel
-        builder.HasOne(u => u.EducationalLevel)
-            .WithMany(u => u.Award)
-            .HasForeignKey(u => u.EducationalLevelId).OnDelete(DeleteBehavior.ClientSetNull);
-
         //Round
         builder.HasOne(u => u.Round)
             .WithMany(u => u.Award)

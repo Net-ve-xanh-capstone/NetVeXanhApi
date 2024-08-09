@@ -16,7 +16,7 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
         return await DbSet.Where(x => x.Status != ScheduleStatus.Delete.ToString()).ToListAsync();
     }
 
-    public override async Task<Schedule?> GetByIdAsync(Guid id)
+    public override async Task<Schedule?> GetByIdAsync(Guid? id)
     {
         return await DbSet.Where(x => x.Status != ScheduleStatus.Delete.ToString())
             .Include(s => s.Painting.Where(x => x.Status != PaintingStatus.Delete.ToString()))

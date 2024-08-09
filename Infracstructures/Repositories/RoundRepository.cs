@@ -11,9 +11,9 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     {
     }
 
-    public override async Task<Round?> GetByIdAsync(Guid id)
+    public override async Task<Round?> GetByIdAsync(Guid? id)
     {
-        return await DbSet.Include(src => src.Schedule)
+        return await DbSet.Include(src => src.Award).Include(src => src.Schedule)
             .Include(r => r.EducationalLevel).ThenInclude(e => e.Round)
             .FirstOrDefaultAsync(src => src.Id == id && src.Status != RoundStatus.Delete.ToString());
     }
@@ -26,11 +26,9 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
             .ToListAsync();
     }
 
-
-    public async Task<Round?> GetRoundDetail(Guid id)
+    public Task<Round?> GetRoundDetail(Guid id)
     {
-        return await DbSet.Include(r => r.EducationalLevel).ThenInclude(e => e.Award)
-            .FirstOrDefaultAsync(r => r.Id == id);
+        throw new NotImplementedException();
     }
 
     public async Task<List<Topic>> GetTopic(Guid roundId)

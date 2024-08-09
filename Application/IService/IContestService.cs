@@ -8,7 +8,9 @@ namespace Application.IService;
 
 public interface IContestService
 {
-    Task<bool> AddContest(ContestRequest addContestViewModel);
+    //Task<bool> AddContest(ContestRequest addContestViewModel);
+
+    Task<bool> CreateContest(CreateContestSendModel model);
     Task<bool> DeleteContest(Guid contestId);
 
     Task<bool> UpdateContest(UpdateContest updateContest);

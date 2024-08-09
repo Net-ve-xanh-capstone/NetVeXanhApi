@@ -1,12 +1,11 @@
 ﻿namespace Application.SendModels.Award;
 
-public class  AwardRequest
+public class  CreateAwardSendModel
 {
     public string Rank { get; set; }
     public int Quantity { get; set; }
     public double Cash { get; set; } = 0;
     public string Artifact { get; set; } = "Không có thông tin";
-    public string? Description { get; set; } = "Không có mô tả";
-    public Guid EducationalLevelId { get; set; }
-    public Guid CurrentUserId { get; set; }
+    public Guid RoundId { get; set; }
+    public Guid CreatedBy { get; set; }
 }

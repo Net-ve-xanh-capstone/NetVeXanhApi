@@ -16,7 +16,7 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
         return await DbSet.Include(a => a.Award).Where(a => a.ScheduleId == id).ToListAsync();
     }
 
-    public override Task<AwardSchedule?> GetByIdAsync(Guid id)
+    public override Task<AwardSchedule?> GetByIdAsync(Guid? id)
     {
         return DbSet.Include(a => a.Award)
             .Include(a => a.Schedule)

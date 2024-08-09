@@ -37,8 +37,8 @@ public partial class MapperConfigs : Profile
                 src.Status == PaintingStatus.Delete.ToString() ? "Đã xóa" :
                 src.Status == PaintingStatus.Accepted.ToString() ? "Đã chấp nhận" :
                 src.Status == PaintingStatus.Rejected.ToString() ? "Đã từ chối" :
-                src.Status == PaintingStatus.Pass.ToString() ? "Qua Vòng 1" :
-                src.Status == PaintingStatus.NotPass.ToString() ? "Không qua vòng 1" :
+                src.Status == PaintingStatus.Pass.ToString() ? "Qua Vòng" :
+                src.Status == PaintingStatus.NotPass.ToString() ? "Không qua vòng" :
                 src.Status == PaintingStatus.FinalRound.ToString() ? "Vòng chung kết" :
                 src.Status == PaintingStatus.HasPrizes.ToString() ? "Có giải thưởng" :
                 "Trạng thái không xác định"
@@ -162,8 +162,8 @@ public partial class MapperConfigs : Profile
         {
             // Sử dụng giá trị từ PaintingStatus
             var s when s == PaintingStatus.HasPrizes.ToString() => "Đã đoạt giải",
-            var s when s == PaintingStatus.NotPass.ToString() => "Không qua vòng 1",
-            var s when s == PaintingStatus.Pass.ToString() => "Đã qua vòng 1",
+            var s when s == PaintingStatus.NotPass.ToString() => "Không qua vòng",
+            var s when s == PaintingStatus.Pass.ToString() => "Đã qua vòng",
             _ => null
         };
     }

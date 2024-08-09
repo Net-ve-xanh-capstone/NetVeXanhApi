@@ -14,8 +14,6 @@ public class Award : BaseModel
 
     //Relation
     public Round Round { get; set; }
-    public EducationalLevel EducationalLevel { get; set; }
     public ICollection<Painting> Painting { get; set; }
-
     public ICollection<AwardSchedule> AwardSchedule { get; set; }
 }

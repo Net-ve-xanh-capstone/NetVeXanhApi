@@ -122,7 +122,7 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
-        var validationResult = await ValidateScheduleRequest(schedule);
+        /*var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
@@ -190,12 +190,13 @@ public class ScheduleService : IScheduleService
             await _mailService.SendScheduleToExaminer(account);
         }
 
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        return await _unitOfWork.SaveChangesAsync() > 0;*/
+        throw new NotImplementedException();
     }
 
     public async Task<bool> CreateScheduleForFinalRound(ScheduleRequest schedule)
     {
-        try
+        /*try
         {
             var round = await _unitOfWork.RoundRepo.GetRoundDetail(schedule.RoundId);
             if (round.Status != RoundStatus.Complete.ToString())
@@ -282,7 +283,8 @@ public class ScheduleService : IScheduleService
         catch (Exception e)
         {
             throw new Exception(e.Message);
-        }
+        }*/
+        throw new NotImplementedException();
     }
 
     public List<List<Painting>> SplitList(List<Painting> list, int n)

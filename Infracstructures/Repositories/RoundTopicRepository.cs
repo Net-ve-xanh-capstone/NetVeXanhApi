@@ -22,13 +22,14 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
             .FirstOrDefaultAsync(src => src.Id == id);
     }
 
-    public async Task<List<Painting>> ListPaintingForPreliminaryRound(Guid roundId)
+    public async Task<List<Painting>> ListPaintingForPreliminaryRound(Guid roundId, int number)
     {
-        return await DbSet.Include(tr => tr.Painting)
+        return await DbSet
             .Where(tr => tr.RoundId == roundId)
             .SelectMany(tr => tr.Painting)
-            .Where(p => p.Status == PaintingStatus.Accepted.ToString())
-            .OrderByDescending(p => p.UpdatedTime)
+            .Where(p => p.Status == PaintingStatus.Accepted.ToString() && p.ScheduleId != null)
+            .OrderBy(p => Guid.NewGuid())
+            .Take(number)
             .ToListAsync();
     }
 
@@ -37,14 +38,14 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
         return await DbSet.Include(src => src.Topic).Where(src => src.RoundId == roundId).ToListAsync();
     }
 
-    public async Task<List<Painting>> ListPaintingForFinalRound(Guid roundId)
+    public async Task<List<Painting>> ListPaintingForFinalRound(Guid roundId, int number)
     {
         return await DbSet
             .Where(tr => tr.RoundId == roundId)
-            .Include(tr => tr.Painting)
             .SelectMany(tr => tr.Painting)
-            .Where(p => p.Status == PaintingStatus.FinalRound.ToString())
-            .OrderByDescending(p => p.UpdatedTime)
+            .Where(p => p.Status == PaintingStatus.FinalRound.ToString() && p.ScheduleId != null)
+            .OrderByDescending(p => Guid.NewGuid())
+            .Take(number)
             .ToListAsync();
     }
 

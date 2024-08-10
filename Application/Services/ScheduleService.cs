@@ -138,6 +138,7 @@ public class ScheduleService : IScheduleService
         newSchedule.RoundId = schedule.RoundId;
         newSchedule.Description = schedule.Description;
         newSchedule.Status = ScheduleStatus.Rating.ToString();
+        newSchedule.CreatedBy = schedule.CurrentUserId;
 
         //Add award schudele
         var newAwardSchedule = new AwardSchedule();
@@ -146,6 +147,7 @@ public class ScheduleService : IScheduleService
         newAwardSchedule.AwardId = award.Id;
         newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
         newAwardSchedule.Quantity = schedule.PassedCount;
+        newAwardSchedule.CreatedBy = schedule.CurrentUserId;
 
 
         newSchedule.AwardSchedule = new List<AwardSchedule>();
@@ -188,6 +190,7 @@ public class ScheduleService : IScheduleService
         newSchedule.RoundId = schedule.RoundId;
         newSchedule.Description = schedule.Description;
         newSchedule.Status = ScheduleStatus.Rating.ToString();
+        newSchedule.CreatedBy = schedule.CurrentUserId;
 
         var listAwardSchedule = new List<AwardSchedule>();
         foreach(var a in award)
@@ -214,6 +217,7 @@ public class ScheduleService : IScheduleService
                     break;
             }
             newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+            newAwardSchedule.CreatedBy = schedule.CurrentUserId;
             listAwardSchedule.Add(newAwardSchedule);
 
         }

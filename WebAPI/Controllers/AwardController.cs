@@ -21,7 +21,11 @@ public class AwardController : Controller
     }
 
     #region Create Award
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="createAward"> Rank = FirstPrize |  SecondPrize | ConsolationPrize | Preliminary | OtherAward |</param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateAward(CreateAwardSendModel createAward)
     {

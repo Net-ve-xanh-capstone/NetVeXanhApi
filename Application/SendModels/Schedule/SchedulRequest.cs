@@ -7,6 +7,6 @@ public class ScheduleRequest
     public DateTime EndDate { get; set; }
     public Guid ExaminerId { get; set; }
     public int JudgedCount { get; set; }
-    public int PassedCount { get; set; }
     public Guid CurrentUserId { get; set; }
+    public List<PrizeWithCountViewModel> Awards { get; set; }
 }

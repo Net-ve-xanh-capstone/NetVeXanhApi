@@ -29,8 +29,10 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
             .ToListAsync();
     }
 
-    public Task<List<Award>?> GetAwardsByContestId(Guid contestId)
+    public async Task<List<Award>?> GetAwardsByRoundId(Guid roundId)
     {
-        throw new NotImplementedException();
+        return await DbSet
+            .Where(x => x.RoundId == roundId && x.Status == AwardStatus.Active.ToString())
+            .ToListAsync();
     }
 }

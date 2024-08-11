@@ -392,7 +392,11 @@ public class ScheduleController : Controller
     #endregion
 
     #region Rating
-
+    /// <summary>
+    /// Chấm điểm vòng loại
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingPreliminaryRound")]
     public async Task<IActionResult> RatingPreliminaryRound(RatingRequest rating)
     {
@@ -438,6 +442,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 1
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingFirstPrize")]
     public async Task<IActionResult> RatingFirstPrize(RatingRequest rating)
     {
@@ -483,6 +493,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 2
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingSecondPrize")]
     public async Task<IActionResult> RatingSecondPrize(RatingRequest rating)
     {
@@ -528,6 +544,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 3
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingThirdPrize")]
     public async Task<IActionResult> RatingThirdPrize(RatingRequest rating)
     {
@@ -572,7 +594,11 @@ public class ScheduleController : Controller
             });
         }
     }
-
+    /// <summary>
+    /// Chấm điểm cho giải khuyến khích
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingConsolationPrize")]
     public async Task<IActionResult> RatingConsolationPrize(RatingRequest rating)
     {

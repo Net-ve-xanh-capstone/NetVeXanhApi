@@ -79,10 +79,10 @@ public class AwardService : IAwardService
     #endregion
 
     #region Get List Award By ContestId
-    public async Task<List<ListAwardViewModels>?> GetAwardsByContestId(Guid contestId)
+    public async Task<List<AwardViewModel>?> GetAwardsByRoundId(Guid roundId)
     {
-        var list = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
-        return _mapper.Map<List<ListAwardViewModels>>(list);
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        return _mapper.Map<List<AwardViewModel>>(list);
     }
     #endregion
 

@@ -9,5 +9,5 @@ public class PaintingRatingViewModel
 {
     public Guid PaintingId { get; set; }
     public bool IsPass { get; set; }
-    public string Reason { get; set; }
+    public string? Reason { get; set; }
 }

@@ -182,13 +182,18 @@ public class AwardController : Controller
 
     #endregion
     
-    #region Get List Award By Contest Id
-    [HttpGet("contest/{contestId}")]
-    public async Task<IActionResult> GetAllAward(Guid contestId)
+    #region Get List Award By Round Id
+    /// <summary>
+    /// Lấy giải theo vòng để nhập vào số lượng của giải đó để tạo lịch chấm 
+    /// </summary>
+    /// <param name="roundId"></param>
+    /// <returns></returns>
+    [HttpGet("Round/{roundId}")]
+    public async Task<IActionResult> GetAllAward(Guid roundId)
     {
         try
         {
-            var result = await _awardService.GetAwardsByContestId(contestId);
+            var result = await _awardService.GetAwardsByRoundId(roundId);
             if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
             return Ok(new BaseResponseModel
             {

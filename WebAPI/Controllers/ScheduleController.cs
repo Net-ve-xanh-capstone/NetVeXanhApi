@@ -69,7 +69,7 @@ public class ScheduleController : Controller
     #region Create Schedule For Final Round
 
     [HttpPost("final")]
-    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
         try
         {

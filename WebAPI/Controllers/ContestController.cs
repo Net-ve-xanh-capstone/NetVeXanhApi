@@ -20,7 +20,11 @@ public class ContestController : Controller
     }
 
     #region Create Contest
-
+    /// <summary>
+    /// Api tạo contest (mới) 
+    /// </summary>
+    /// <param name="contest">không cần để contestid, createby trong level và không cần để Levellist, createby trong round</param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateContest(CreateContestSendModel contest)
     {

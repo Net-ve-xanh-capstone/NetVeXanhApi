@@ -352,4 +352,33 @@ public class ContestController : Controller
     }
 
     #endregion
+    
+    #region Get drop down Contest
+
+    [HttpGet("getListDorpDown/{id}")]
+    public async Task<IActionResult> GetListDropDown(Guid id)
+    {
+        try
+        {
+            var result = await _contestService.GetListForDorpDown(id);
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy thông tin cuộc thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 }

@@ -477,7 +477,7 @@ public class ContestService : IContestService
     public async Task<ListDropDownContest> GetListForDorpDown(Guid contestId)
     {
         var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
-        var listRound = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
+        var listRound = await _unitOfWork.ContestRepo.GetListRoundName(contestId);
         var result = new ListDropDownContest();
         result.Rounds = listRound;
         result.EducationalLevels = listLevel;

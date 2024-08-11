@@ -32,7 +32,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .FirstOrDefaultAsync(src => src.Id == contestId);
 
         return contest?.EducationalLevel.Select(src => src.Level)
-            .Distinct()
+            .Distinct().OrderBy(level => level)
             .ToList() ?? new List<string>();
     }
     
@@ -41,7 +41,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         var contest = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Round)
             .FirstOrDefaultAsync(src => src.Id == contestId);
 
-        return contest?.EducationalLevel?.ToList().SelectMany(src => src.Round).Select(src => src.Name)
+        return contest?.EducationalLevel?.ToList().SelectMany(src => src.Round).OrderBy(src => src.RoundNumber).Select(src => src.Name)
             .Distinct()
             .ToList() ?? new List<string>();
     }

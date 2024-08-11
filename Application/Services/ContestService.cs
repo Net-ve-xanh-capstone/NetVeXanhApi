@@ -5,6 +5,7 @@ using Application.SendModels.Contest;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -467,6 +468,20 @@ public class ContestService : IContestService
     public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate)
     {
         return await _validatorFactory.UpdateContestRequestValidator.ValidateAsync(contestUpdate);
+    }
+
+    #endregion
+
+    #region list dropDown Infor
+
+    public async Task<ListDropDownContest> GetListForDorpDown(Guid contestId)
+    {
+        var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
+        var listRound = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
+        var result = new ListDropDownContest();
+        result.Rounds = listRound;
+        result.EducationalLevels = listLevel;
+        return result;
     }
 
     #endregion

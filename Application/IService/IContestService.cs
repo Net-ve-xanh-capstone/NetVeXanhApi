@@ -28,4 +28,6 @@ public interface IContestService
 
     Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate);
     Task<List<AccountAwardViewModel>> GetAccountWithAwardPainting();
+    Task<ListDropDownContest> GetListForDorpDown(Guid contestId);
+
 }

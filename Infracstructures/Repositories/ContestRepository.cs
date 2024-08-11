@@ -1,6 +1,7 @@
 ﻿using Application.IRepositories;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,26 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<Contest?> GetContestThisYear()
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
+    }
+
+    public async Task<List<string>> GetListEducationalLevelName(Guid contestId)
+    {
+        var contest = await DbSet.Include(src => src.EducationalLevel)
+            .FirstOrDefaultAsync(src => src.Id == contestId);
+
+        return contest?.EducationalLevel.Select(src => src.Level)
+            .Distinct()
+            .ToList() ?? new List<string>();
+    }
+    
+    public async Task<List<string>> GetListRoundName(Guid contestId)
+    {
+        var contest = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Round)
+            .FirstOrDefaultAsync(src => src.Id == contestId);
+
+        return contest?.EducationalLevel?.ToList().SelectMany(src => src.Round).Select(src => src.Name)
+            .Distinct()
+            .ToList() ?? new List<string>();
     }
 
     public async Task<Contest?> GetAllContestInformationAsync(Guid contestId)

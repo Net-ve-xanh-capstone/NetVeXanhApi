@@ -34,31 +34,6 @@ public class RatingRequestValidator : AbstractValidator<RatingRequest>
         });
 
 
-        //Validate Paintings
-        RuleFor(x => x.Paintings)
-            .NotNull().WithMessage("Danh sách tranh không được để trống.")
-            .Must(paintings => paintings != null && paintings.Any())
-            .WithMessage("Danh sách tranh phải chứa ít nhất một mục.");
-
-        When(x => x.Paintings != null && x.Paintings.Any(), () =>
-        {
-            RuleForEach(x => x.Paintings).ChildRules(painting =>
-            {
-                painting.RuleFor(p => p)
-                    .NotEmpty().WithMessage("Không có tranh nào để chấm.")
-                    .Must(paintingId => Guid.TryParse(paintingId.ToString(), out _))
-                    .WithMessage("Mỗi GUID của tranh phải là một GUID hợp lệ.")
-                    .DependentRules(() =>
-                    {
-                        painting.RuleFor(p => p)
-                            .MustAsync(async (paintingId, cancellation) =>
-                            {
-                                return await _validationServiceManager.PaintingValidationService.IsExistedId(
-                                    paintingId);
-                            })
-                            .WithMessage("Tranh với GUID không tồn tại.");
-                    });
-            });
-        });
+       
     }
 }

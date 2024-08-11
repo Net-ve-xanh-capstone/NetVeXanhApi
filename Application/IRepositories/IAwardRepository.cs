@@ -6,6 +6,6 @@ public interface IAwardRepository : IGenericRepository<Award>
 {
     Task<List<Guid>> GetAwardIdByListLevelId(List<Guid> listLevelId);
     
-    Task<List<Award>?> GetAwardsByContestId(Guid contestId);
+    Task<List<Award>?> GetAwardsByRoundId(Guid roundId);
 
 }

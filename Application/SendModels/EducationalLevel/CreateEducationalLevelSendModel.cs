@@ -9,5 +9,7 @@ public class CreateEducationalLevelSendModel
     public string? Description { get; set; }
     public Guid? CreatedBy { get; set; }
     public Guid? ContestId { get; set; }
+    public int? MinAge { get; set; }
+    public int? MaxAge { get; set; }
     public List<CreateRoundSendModel> Round { get; set; } = null!;
 }

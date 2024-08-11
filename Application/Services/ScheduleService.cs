@@ -141,27 +141,24 @@ public class ScheduleService : IScheduleService
         newSchedule.CreatedBy = schedule.CurrentUserId;
 
         //Add award schudele
-        var newAwardSchedule = new AwardSchedule();
-        newAwardSchedule.Id = Guid.NewGuid();
-        newAwardSchedule.ScheduleId = newSchedule.Id;
-        newAwardSchedule.AwardId = award.Id;
-        newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-        newAwardSchedule.Quantity = schedule.PassedCount;
-        newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+        var listAwardSchedule = new List<AwardSchedule>();
+        foreach (var a in schedule.Awards)
+        {
+            var newAwardSchedule = new AwardSchedule();
+            newAwardSchedule.ScheduleId = newSchedule.Id;
+            newAwardSchedule.AwardId = a.AwardId;
+            newAwardSchedule.Quantity = a.AwardCount;
+            newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+            newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+        }
+        newSchedule.AwardSchedule = listAwardSchedule;
 
-
-        newSchedule.AwardSchedule = new List<AwardSchedule>();
-        newSchedule.AwardSchedule.Add(newAwardSchedule);
-
-        await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
-
-        //Change Schedule in Painting
-
-        foreach(var p in listPainting)
+        foreach (var p in listPainting)
         {
             p.ScheduleId = newSchedule.Id;
         }
 
+        await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
         var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
         await _mailService.SendScheduleToExaminer(examiner);
 
@@ -178,7 +175,8 @@ public class ScheduleService : IScheduleService
 
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
         //Get Painting 
-        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgedCount);
+        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount
+            );
         var award = round?.Award.ToList();
         if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
@@ -193,33 +191,14 @@ public class ScheduleService : IScheduleService
         newSchedule.CreatedBy = schedule.CurrentUserId;
 
         var listAwardSchedule = new List<AwardSchedule>();
-        foreach(var a in award)
+        foreach(var a in schedule.Awards)
         {
             var newAwardSchedule = new AwardSchedule();
             newAwardSchedule.ScheduleId = newSchedule.Id;
-            newAwardSchedule.AwardId = a.Id;
-            switch (a.Rank)
-            {
-                case nameof(RankAward.FirstPrize):
-                    newAwardSchedule.Quantity = schedule.FirstPrizeCount;
-                    break;
-                case nameof(RankAward.SecondPrize):
-                    newAwardSchedule.Quantity = schedule.SecondPrizeCount;
-                    break;
-                case nameof(RankAward.ThirdPrize):
-                    newAwardSchedule.Quantity = schedule.ThirdPrizeCount;
-                    break;
-                case nameof(RankAward.ConsolationPrize):
-                    newAwardSchedule.Quantity = schedule.ConsolationPrizeCount;
-                    break;
-                default:
-                    // Xử lý trường hợp không hợp lệ hoặc không khớp
-                    break;
-            }
+            newAwardSchedule.AwardId = a.AwardId;
+            newAwardSchedule.Quantity = a.AwardCount;
             newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
             newAwardSchedule.CreatedBy = schedule.CurrentUserId;
-            listAwardSchedule.Add(newAwardSchedule);
-
         }
         newSchedule.AwardSchedule = listAwardSchedule;
 
@@ -229,6 +208,8 @@ public class ScheduleService : IScheduleService
         }
 
         await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+        var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
+        await _mailService.SendScheduleToExaminer(examiner);
         return await _unitOfWork.SaveChangesAsync() > 0;
 
     }

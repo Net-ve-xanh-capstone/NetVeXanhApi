@@ -391,6 +391,53 @@ public class ScheduleController : Controller
 
     #endregion
 
+    #region New Rating Final Round
+    [HttpPost("RatingFinalRound")]
+    public async Task<IActionResult> RatingFinalRound(RatingRequest rating)
+    {
+        try
+        {
+            var result = await _scheduleService.RatingFinalRound(rating);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Chấm điểm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = combinedErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+    #endregion
+
     #region Rating
     /// <summary>
     /// Chấm điểm vòng loại

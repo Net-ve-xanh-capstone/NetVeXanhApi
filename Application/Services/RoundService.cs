@@ -116,6 +116,8 @@ public class RoundService : IRoundService
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(updateRound.Id);
         if (round == null) throw new Exception("Khong tim thay Round");
         _mapper.Map(updateRound, round);
+        round.UpdatedBy = updateRound.CurrentUserId;
+        round.UpdatedTime = DateTime.Now;
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

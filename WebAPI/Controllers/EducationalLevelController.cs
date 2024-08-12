@@ -19,7 +19,11 @@ public class EducationalLevelController : Controller
     }
 
     #region Create EducationalLevel
-
+    /// <summary>
+    /// Api Tạo Level (mới)
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateEducationalLevel(CreateEducationalLevelSendModel model)
     {

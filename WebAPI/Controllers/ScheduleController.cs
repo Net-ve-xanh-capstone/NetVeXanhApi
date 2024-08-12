@@ -67,9 +67,16 @@ public class ScheduleController : Controller
     #endregion */
 
     #region Create Schedule 
-
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    /// AwardCount là số lượng của giải mà giám khảo được chấm
+    /// JudgeCount là số lượng mà giám khảo được phân công chấm
+    /// </param>
+    /// <returns></returns>
     [HttpPost()]
-    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
+    public async Task<IActionResult> CreateSchedule(ScheduleForFinalRequest schedule)
     {
         try
         {
@@ -91,7 +98,7 @@ public class ScheduleController : Controller
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
+                    Message = "Hệ thống bị lỗi vui lòng thử lại"
                 });
             return Ok(new BaseResponseModel
             {

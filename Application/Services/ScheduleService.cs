@@ -265,6 +265,56 @@ public class ScheduleService : IScheduleService
 
     #endregion
 
+    #region New Rating
+
+    public async Task<bool> RatingFinalRound(RatingRequest ratingPainting)
+    {
+        var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+        //Get schedule 
+        var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
+
+        if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
+
+        //Get painting have status is FinalRound
+       // var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
+        //Get Award from Award schedule
+        var awardSchedule = schedules.AwardSchedule.FirstOrDefault(a => a.AwardId == ratingPainting.AwardId);
+
+        if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
+
+        //Check Have any id from request don't exist in schedule
+       /* if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(listPainting.Select(p => p.Id)).ToList().Any())
+            throw new Exception("Có tranh không tồn tại");*/
+
+
+        //Create var to call all rated painting
+        var listPass = schedules.Painting.Where(p => ratingPainting.Paintings.Select(r => r.PaintingId).Contains(p.Id)).ToList();
+
+        if (listPass.Count != awardSchedule.Quantity)
+            throw new Exception($"Số lượng giải thưởng: {awardSchedule.Quantity}! Vui lòng kiểm tra lại đúng số lượng");
+
+        foreach (var p in listPass)
+        {
+            p.Status = PaintingStatus.HasPrizes.ToString();
+            p.AwardId = ratingPainting.AwardId;
+        }
+        schedules.Painting.ToList().ForEach(p => p.FinalDecisionTimestamp = DateTime.Now);
+        
+
+        awardSchedule.Status = AwardScheduleStatus.Done.ToString();
+
+        if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
+            schedules.Status = ScheduleStatus.Done.ToString();
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return true;
+    }
+    #endregion
+
     #region Rating
 
     public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)
@@ -282,7 +332,7 @@ public class ScheduleService : IScheduleService
             throw new Exception("Có tranh không tồn tại trong lịch chấm");
 
 
-        //Get painting have status is FinalRound
+        //Get painting have status is Accepted
         var listPass = schedules.Painting
             .Where(p => ratingPainting.Paintings
                 .Where(r => r.IsPass) // Lọc những painting có IsPassed = true
@@ -302,10 +352,14 @@ public class ScheduleService : IScheduleService
         listPass.ForEach(p =>
         {
             p.Status = PaintingStatus.Pass.ToString();
-            p.AwardId = awardSchedule!.AwardId;
+            p.AwardId = ratingPainting.AwardId;
             p.JudgementReason = ratingPainting.Paintings.FirstOrDefault(r => r.PaintingId == p.Id)?.Reason;
         });
-        listNotPass.ForEach(p => p.Status = PaintingStatus.NotPass.ToString());
+        listNotPass.ForEach(p =>
+        {
+            p.Status = PaintingStatus.NotPass.ToString();
+            p.JudgementReason = ratingPainting.Paintings.FirstOrDefault(r => r.PaintingId == p.Id)?.Reason;
+        });
         schedules.Painting.ToList().ForEach(p => p.FinalDecisionTimestamp = DateTime.Now);
         schedules.AwardSchedule.First().Status = AwardScheduleStatus.Done.ToString();
         schedules.Status = ScheduleStatus.Done.ToString();
@@ -324,7 +378,7 @@ public class ScheduleService : IScheduleService
         if (!validationResult.IsValid)
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        //Get schedule with list painting 
+        //Get painting with schedule 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
 
         if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("This schedules has Done");

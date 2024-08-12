@@ -10,6 +10,6 @@ public class CreateRoundSendModel
     public DateTime EndTime { get; set; }
     public int RoundNumber { get; set; }
     public Guid? CreatedBy { get; set; }
-    public Guid? EducationalLevelId { get; set; }
+    public List<Guid>? LevelList { get; set; }
     public List<CreateDependentAwardSendModel> Award { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
 ﻿using Application.IRepositories;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,9 +22,9 @@ public class EducationalLevelRepository : GenericRepository<EducationalLevel>, I
         return await DbSet.Include(src => src.Contest).Include(src => src.Round).FirstOrDefaultAsync(src => src.Id == id);
     }
 
-    public Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
+    public async Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
     {
-        throw new NotImplementedException();
+        return await DbSet.Include(src => src.Contest).Include(src => src.Round).Where(src => src.ContestId == contestId).OrderBy(x=>x.Level).ToListAsync();
     }
 
     public async Task<List<Guid>> GetLevelIdByListContestId(List<Guid> contestIdList)

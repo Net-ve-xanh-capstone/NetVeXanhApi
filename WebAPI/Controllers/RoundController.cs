@@ -19,7 +19,11 @@ public class RoundController : Controller
     }
 
     #region Create Round
-
+    /// <summary>
+    /// Tạo Round (mới)
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateRound(CreateRoundSendModel model)
     {

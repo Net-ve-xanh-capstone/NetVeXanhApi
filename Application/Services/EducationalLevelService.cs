@@ -121,6 +121,7 @@ public class EducationalLevelService : IEducationalLevelService
         var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
         if (EducationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
         _mapper.Map(updateEducationalLevel, EducationalLevel);
+        EducationalLevel.UpdatedBy = updateEducationalLevel.CurrentUserId;
         EducationalLevel.UpdatedTime = _currentTime.GetCurrentTime();
 
         return await _unitOfWork.SaveChangesAsync() > 0;

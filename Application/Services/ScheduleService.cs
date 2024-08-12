@@ -121,7 +121,7 @@ public class ScheduleService : IScheduleService
 
     #region Create
 
-    /*public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
+    public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
@@ -129,7 +129,8 @@ public class ScheduleService : IScheduleService
         //Get Painting 
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId, schedule.JudgedCount);
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
-        var award = round?.Award.FirstOrDefault();
+        var award = round?.Award.ToList();
+        if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
         var newSchedule = new Schedule();
         newSchedule.Id = Guid.NewGuid();
@@ -150,6 +151,7 @@ public class ScheduleService : IScheduleService
             newAwardSchedule.Quantity = a.AwardCount;
             newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
             newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+            listAwardSchedule.Add(newAwardSchedule);
         }
         newSchedule.AwardSchedule = listAwardSchedule;
 
@@ -163,8 +165,8 @@ public class ScheduleService : IScheduleService
         await _mailService.SendScheduleToExaminer(examiner);
 
 
-        return await _unitOfWork.SaveChangesAsync() > 0; 
-    }*/
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
 
     public async Task<bool> CreateSchedule(ScheduleForFinalRequest schedule)
     {
@@ -175,8 +177,7 @@ public class ScheduleService : IScheduleService
 
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
         //Get Painting 
-        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount
-            );
+        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount);
         var award = round?.Award.ToList();
         if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 

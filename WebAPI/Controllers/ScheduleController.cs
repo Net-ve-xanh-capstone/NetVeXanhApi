@@ -18,14 +18,22 @@ public class ScheduleController : Controller
     }
 
 
-    /*#region Create Schedule For Preliminary Round
-
+    #region Create Schedule For Preliminary Round
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
     [HttpPost("preliminary")]
+    
     public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         try
         {
-            *//*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -37,7 +45,7 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }*//*
+            }
             var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -64,19 +72,19 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion */
+    #endregion 
 
-    #region Create Schedule 
+    #region Create Schedule For Final Round
     /// <summary>
     /// Tạo lịch chấm
     /// </summary>
     /// <param name="schedule">    
-    /// AwardCount là số lượng của giải mà giám khảo được chấm
-    /// JudgeCount là số lượng mà giám khảo được phân công chấm
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
-    [HttpPost()]
-    public async Task<IActionResult> CreateSchedule(ScheduleForFinalRequest schedule)
+    [HttpPost("final")]
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
         try
         {

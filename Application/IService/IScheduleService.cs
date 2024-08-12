@@ -9,7 +9,7 @@ namespace Application.IService;
 public interface IScheduleService
 {
     Task<List<ListScheduleViewModel>> GetListSchedule(Guid id);
-    //Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule);
+    Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule);
     Task<bool> CreateSchedule(ScheduleForFinalRequest schedule);
     Task<(List<ScheduleRatingViewModel>, int)> GetListSchedule(ListModels listModels);
     Task<ScheduleRatingViewModel?> GetScheduleById(Guid id);

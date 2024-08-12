@@ -21,11 +21,11 @@ public class EducationalLevelController : Controller
     #region Create EducationalLevel
 
     [HttpPost]
-    public async Task<IActionResult> CreateEducationalLevel(EducationalLevelRequest educationalLevel)
+    public async Task<IActionResult> CreateEducationalLevel(CreateEducationalLevelSendModel model)
     {
         try
         {
-            var result = await _educationalLevelService.CreateEducationalLevel(educationalLevel);
+            var result = await _educationalLevelService.CreateEducationalLevel(model);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

@@ -1,9 +1,11 @@
-﻿using Application.IService;
+﻿using Application.BaseModels;
+using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Contest;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -32,7 +34,7 @@ public class ContestService : IContestService
         _validatorFactory = validatorFactory;
     }
 
-    #region Add Contest
+    /*#region Add Contest
 
     public async Task<bool> AddContest(ContestRequest addContestViewModel)
     {
@@ -45,8 +47,8 @@ public class ContestService : IContestService
 
         var contest = _mapper.Map<Contest>(addContestViewModel);
 
-        if (await _unitOfWork.ContestRepo.CheckContestExist(contest.StartTime))
-            throw new Exception("Đã Tồn Tại Cuộc Thi Cho Năm Nay");
+        if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
+            throw new Exception("Thời gian bị trùng lặp");
 
         contest.Status = ContestStatus.NotStarted.ToString();
         contest.CreatedTime = _currentTime.GetCurrentTime();
@@ -261,6 +263,32 @@ public class ContestService : IContestService
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
+    #endregion*/
+
+    #region Create Contest
+
+    public async Task<bool> CreateContest(CreateContestSendModel model)
+    {
+        var contest = _mapper.Map<Contest>(model);
+        foreach (var educationalLevel in contest.EducationalLevel)
+        {
+            educationalLevel.CreatedBy = contest.CreatedBy;
+            foreach (var round in educationalLevel.Round)
+            {
+                round.CreatedBy = contest.CreatedBy;
+                foreach (var award in round.Award)
+                {
+                    award.CreatedBy = contest.CreatedBy;
+                }
+            }
+        }
+        if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
+            throw new Exception("Thời gian bị trùng lặp");
+
+        await _unitOfWork.ContestRepo.AddAsync(contest);
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
     #endregion
 
     #region Delete Contest
@@ -284,10 +312,11 @@ public class ContestService : IContestService
             {
                 round.Status = RoundStatus.Delete.ToString();
                 foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
+                foreach (var award in round.Award)
+                {
+                    award.Status = AwardStatus.Inactive.ToString();
+                }
             }
-
-            //award
-            foreach (var award in level.Award) award.Status = AwardStatus.Inactive.ToString();
 
             level.Status = EducationalLevelStatus.Delete.ToString();
         }
@@ -360,6 +389,29 @@ public class ContestService : IContestService
     }
 
     #endregion
+    
+    #region Get All Contest
+
+    public async Task<(List<ContestViewModel?>, int)> GetAllContest_v2(ListModels listModel)
+    {
+        var contest = await _unitOfWork.ContestRepo.GetAllAsync();
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        var result = _mapper.Map<List<ContestViewModel>>(contest);
+        foreach (var item in result)
+        {
+            item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
+            item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
+        }
+        
+        var totalPages = (int)Math.Ceiling((double)result.Count / listModel.PageSize);
+        int? itemsToSkip = (listModel.PageNumber - 1) * listModel.PageSize;
+        result = result.Skip((int)itemsToSkip)
+            .Take(listModel.PageSize)
+            .ToList();
+        return (result, totalPages);
+    }
+
+    #endregion
 
     #region get contest for filter painting
 
@@ -416,6 +468,20 @@ public class ContestService : IContestService
     public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate)
     {
         return await _validatorFactory.UpdateContestRequestValidator.ValidateAsync(contestUpdate);
+    }
+
+    #endregion
+
+    #region list dropDown Infor
+
+    public async Task<ListDropDownContest> GetListForDorpDown(Guid contestId)
+    {
+        var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
+        var listRound = await _unitOfWork.ContestRepo.GetListRoundName(contestId);
+        var result = new ListDropDownContest();
+        result.Rounds = listRound;
+        result.EducationalLevels = listLevel;
+        return result;
     }
 
     #endregion

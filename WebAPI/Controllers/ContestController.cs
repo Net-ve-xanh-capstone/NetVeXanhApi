@@ -2,6 +2,7 @@
 using Application.IRepositories;
 using Application.IService;
 using Application.SendModels.Contest;
+using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,13 +20,17 @@ public class ContestController : Controller
     }
 
     #region Create Contest
-
+    /// <summary>
+    /// Api tạo contest (mới) 
+    /// </summary>
+    /// <param name="contest">không cần để contestid, createby trong level và không cần để Levellist, createby trong round</param>
+    /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateContest(ContestRequest contest)
+    public async Task<IActionResult> CreateContest(CreateContestSendModel contest)
     {
         try
         {
-            var result = await _contestService.AddContest(contest);
+            var result = await _contestService.CreateContest(contest);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -192,6 +197,49 @@ public class ContestController : Controller
     }
 
     #endregion
+    
+    #region Get All Contest v2
+
+    [HttpGet("getallcontest_2")]
+    public async Task<IActionResult> GetAllContest_v2([FromQuery] ListModels listModel)
+    {
+        try
+        {
+            var (list, totalPage) = await _contestService.GetAllContest_v2(listModel);
+            if (totalPage < listModel.PageNumber)
+                return NotFound(new BaseResponseModel
+                {
+                    Status = NotFound().StatusCode,
+                    Message = "Over number page"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Success",
+                Result = new
+                {
+                    List = list,
+                    TotalPage = totalPage
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new
+                {
+                    List = new List<Contest>(),
+                    TotalPage = 0
+                },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region get contest for filter painting
 
@@ -292,6 +340,35 @@ public class ContestController : Controller
             {
                 Status = Ok().StatusCode,
                 Message = "Lấy thông tin cuộc thi gần nhất thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #region Get drop down Contest
+
+    [HttpGet("getListDorpDown/{id}")]
+    public async Task<IActionResult> GetListDropDown(Guid id)
+    {
+        try
+        {
+            var result = await _contestService.GetListForDorpDown(id);
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy thông tin cuộc thi thành công",
                 Result = result
             });
         }

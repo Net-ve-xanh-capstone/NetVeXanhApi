@@ -27,7 +27,7 @@ public interface IValidatorFactory
     IValidator<TopicUpdateRequest> TopicUpdateRequestValidator { get; }
     IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
-    IValidator<AwardRequest> AwardRequestValidator { get; }
+    IValidator<CreateAwardSendModel> AwardRequestValidator { get; }
     IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
     IValidator<CategoryRequest> CategoryRequestValidator { get; }
     IValidator<UpdateCategoryRequest> UpdateCategoryRequestValidator { get; }

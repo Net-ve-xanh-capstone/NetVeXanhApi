@@ -34,7 +34,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .FirstOrDefaultAsync(x => x.Code == code);
     }
 
-    public override async Task<Painting?> GetByIdAsync(Guid id)
+    public override async Task<Painting?> GetByIdAsync(Guid? id)
     {
         return await DbSet.Where(x => x.Status != PaintingStatus.Delete.ToString())
             .Include(x => x.RoundTopic)

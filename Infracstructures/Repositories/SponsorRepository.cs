@@ -11,7 +11,7 @@ public class SponsorRepository : GenericRepository<Sponsor>, ISponsorRepository
     {
     }
 
-    public override async Task<Sponsor?> GetByIdAsync(Guid id)
+    public override async Task<Sponsor?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == SponsorStatus.Active.ToString());
     }

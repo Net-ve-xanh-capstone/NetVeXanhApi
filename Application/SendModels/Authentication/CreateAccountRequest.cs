@@ -17,4 +17,5 @@ public class CreateAccountRequest
     public bool Gender { get; set; } = true;
 
     public DateTime Birthday { get; set; }
+    public string Address { get; set; }
 }

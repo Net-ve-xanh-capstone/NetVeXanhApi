@@ -16,7 +16,7 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
         return await DbSet.Where(x => x.Status == AwardStatus.Active.ToString()).ToListAsync();
     }
 
-    public override async Task<Award?> GetByIdAsync(Guid id)
+    public override async Task<Award?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == AwardStatus.Active.ToString());
     }
@@ -26,6 +26,13 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
         return await DbSet
             .Where(x => listLevelId.Contains((Guid)x.EducationalLevelId))
             .Select(x => x.Id)
+            .ToListAsync();
+    }
+
+    public async Task<List<Award>?> GetAwardsByRoundId(Guid roundId)
+    {
+        return await DbSet
+            .Where(x => x.RoundId == roundId && x.Status == AwardStatus.Active.ToString())
             .ToListAsync();
     }
 }

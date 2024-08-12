@@ -1,4 +1,5 @@
-﻿using Application.SendModels.Round;
+﻿using Application.SendModels.Contest;
+using Application.SendModels.Round;
 using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -12,6 +13,11 @@ public partial class MapperConfigs : Profile
 {
     partial void AddRoundMapperConfig()
     {
+        CreateMap<CreateRoundSendModel, Round>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RoundStatus.NotStarted.ToString()))
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award));
+
+        
         CreateMap<RoundRequest, Round>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy))
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy));
@@ -33,6 +39,7 @@ public partial class MapperConfigs : Profile
         CreateMap<Round, ListTopicViewModel>().ReverseMap();
 
         CreateMap<Round, RoundInLevelViewModel>()
+            .ForMember(dest => dest.Award, opt => opt.MapFrom(src => src.Award))
             .ForMember(dest => dest.RoundTopic, opt => opt.MapFrom(src => src.RoundTopic));
 
 

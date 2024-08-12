@@ -54,7 +54,7 @@ public class GenericRepository<TModel> : IGenericRepository<TModel> where TModel
         return await query.ToListAsync();
     }
 
-    public virtual async Task<TModel?> GetByIdAsync(Guid id)
+    public virtual async Task<TModel?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FindAsync(id);
     }

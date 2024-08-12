@@ -9,9 +9,7 @@ public class EducationalLevel : BaseModel
     public Guid? ContestId { get; set; }
     public int? MinAge { get; set; }
     public int? MaxAge { get; set; }
-
-    //Relation
-    public ICollection<Award> Award { get; set; }
+    
     public Contest Contest { get; set; }
     public ICollection<Round> Round { get; set; }
 }

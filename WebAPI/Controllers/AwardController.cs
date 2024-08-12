@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebAPI.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/awards/")]
 public class AwardController : Controller
 {
@@ -22,19 +21,17 @@ public class AwardController : Controller
     }
 
     #region Create Award
-
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="createAward"> Rank = FirstPrize |  SecondPrize | ConsolationPrize | Preliminary | OtherAward |</param>
+    /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateAward(AwardRequest award)
+    public async Task<IActionResult> CreateAward(CreateAwardSendModel createAward)
     {
         try
         {
-            if (!Enum.IsDefined(typeof(RankAward), award.Rank))
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "Giải không tồn tại. Vui lòng kiểm tra lại!"
-                });
-            var result = await _awardService.AddAward(award);
+            var result = await _awardService.AddAward(createAward);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -178,6 +175,40 @@ public class AwardController : Controller
                     List = new List<Award>(),
                     TotalPage = 0
                 },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #region Get List Award By Round Id
+    /// <summary>
+    /// Lấy giải theo vòng để nhập vào số lượng của giải đó để tạo lịch chấm 
+    /// </summary>
+    /// <param name="roundId"></param>
+    /// <returns></returns>
+    [HttpGet("Round/{roundId}")]
+    public async Task<IActionResult> GetAllAward(Guid roundId)
+    {
+        try
+        {
+            var result = await _awardService.GetAwardsByRoundId(roundId);
+            if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Topic Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
                 Errors = ex
             });
         }

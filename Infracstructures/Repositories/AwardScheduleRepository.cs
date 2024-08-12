@@ -16,12 +16,13 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
         return await DbSet.Include(a => a.Award).Where(a => a.ScheduleId == id).ToListAsync();
     }
 
-    public override Task<AwardSchedule?> GetByIdAsync(Guid id)
+    public override Task<AwardSchedule?> GetByIdAsync(Guid? id)
     {
         return DbSet.Include(a => a.Award)
             .Include(a => a.Schedule)
             .ThenInclude(s => s.Painting.Where(p =>
                 p.Status == PaintingStatus.Accepted.ToString() || p.Status == PaintingStatus.FinalRound.ToString()))
+            .ThenInclude(x=>x.RoundTopic).ThenInclude(x=>x.Topic)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
 }

@@ -69,7 +69,7 @@ public class ScheduleController : Controller
     #region Create Schedule For Final Round
 
     [HttpPost("final")]
-    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleRequest schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
         try
         {
@@ -391,8 +391,59 @@ public class ScheduleController : Controller
 
     #endregion
 
-    #region Rating
+    #region New Rating Final Round
+    [HttpPost("RatingFinalRound")]
+    public async Task<IActionResult> RatingFinalRound(RatingRequest rating)
+    {
+        try
+        {
+            var result = await _scheduleService.RatingFinalRound(rating);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Chấm điểm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
 
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = combinedErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+    #endregion
+
+    #region Rating
+    /// <summary>
+    /// Chấm điểm vòng loại
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingPreliminaryRound")]
     public async Task<IActionResult> RatingPreliminaryRound(RatingRequest rating)
     {
@@ -438,6 +489,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 1
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingFirstPrize")]
     public async Task<IActionResult> RatingFirstPrize(RatingRequest rating)
     {
@@ -483,6 +540,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 2
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingSecondPrize")]
     public async Task<IActionResult> RatingSecondPrize(RatingRequest rating)
     {
@@ -528,6 +591,12 @@ public class ScheduleController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Chấm điểm cho giải 3
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingThirdPrize")]
     public async Task<IActionResult> RatingThirdPrize(RatingRequest rating)
     {
@@ -572,7 +641,11 @@ public class ScheduleController : Controller
             });
         }
     }
-
+    /// <summary>
+    /// Chấm điểm cho giải khuyến khích
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingConsolationPrize")]
     public async Task<IActionResult> RatingConsolationPrize(RatingRequest rating)
     {

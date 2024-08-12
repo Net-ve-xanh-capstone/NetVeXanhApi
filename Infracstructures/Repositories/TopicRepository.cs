@@ -11,7 +11,7 @@ public class TopicRepository : GenericRepository<Topic>, ITopicRepository
     {
     }
 
-    public override async Task<Topic?> GetByIdAsync(Guid id)
+    public override async Task<Topic?> GetByIdAsync(Guid? id)
     {
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == TopicStatus.Active.ToString());
     }

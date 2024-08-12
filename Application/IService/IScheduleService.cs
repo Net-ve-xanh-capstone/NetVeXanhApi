@@ -9,12 +9,14 @@ namespace Application.IService;
 public interface IScheduleService
 {
     Task<List<ListScheduleViewModel>> GetListSchedule(Guid id);
-    Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest Schedule);
-    Task<bool> CreateScheduleForFinalRound(ScheduleRequest Schedule);
+    Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule);
+    Task<bool> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule);
     Task<(List<ScheduleRatingViewModel>, int)> GetListSchedule(ListModels listModels);
     Task<ScheduleRatingViewModel?> GetScheduleById(Guid id);
     Task<List<ScheduleViewModel?>> GetScheduleByExaminerId(Guid id);
     Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId);
+
+    Task<bool> RatingFinalRound(RatingRequest ratingPainting);
 
     Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting);
     Task<bool> RatingFirstPrize(RatingRequest ratingPainting);

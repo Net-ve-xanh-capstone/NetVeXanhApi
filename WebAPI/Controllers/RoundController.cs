@@ -21,11 +21,11 @@ public class RoundController : Controller
     #region Create Round
 
     [HttpPost]
-    public async Task<IActionResult> CreateRound(RoundRequest round)
+    public async Task<IActionResult> CreateRound(CreateRoundSendModel model)
     {
         try
         {
-            var result = await _roundService.CreateRound(round);
+            var result = await _roundService.CreateRound(model);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,

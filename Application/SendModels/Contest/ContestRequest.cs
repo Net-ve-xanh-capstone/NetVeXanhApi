@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Application.SendModels.EducationalLevel;
+using Domain;
 
 namespace Application.SendModels.Contest;
 

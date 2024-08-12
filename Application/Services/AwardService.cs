@@ -4,6 +4,7 @@ using Application.IService.ICommonService;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -34,13 +35,22 @@ public class AwardService : IAwardService
 
     #region Add Award
 
-    public async Task<bool> AddAward(AwardRequest addAwardViewModel)
+    public async Task<bool> AddAward(CreateAwardSendModel model)
     {
-        var validationResult = await ValidateAwardRequest(addAwardViewModel);
-        if (!validationResult.IsValid)
-            // Handle validation failure
-            throw new ValidationException(validationResult.Errors);
-        var award = _mapper.Map<Award>(addAwardViewModel);
+        var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
+        if (round!.Name != "Chung Kết")
+        {
+            throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
+        }
+        if (round.Award.Any(src => src.Rank == model.Rank))
+        {
+            throw new Exception(" Bạn không thể thêm được các giải đã có sẵn");
+        }
+        var validationResult = await ValidateAwardRequest(model);
+        if (!validationResult.IsValid)throw new ValidationException(validationResult.Errors);
+        var award = _mapper.Map<Award>(model);
+        award.Rank = RankAward.OtherAward.ToString();
+        award.Description = model.Rank;
         award.Status = AwardStatus.Active.ToString();
         await _unitOfWork.AwardRepo.AddAsync(award);
         award.CreatedTime = _currentTime.GetCurrentTime();
@@ -68,15 +78,25 @@ public class AwardService : IAwardService
 
     #endregion
 
+    #region Get List Award By ContestId
+    public async Task<List<AwardViewModel>?> GetAwardsByRoundId(Guid roundId)
+    {
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        return _mapper.Map<List<AwardViewModel>>(list);
+    }
+    #endregion
+
     #region Delete Award
 
     public async Task<bool> DeleteAward(Guid awardId)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
         if (award == null) throw new Exception("Khong tim thay Award");
-
+        if (award.Rank != RankAward.OtherAward.ToString())
+        {
+            throw new Exception("Bạn Không Thể Xóa những giải chính !");
+        }
         award.Status = AwardStatus.Inactive.ToString();
-
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -88,17 +108,23 @@ public class AwardService : IAwardService
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(updateAward.Id);
         if (award == null) throw new Exception("Khong tim thay Award");
-
-        _mapper.Map(updateAward, award);
-
+        if (award.Rank == RankAward.OtherAward.ToString())
+        {
+            _mapper.Map(updateAward, award);
+            award.Rank = RankAward.OtherAward.ToString();
+            award.Description = updateAward.Rank;
+        }
+        else
+        {
+            _mapper.Map(updateAward, award);
+        }
         award.UpdatedTime = _currentTime.GetCurrentTime();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
     #endregion
-
-
+    
     #region Get Award By Id
 
     public async Task<AwardViewModel> GetAwardById(Guid awardId)
@@ -110,17 +136,19 @@ public class AwardService : IAwardService
 
     #endregion
 
-    //Check Id is Exist
+    #region IsExisted
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.AwardRepo.IsExistIdAsync(id);
     }
 
+    #endregion
+
     #region Validate
 
-    public async Task<ValidationResult> ValidateAwardRequest(AwardRequest award)
+    public async Task<ValidationResult> ValidateAwardRequest(CreateAwardSendModel createAward)
     {
-        return await _validatorFactory.AwardRequestValidator.ValidateAsync(award);
+        return await _validatorFactory.AwardRequestValidator.ValidateAsync(createAward);
     }
 
     public async Task<ValidationResult> ValidateTopicUpdateRequest(UpdateAwardRequest awardUpdate)

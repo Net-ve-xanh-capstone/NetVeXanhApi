@@ -18,14 +18,14 @@ public class ScheduleController : Controller
     }
 
 
-    #region Create Schedule For Preliminary Round
+    /*#region Create Schedule For Preliminary Round
 
     [HttpPost("preliminary")]
     public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         try
         {
-            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            *//*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -37,7 +37,7 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }*/
+            }*//*
             var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -64,11 +64,11 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion
+    #endregion */
 
-    #region Create Schedule For Final Round
+    #region Create Schedule 
 
-    [HttpPost("final")]
+    [HttpPost()]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
         try
@@ -86,7 +86,7 @@ public class ScheduleController : Controller
                 };
                 return BadRequest(response);
             }*/
-            var result = await _scheduleService.CreateScheduleForFinalRound(schedule);
+            var result = await _scheduleService.CreateSchedule(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {

@@ -121,7 +121,7 @@ public class ScheduleService : IScheduleService
 
     #region Create
 
-    public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
+    /*public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
@@ -164,9 +164,9 @@ public class ScheduleService : IScheduleService
 
 
         return await _unitOfWork.SaveChangesAsync() > 0; 
-    }
+    }*/
 
-    public async Task<bool> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
+    public async Task<bool> CreateSchedule(ScheduleForFinalRequest schedule)
     {
 
         /*var validationResult = await ValidateScheduleRequest(schedule);
@@ -199,6 +199,7 @@ public class ScheduleService : IScheduleService
             newAwardSchedule.Quantity = a.AwardCount;
             newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
             newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+            listAwardSchedule.Add(newAwardSchedule);
         }
         newSchedule.AwardSchedule = listAwardSchedule;
 

@@ -323,6 +323,7 @@ public class PaintingService : IPaintingService
         else
             painting.Status = PaintingStatus.Rejected.ToString();
         painting.ReviewedTimestamp = DateTime.Now;
+        painting.Reviewer = request.CurrentUserId;
         painting.ReviewReason = request.Reason;
 
         await _unitOfWork.SaveChangesAsync();

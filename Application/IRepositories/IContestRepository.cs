@@ -8,8 +8,10 @@ public interface IContestRepository : IGenericRepository<Contest>
 {
     Task<List<String>> GetListEducationalLevelName(Guid contestId);
     Task<List<string>> GetListRoundName(Guid contestId);
+    Task<Contest?> GetByIdForScheduleAsync(Guid? id);
 
-    
+
+
     Task<Contest?> GetAllContestInformationAsync(Guid contestId);
     Task<List<ContestNameYearViewModel>> Get5RecentYearAsync();
     Task<(DateTime StartTime, DateTime EndTime)?> GetStartEndTimeByContestId(Guid contestId);

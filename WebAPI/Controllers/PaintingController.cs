@@ -325,7 +325,11 @@ public class PaintingController : Controller
     #endregion
 
     #region Review Decision of Painting
-
+    /// <summary>
+    /// Review painting của staff ( có thay đổi thêm Id của user hiện tại)
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPatch("review")]
     public async Task<IActionResult> ReviewDecisionOfPainting(PaintingUpdateStatusRequest request)
     {

@@ -13,7 +13,14 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public ContestRepository(AppDbContext context) : base(context)
     {
     }
-
+    public async Task<Contest?> GetByIdForScheduleAsync(Guid? id)
+    {
+        return await DbSet.Where(x => x.Id == id)
+            .Include(x=>x.EducationalLevel)
+            .ThenInclude(x=>x.Round)
+            .ThenInclude(x=>x.Schedule)
+            .FirstOrDefaultAsync();
+    }
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
@@ -92,9 +99,16 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return round != null ? (round.StartTime, round.EndTime) : (DateTime.MinValue, DateTime.MinValue);
     }
 
-    public Task<Contest?> GetNearestContestInformationAsync()
+    public async Task<Contest?> GetNearestContestInformationAsync()
     {
-        throw new NotImplementedException();
+        var guid = Guid.Parse("4E7AD1E2-FDCA-4E9C-B202-A2D0BAA439EF");
+
+        var result = await DbSet.Where(x => x.Id == guid)
+            .Include(x => x.EducationalLevel)
+            .ThenInclude(x => x.Round)
+            .ThenInclude(x => x.Schedule)
+            .FirstOrDefaultAsync();
+        return result;
     }
 
     public async Task<List<Guid>> Get3NearestContestId()

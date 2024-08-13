@@ -17,7 +17,11 @@ public class AwardScheduleController : Controller
     }
 
     #region Get list Award Schedule By Schedule Id
-
+    /// <summary>
+    /// Lấy ra những giải của 1 schedule
+    /// </summary>
+    /// <param name="id">Truyền vào Schedule Id</param>
+    /// <returns></returns>
     [HttpGet("schedule/{id}")]
     public async Task<IActionResult> GetListAwardScheduleById(Guid id)
     {
@@ -47,7 +51,11 @@ public class AwardScheduleController : Controller
     #endregion
 
     #region Get AwardSchedule By Id
-
+    /// <summary>
+    /// Lấy ra giải và tranh để chấm
+    /// </summary>
+    /// <param name="id">Truyền vào AwardScheduleId (Id của cái api ở trên)</param>
+    /// <returns></returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAwardById(Guid id)
     {

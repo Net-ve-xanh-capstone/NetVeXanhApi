@@ -27,7 +27,8 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
         return await DbSet
             .Where(tr => tr.RoundId == roundId)
             .SelectMany(tr => tr.Painting)
-            .Where(p => p.Status == PaintingStatus.Accepted.ToString() && p.ScheduleId != null)
+            .Where(p => p.Status == PaintingStatus.Accepted.ToString())
+            .Where(p => p.ScheduleId == null)
             .OrderBy(p => Guid.NewGuid())
             .Take(number)
             .ToListAsync();
@@ -43,7 +44,7 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
         return await DbSet
             .Where(tr => tr.RoundId == roundId)
             .SelectMany(tr => tr.Painting)
-            .Where(p => p.Status == PaintingStatus.FinalRound.ToString() && p.ScheduleId != null)
+            .Where(p => p.Status == PaintingStatus.FinalRound.ToString() && p.ScheduleId == null)
             .OrderByDescending(p => Guid.NewGuid())
             .Take(number)
             .ToListAsync();

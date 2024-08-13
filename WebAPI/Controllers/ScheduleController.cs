@@ -19,13 +19,21 @@ public class ScheduleController : Controller
 
 
     #region Create Schedule For Preliminary Round
-
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
     [HttpPost("preliminary")]
+    
     public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
     {
         try
         {
-            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -37,7 +45,7 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }*/
+            }
             var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -64,10 +72,17 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion
+    #endregion 
 
     #region Create Schedule For Final Round
-
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
     [HttpPost("final")]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
@@ -86,12 +101,12 @@ public class ScheduleController : Controller
                 };
                 return BadRequest(response);
             }*/
-            var result = await _scheduleService.CreateScheduleForFinalRound(schedule);
+            var result = await _scheduleService.CreateSchedule(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
+                    Message = "Hệ thống bị lỗi vui lòng thử lại"
                 });
             return Ok(new BaseResponseModel
             {

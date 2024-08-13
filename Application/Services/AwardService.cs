@@ -38,7 +38,7 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardSendModel model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Chung Kết")
+        if (round!.Name != "Vòng Chung Kết")
         {
             throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
         }

@@ -5,4 +5,5 @@ public class PaintingUpdateStatusRequest
     public Guid Id { get; set; }
     public string? Reason { get; set; } = "Không có thông tin";
     public bool IsPassed { get; set; }
+    public Guid CurrentUserId { get; set; }
 }

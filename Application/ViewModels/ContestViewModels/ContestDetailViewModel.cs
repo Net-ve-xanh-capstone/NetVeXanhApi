@@ -51,6 +51,8 @@ public class EducationalLevelInContest
     public Guid Id { get; set; }
     public string Description { get; set; }
     public string Level { get; set; }
+    public int MinAge { get; set; }
+    public int MaxAge { get; set; }
     public List<RoundInLevelViewModel> Round { get; set; }
 }
 

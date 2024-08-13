@@ -304,13 +304,13 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id for Web
-
-    [HttpGet("examiner/{examinerId}/")]
-    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId)
+    /*/contest/{contestId}*/
+    [HttpGet("examiner/{examinerId}")]
+    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId/*, [FromRoute] Guid contestId*/)
     {
         try
         {
-            var result = await _scheduleService.GetScheduleForWeb(examinerId);
+            var result = await _scheduleService.GetScheduleForWeb(examinerId/*, contestId*/);
             if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
@@ -407,6 +407,11 @@ public class ScheduleController : Controller
     #endregion
 
     #region New Rating Final Round
+    /// <summary>
+    /// Chấm điểm vòng chung kết
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
     [HttpPost("RatingFinalRound")]
     public async Task<IActionResult> RatingFinalRound(RatingRequest rating)
     {
@@ -453,7 +458,7 @@ public class ScheduleController : Controller
     }
     #endregion
 
-    #region Rating
+    #region rating vòng loại
     /// <summary>
     /// Chấm điểm vòng loại
     /// </summary>
@@ -503,6 +508,11 @@ public class ScheduleController : Controller
             });
         }
     }
+
+    #endregion
+
+    /*#region Rating
+
 
 
     /// <summary>
@@ -706,5 +716,5 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion
+    #endregion*/
 }

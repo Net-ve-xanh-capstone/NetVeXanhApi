@@ -7,4 +7,6 @@ public class EducationalLevelViewModel
     public Guid? ContestId { get; set; }
     public Guid Createby { get; set; }
     public string Level { get; set; }
+    public int MinAge { get; set; }
+    public int MaxAge { get; set; }
 }

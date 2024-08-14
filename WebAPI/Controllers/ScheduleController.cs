@@ -406,7 +406,7 @@ public class ScheduleController : Controller
 
     #endregion
 
-    #region New Rating Final Round
+    /*#region New Rating Final Round
     /// <summary>
     /// Chấm điểm vòng chung kết
     /// </summary>
@@ -456,9 +456,60 @@ public class ScheduleController : Controller
             });
         }
     }
+    #endregion*/
+    #region  Rating 
+    /// <summary>
+    /// Chấm điểm 
+    /// </summary>
+    /// <param name="rating">không có award thì cho awardId = null</param>
+    /// <returns></returns>
+    [HttpPost("Rating")]
+    public async Task<IActionResult> RatingPainting(RatingRequest rating)
+    {
+        try
+        {
+            var result = await _scheduleService.RatingPainting(rating);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Chấm điểm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            // Tạo danh sách các thông điệp lỗi từ ex.Errors
+            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
+
+            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
+            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = combinedErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
     #endregion
 
-    #region rating vòng loại
+    /*#region rating vòng loại
     /// <summary>
     /// Chấm điểm vòng loại
     /// </summary>
@@ -509,7 +560,7 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion
+    #endregion*/
 
     /*#region Rating
 

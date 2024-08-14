@@ -33,6 +33,13 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Code == code);
     }
+    public virtual async Task<List<Painting>?> GetByScheduleIdAsync(Guid scheduleId)
+    {
+        return await DbSet.Where(x => x.ScheduleId == scheduleId)
+            .Include(x => x.RoundTopic)
+            .ThenInclude(x => x.Topic)
+            .Include(x => x.Account).ToListAsync();
+    }
 
     public override async Task<Painting?> GetByIdAsync(Guid? id)
     {
@@ -193,6 +200,13 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .ThenInclude(r => r.Round)
             .ThenInclude(r => r.EducationalLevel)
             .Where(p => p.RoundTopic.Round.EducationalLevel.ContestId == contestId)
+            .CountAsync();
+    }
+
+    public async Task<int> CountPaintingHaveAward(Guid scheduleId, Guid awardId)
+    {
+        return await DbSet
+            .Where(p => p.ScheduleId == scheduleId && p.AwardId == awardId)
             .CountAsync();
     }
 }

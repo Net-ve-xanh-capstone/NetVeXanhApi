@@ -38,6 +38,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
         return await DbSet.Where(x => x.ScheduleId == scheduleId)
             .Include(x => x.RoundTopic)
             .ThenInclude(x => x.Topic)
+            .Include(x => x.Award)
             .Include(x => x.Account).ToListAsync();
     }
 

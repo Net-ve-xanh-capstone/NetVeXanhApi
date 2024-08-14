@@ -388,9 +388,9 @@ public class PaintingService : IPaintingService
 
     public async Task<List<PaintingForScheduleViewModel>> GetPaintingByScheduleId(Guid scheduleId)
     {
-        var painting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
-        if (painting.Count == 0) throw new Exception("Khong tim thay Painting");
-        return _mapper.Map<List<PaintingForScheduleViewModel>>(painting);
+        var listPainting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
+        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        return _mapper.Map<List<PaintingForScheduleViewModel>>(listPainting);
     }
 
     #endregion

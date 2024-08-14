@@ -10,6 +10,7 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Services;
 
@@ -192,7 +193,7 @@ public class ScheduleService : IScheduleService
         newSchedule.CreatedBy = schedule.CurrentUserId;
 
         var listAwardSchedule = new List<AwardSchedule>();
-        foreach(var a in schedule.Awards)
+        foreach (var a in schedule.Awards)
         {
             var newAwardSchedule = new AwardSchedule();
             newAwardSchedule.ScheduleId = newSchedule.Id;
@@ -255,10 +256,10 @@ public class ScheduleService : IScheduleService
         if (contest == null) throw new Exception("Không tìm thấy Contest");
         var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contest!.Id);
         foreach (var level in educationalLevel)
-        foreach (var round in level.Round)
-        foreach (var schedule in round.Schedule)
-            if (schedule.ExaminerId != examinerId)
-                round.Schedule.Remove(schedule);
+            foreach (var round in level.Round)
+                foreach (var schedule in round.Schedule)
+                    if (schedule.ExaminerId != examinerId)
+                        round.Schedule.Remove(schedule);
 
         if (educationalLevel == null) throw new Exception("Khong tim thay");
 
@@ -281,32 +282,32 @@ public class ScheduleService : IScheduleService
         if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
 
         //Get painting have status is FinalRound
-       // var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
+        // var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
         //Get Award from Award schedule
-        var awardSchedule = schedules.AwardSchedule.FirstOrDefault(a => a.AwardId == ratingPainting.AwardId);
+        //var awardSchedule = schedules.AwardSchedule.FirstOrDefault(a => a.AwardId == ratingPainting.AwardId);
 
-        if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
+        //if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
 
         //Check Have any id from request don't exist in schedule
-       /* if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(listPainting.Select(p => p.Id)).ToList().Any())
-            throw new Exception("Có tranh không tồn tại");*/
+        /* if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(listPainting.Select(p => p.Id)).ToList().Any())
+             throw new Exception("Có tranh không tồn tại");*/
 
 
         //Create var to call all rated painting
         var listPass = schedules.Painting.Where(p => ratingPainting.Paintings.Select(r => r.PaintingId).Contains(p.Id)).ToList();
 
-        if (listPass.Count != awardSchedule.Quantity)
+        /*if (listPass.Count != awardSchedule.Quantity)
             throw new Exception($"Số lượng giải thưởng: {awardSchedule.Quantity}! Vui lòng kiểm tra lại đúng số lượng");
-
+*/
         foreach (var p in listPass)
         {
             p.Status = PaintingStatus.HasPrizes.ToString();
-            p.AwardId = ratingPainting.AwardId;
+           // p.AwardId = ratingPainting.AwardId;
         }
         schedules.Painting.ToList().ForEach(p => p.FinalDecisionTimestamp = DateTime.Now);
-        
 
-        awardSchedule.Status = AwardScheduleStatus.Done.ToString();
+
+       // awardSchedule.Status = AwardScheduleStatus.Done.ToString();
 
         if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
             schedules.Status = ScheduleStatus.Done.ToString();
@@ -316,6 +317,69 @@ public class ScheduleService : IScheduleService
         return true;
     }
     #endregion
+    #region Rating 
+
+    public async Task<bool> RatingPainting(RatingRequest ratingPainting)
+    {
+        /*var validationResult = await ValidateRatingRequest(ratingPainting);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);*/
+
+        //Get schedule 
+        var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
+
+        if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
+
+        //Get painting have status is FinalRound
+        // var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
+        foreach (var p in ratingPainting.Paintings)
+        {
+            AwardSchedule awardSchedule = new AwardSchedule();
+            //Get Award from Award schedule
+            if (p.AwardId.HasValue)
+            {
+                awardSchedule = schedules.AwardSchedule.FirstOrDefault(a => a.AwardId == p.AwardId);
+                if (awardSchedule == null) throw new Exception($"Không tìm thấy giải thường {p.AwardId}");
+                if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception($"Đã hết giải {p.AwardId}");
+            }
+
+            //Check Have any id from request don't exist in schedule
+            /* if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(listPainting.Select(p => p.Id)).ToList().Any())
+                 throw new Exception("Có tranh không tồn tại");*/
+
+
+            //Create var to call all rated painting
+            var painting = schedules.Painting.FirstOrDefault(x => x.Id == p.PaintingId);
+
+            if (painting == null)
+                throw new Exception($"Không tìm thấy bài dự thi {p.PaintingId} trong danh sách những bài được chấm");
+
+
+            painting.Status = PaintingStatus.HasPrizes.ToString();
+            painting.AwardId = p.AwardId;
+            painting.JudgementReason = p.Reason;
+            painting.FinalDecisionTimestamp = DateTime.Now;
+
+            await _unitOfWork.SaveChangesAsync();
+
+            if (p.AwardId.HasValue)
+            {
+                var paintingAwardCount = await _unitOfWork.PaintingRepo.CountPaintingHaveAward(ratingPainting.ScheduleId, p.AwardId.Value);
+                if (awardSchedule.Quantity == paintingAwardCount)
+                    awardSchedule.Status = AwardScheduleStatus.Done.ToString();
+            }
+
+            if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
+                schedules.Status = ScheduleStatus.Done.ToString();
+
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        return true;
+    }
+    #endregion
+
 
     #region Rating
 
@@ -327,14 +391,14 @@ public class ScheduleService : IScheduleService
             throw new ValidationException(validationResult.Errors);
         //Get schedule with list painting 
         var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
-        if (schedules.Painting.Any(p => p.Status != PaintingStatus.Accepted.ToString())) 
+        if (schedules.Painting.Any(p => p.Status != PaintingStatus.Accepted.ToString()))
             throw new Exception("Có tranh đang ở trạng thái không hợp lệ");
 
         if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(schedules.Painting.Select(p => p.Id)).ToList().Any())
             throw new Exception("Có tranh không tồn tại trong lịch chấm");
 
 
-        //Get painting have status is Accepted
+        /*//Get painting have status is Accepted
         var listPass = schedules.Painting
             .Where(p => ratingPainting.Paintings
                 .Where(r => r.IsPass) // Lọc những painting có IsPassed = true
@@ -346,12 +410,12 @@ public class ScheduleService : IScheduleService
                 .Where(r => !r.IsPass) // Lọc những painting có IsPassed = false
                 .Select(r => r.PaintingId) // Chọn các Id
                 .Contains(p.Id)) // Kiểm tra xem Id của painting có trong danh sách không
-            .ToList();
+            .ToList();*/
 
         //Get Award from Award schedule
         var awardSchedule = schedules.AwardSchedule.FirstOrDefault();
 
-        listPass.ForEach(p =>
+        /*listPass.ForEach(p =>
         {
             p.Status = PaintingStatus.Pass.ToString();
             p.AwardId = ratingPainting.AwardId;
@@ -366,7 +430,7 @@ public class ScheduleService : IScheduleService
         schedules.AwardSchedule.First().Status = AwardScheduleStatus.Done.ToString();
         schedules.Status = ScheduleStatus.Done.ToString();
         if (listPass.Count != schedules.AwardSchedule.First().Quantity)
-            throw new Exception("Số lượng tranh không đúng");
+            throw new Exception("Số lượng tranh không đúng");*/
 
 
         await _unitOfWork.SaveChangesAsync();

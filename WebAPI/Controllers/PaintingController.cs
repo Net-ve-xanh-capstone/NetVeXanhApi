@@ -475,6 +475,39 @@ public class PaintingController : Controller
     }
 
     #endregion
+    #region Get Painting By ScheduleId
+    /// <summary>
+    /// Lấy danh sách bài dự thi theo schedule
+    /// </summary>
+    /// <param name="scheduleId"></param>
+    /// <returns></returns>
+    [HttpGet("Schedule/{scheduleId}")]
+    public async Task<IActionResult> GetPaintingByScheduleId([FromRoute] Guid scheduleId)
+    {
+        try
+        {
+            var result = await _paintingService.GetPaintingByScheduleId(scheduleId);
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy bài dự thi theo lịch thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Tracking Painting By Id
 

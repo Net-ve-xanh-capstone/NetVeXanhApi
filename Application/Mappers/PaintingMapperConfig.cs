@@ -74,6 +74,7 @@ public partial class MapperConfigs : Profile
                 src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
                 src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ))
+            .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
             .ForPath(dest => dest.Reason, opt => opt.MapFrom(src => src.JudgementReason))
             .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))

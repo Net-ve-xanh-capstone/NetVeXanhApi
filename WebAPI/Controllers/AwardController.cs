@@ -194,11 +194,11 @@ public class AwardController : Controller
         try
         {
             var result = await _awardService.GetAwardsByRoundId(roundId);
-            if (result == null) return NotFound(new { Success = false, Message = "Topic not found" });
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy giải" });
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Get Topic Success",
+                Message = "Get Award Success",
                 Result = result
             });
         }
@@ -227,7 +227,7 @@ public class AwardController : Controller
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
-                Message = "Trang vượt quá số lượng trang cho phép.",
+                Message = "Lấy chi tiết giải thưởng thành công.",
                 Result = result
             });
         }

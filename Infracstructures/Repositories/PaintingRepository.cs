@@ -204,6 +204,39 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .CountAsync();
     }
 
+    public async Task<int> GetNumPaintingInRound(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInRoundIsHaveSchedule(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId && p.ScheduleId != null)
+            .CountAsync();
+    }
+    public async Task<int> GetNumPaintingInRoundIsNotHaveSchedule(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId && p.ScheduleId == null)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInSchedule(Guid scheduleId)
+    {
+        return await DbSet
+            .Where(p => p.ScheduleId == scheduleId)
+            .CountAsync();
+    }
+
     public async Task<int> CountPaintingHaveAward(Guid scheduleId, Guid awardId)
     {
         return await DbSet

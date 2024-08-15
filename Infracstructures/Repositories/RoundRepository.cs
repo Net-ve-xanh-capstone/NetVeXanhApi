@@ -48,9 +48,15 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
 
     public async Task<List<Round>> GetRoundByContestId(Guid id)
     {
-        var list = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Contest)
-            .Include(src => src.Schedule).ThenInclude(src => src.Account).Where(src =>
-                src.EducationalLevel.ContestId == id && src.Status != RoundStatus.Delete.ToString())
+        var list = await DbSet
+            .Include(src => src.EducationalLevel)
+            .ThenInclude(src => src.Contest)
+            .Include(src => src.Schedule)
+            .ThenInclude(src => src.Account)
+            .Include(src => src.Schedule)
+            .ThenInclude(src => src.AwardSchedule)
+            .ThenInclude(src => src.Award)
+            .Where(src => src.EducationalLevel.ContestId == id && src.Status != RoundStatus.Delete.ToString())
             .ToListAsync();
         return list;
     }

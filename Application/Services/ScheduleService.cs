@@ -36,8 +36,19 @@ public class ScheduleService : IScheduleService
 
     public async Task<List<ListScheduleViewModel>> GetListSchedule(Guid id)
     {
-        var rounds = await _unitOfWork.RoundRepo.GetRoundByContestId(id);
-        return _mapper.Map<List<ListScheduleViewModel>>(rounds);
+        var listSchedule = await _unitOfWork.RoundRepo.GetRoundByContestId(id);
+        var result = _mapper.Map<List<ListScheduleViewModel>>(listSchedule);
+        foreach (var s in result)
+        {
+            s.TotalPainting = await _unitOfWork.PaintingRepo.GetNumPaintingInRound(s.RoundId);
+            s.PaintingNoSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(s.RoundId);
+            s.PaintingWithSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsHaveSchedule(s.RoundId);
+            foreach (var l in s.Schedules)
+            {
+                l.PaintingCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
+            }
+        }
+        return result;
     }
 
     #endregion

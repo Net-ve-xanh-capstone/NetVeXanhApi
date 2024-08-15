@@ -20,4 +20,8 @@ public interface IPaintingRepository : IGenericRepository<Painting>
     Task<int> PaintingCountByContest(Guid contestId);
     Task<bool> IsExistPaintingInContest(Guid accountId, Guid roundId);
     Task<Account?> GetAccountByPaintingIdAsync(Guid paintingId);
+
+    Task<int> GetNumPaintingInRound(Guid roundId);
+    Task<int> GetNumPaintingInRoundIsHaveSchedule(Guid roundId);
+    Task<int> GetNumPaintingInRoundIsNotHaveSchedule(Guid roundId);
 }

@@ -230,6 +230,13 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .CountAsync();
     }
 
+    public async Task<int> GetNumPaintingInSchedule(Guid scheduleId)
+    {
+        return await DbSet
+            .Where(p => p.ScheduleId == scheduleId)
+            .CountAsync();
+    }
+
     public async Task<int> CountPaintingHaveAward(Guid scheduleId, Guid awardId)
     {
         return await DbSet

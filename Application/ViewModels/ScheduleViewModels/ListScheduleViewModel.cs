@@ -10,4 +10,5 @@ public class ListScheduleViewModel
     public int PaintingNoSchedule { get; set; }
     public int PaintingWithSchedule { get; set; }
     public List<ScheduleViewModel>? Schedules { get; set; }
+
 }

@@ -43,6 +43,10 @@ public class ScheduleService : IScheduleService
             s.TotalPainting = await _unitOfWork.PaintingRepo.GetNumPaintingInRound(s.RoundId);
             s.PaintingNoSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(s.RoundId);
             s.PaintingWithSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsHaveSchedule(s.RoundId);
+            foreach (var l in s.Schedules)
+            {
+                l.PaintingCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
+            }
         }
         return result;
     }

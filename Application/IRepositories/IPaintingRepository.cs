@@ -24,4 +24,5 @@ public interface IPaintingRepository : IGenericRepository<Painting>
     Task<int> GetNumPaintingInRound(Guid roundId);
     Task<int> GetNumPaintingInRoundIsHaveSchedule(Guid roundId);
     Task<int> GetNumPaintingInRoundIsNotHaveSchedule(Guid roundId);
+    Task<int> GetNumPaintingInSchedule(Guid scheduleId);
 }

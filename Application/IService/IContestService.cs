@@ -31,5 +31,6 @@ public interface IContestService
     Task<ListDropDownContest> GetListForDorpDown(Guid contestId);
 
     Task<List<NumberPaintingViewModel>> QuantiyPaintingForYear();
+    Task<List<ContestAwardQuantityViewModel>> AwardQuantiy();
 
 }

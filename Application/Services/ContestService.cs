@@ -493,6 +493,11 @@ public class ContestService : IContestService
     {
         return await _unitOfWork.ContestRepo.GetNumberOfPaintingsByContestAsync();
     }
+    
+    public async Task<List<ContestAwardQuantityViewModel>> AwardQuantiy()
+    {
+        return await _unitOfWork.ContestRepo.GetAwardQuantity();
+    }
 
     #endregion
 }

@@ -37,5 +37,6 @@ public interface IContestRepository : IGenericRepository<Contest>
     #endregion
 
     public Task<List<NumberPaintingViewModel>> GetNumberOfPaintingsByContestAsync();
+    public Task<List<ContestAwardQuantityViewModel>> GetAwardQuantity();
 
 }

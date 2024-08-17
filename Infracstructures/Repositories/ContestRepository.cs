@@ -169,49 +169,50 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
     {
-        throw new NotImplementedException();
-        /*var listContest = await DbSet
-            .Where(x => contestIdList.Contains(x.Id))
-            .Include(c => c.EducationalLevel) // Bao gồm EducationalLevels
-            .ThenInclude(el => el.Award) // Bao gồm Awards cho mỗi EducationalLevel
-            .ThenInclude(a => a.Painting) // Bao gồm Painting cho mỗi Award
-            .ThenInclude(p => p.Account) // Bao gồm Account cho mỗi Painting
-            .ToListAsync();
+         var listContest = await DbSet
+             .Where(x => contestIdList.Contains(x.Id))
+             .Include(c => c.EducationalLevel) // Bao gồm EducationalLevels
+             .ThenInclude(el => el.Round) // Bao gồm Awards cho mỗi EducationalLevel
+             .ThenInclude(el => el.Award)
+             .ThenInclude(a => a.Painting) // Bao gồm Painting cho mỗi Award
+             .ThenInclude(p => p.Account) // Bao gồm Account cho mỗi Painting
+             .ToListAsync();
 
-        var filteredContests = listContest
-            .Select(c => new
-            {
-                Contest = c,
-                EducationalLevel = c.EducationalLevel
-                    .Select(el => new
-                    {
-                        EducationalLevel = el,
-                        Awards = el.Award
-                            .Where(a => a.Rank == RankAward.FirstPrize.ToString() ||
-                                        a.Rank == RankAward.SecondPrize.ToString())
-                            .ToList()
-                    })
-                    .Where(el => el.Awards.Any()) // Giữ lại các cấp học nếu có giải thưởng đã lọc
-                    .ToList()
-            })
-            .Where(x => x.EducationalLevel
-                .Any()) // Giữ lại các cuộc thi nếu có ít nhất một cấp học với giải thưởng đã lọc
-            .Select(x => new Contest
-            {
-                Id = x.Contest.Id,
-                Name = x.Contest.Name,
-                EducationalLevel = x.EducationalLevel
-                    .Select(el => new EducationalLevel
-                    {
-                        Id = el.EducationalLevel.Id,
-                        Level = el.EducationalLevel.Level,
-                        Award = el.Awards
-                    })
-                    .ToList()
-            })
-            .ToList();
+         var filteredContests = listContest
+             .Select(c => new
+             {
+                 Contest = c,
+                 EducationalLevel = c.EducationalLevel
+                     .SelectMany(el => el.Round)
+                     .Select(r => new
+                     {
+                         EducationalLevel = r,
+                         Awards = r.Award
+                             .Where(a => a.Rank == "Giải Nhất" ||
+                                         a.Rank == "Giải Nhì")
+                             .ToList()
+                     })
+                     .Where(el => el.Awards.Any()) // Giữ lại các cấp học nếu có giải thưởng đã lọc
+                     .ToList()
+             })
+             .Where(x => x.EducationalLevel
+                 .Any()) // Giữ lại các cuộc thi nếu có ít nhất một cấp học với giải thưởng đã lọc
+             .Select(x => new Contest
+             {
+                 Id = x.Contest.Id,
+                 Name = x.Contest.Name,
+                 EducationalLevel = x.EducationalLevel
+                     .Select(el => new EducationalLevel
+                     {
+                         Id = el.EducationalLevel.Id,
+                         Level = el.EducationalLevel.EducationalLevel.ToString(),
+                         
+                     })
+                     .ToList()
+             })
+             .ToList();
 
-        return filteredContests;*/
+         return filteredContests;
     }
 
 
@@ -233,7 +234,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     {
         var result = await DbSet.Select(c => new NumberPaintingViewModel
         {
-            Year = c.StartTime.Year,
+            Year = c.EndTime.Year,
             Quantity = c.EducationalLevel
                 .SelectMany(el => el.Round)
                 .SelectMany(r => r.RoundTopic)
@@ -241,6 +242,27 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
                 .Count(p => p.Status != PaintingStatus.Draft.ToString() 
                             && p.Status != PaintingStatus.Delete.ToString())
         }).ToListAsync();
+
+        return result;
+    }
+    
+    
+    public async Task<List<ContestAwardQuantityViewModel>> GetAwardQuantity()
+    {
+        var result = await DbSet// Filter by contest ID if needed
+            .Select(c => new ContestAwardQuantityViewModel
+            {
+                Year = c.StartTime.Year,
+                AwardQuanity = c.EducationalLevel
+                    .SelectMany(e => e.Round)
+                    .SelectMany(r => r.Award)
+                    .GroupBy(a => a.Rank)
+                    .Select(g => new AwardQuanity
+                    {
+                        Name = g.Key,
+                        Quantity = g.Sum(a => a.Quantity)
+                    }).ToList()
+            }).ToListAsync();
 
         return result;
     }

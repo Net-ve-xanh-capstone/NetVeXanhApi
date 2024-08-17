@@ -391,7 +391,7 @@ public class ContestController : Controller
 
     #region Get Quantity Painting For Contest
     /// <summary>
-    /// Lấy danh sách người thong bao có phân trang
+    /// Lấy danh sách số lượng bức tranh dự thi 
     /// </summary>
     /// <returns></returns>
     [HttpGet("getquantitypaintingforyear")]
@@ -420,6 +420,37 @@ public class ContestController : Controller
 
     #endregion
 
+    #region Get Quantity Painting For Contest
+    /// <summary>
+    /// Lấy danh sách số lượng bức tranh dự thi 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getawardquantityforyear")]
+    public async Task<IActionResult> AwardQuantiyForYear()
+    {
+        try
+        {
+            var list = await _contestService.AwardQuantiy();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = list
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
     #endregion
     
 }

@@ -132,6 +132,7 @@ public class RoundService : IRoundService
         if (round == null) throw new Exception("Khong tim thay Round");
         round.Status = RoundStatus.Delete.ToString();
         foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
+        foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

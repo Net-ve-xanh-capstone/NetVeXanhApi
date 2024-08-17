@@ -19,18 +19,24 @@ public class EducationalLevelRepository : GenericRepository<EducationalLevel>, I
 
     public override async Task<EducationalLevel?> GetByIdAsync(Guid? id)
     {
-        return await DbSet.Include(src => src.Contest).Include(src => src.Round).FirstOrDefaultAsync(src => src.Id == id);
+        return await DbSet
+            .Include(src => src.Contest)
+            .Include(src => src.Round)
+            .ThenInclude(src => src.Award)
+            .Include(src => src.Round)
+            .ThenInclude(src => src.Schedule)
+            .FirstOrDefaultAsync(src => src.Id == id && src.Status != EducationalLevelStatus.Delete.ToString());
     }
 
     public async Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
     {
-        return await DbSet.Include(src => src.Contest).Include(src => src.Round).Where(src => src.ContestId == contestId).OrderBy(x=>x.Level).ToListAsync();
+        return await DbSet.Include(src => src.Contest).Include(src => src.Round).Where(src => src.ContestId == contestId && src.Status != EducationalLevelStatus.Delete.ToString()).OrderBy(x=>x.Level).ToListAsync();
     }
 
     public async Task<List<Guid>> GetLevelIdByListContestId(List<Guid> contestIdList)
     {
         return await DbSet
-            .Where(x => contestIdList.Contains((Guid)x.ContestId))
+            .Where(x => contestIdList.Contains((Guid)x.ContestId) && x.Status != EducationalLevelStatus.Delete.ToString())
             .Select(x => x.Id)
             .ToListAsync();
     }

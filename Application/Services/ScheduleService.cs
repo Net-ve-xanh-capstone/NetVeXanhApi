@@ -212,6 +212,9 @@ public class ScheduleService : IScheduleService
         await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
         var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
         await _mailService.SendScheduleToExaminer(examiner);
+        
+        
+        
         return await _unitOfWork.SaveChangesAsync() > 0;
 
     }

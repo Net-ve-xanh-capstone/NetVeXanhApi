@@ -1,4 +1,5 @@
-﻿using Application.IService;
+﻿using Application.BaseModels;
+using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using AutoMapper;
@@ -54,6 +55,28 @@ public class NotificationService : INotificationService
         if (notification == null) throw new Exception("Khong tim thay Notification");
         await ReadNotification(id);
         return _mapper.Map<NotificationDetailViewModel>(notification);
+    }
+
+    public async Task<(List<NotificationViewModel>?, int)> GetNotificationByAccountId(ListModels listModels, Guid id)
+    {
+        var accountList = await _unitOfWork.NotificationRepo.GetAllByAccount(id);
+        accountList = accountList.Where(x => x.Status == AccountStatus.Inactive.ToString()).ToList();
+        var result = _mapper.Map<List<NotificationViewModel>>(accountList);
+
+        var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
+        int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
+        result = result.Skip((int)itemsToSkip)
+            .Take(listModels.PageSize)
+            .ToList();
+        return (result, totalPages);
+    }
+
+    public async Task<List<NotificationViewModel>?> GetNotificationByAccountId(Guid id)
+    {
+        var notification = await _unitOfWork.NotificationRepo.GetByIdAsync(id);
+        if (notification == null) throw new Exception("Khong tim thay Notification");
+        await ReadNotification(id);
+        return _mapper.Map<List<NotificationViewModel>?>(notification);
     }
 
     #endregion

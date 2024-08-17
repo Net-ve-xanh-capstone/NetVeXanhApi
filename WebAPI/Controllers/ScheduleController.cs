@@ -205,7 +205,7 @@ public class ScheduleController : Controller
     {
         try
         {
-            var result = await _scheduleService.GetListSchedule(id);
+            var result = await _scheduleService.GetListScheduleByContestId(id);
             if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {

@@ -35,6 +35,8 @@ public interface IContestRepository : IGenericRepository<Contest>
     Task<bool> CheckContestDuplicate(DateTime startTime, DateTime endTime);
 
     #endregion
-    
-    
+
+    public Task<List<NumberPaintingViewModel>> GetNumberOfPaintingsByContestAsync();
+    public Task<List<ContestAwardQuantityViewModel>> GetAwardQuantity();
+
 }

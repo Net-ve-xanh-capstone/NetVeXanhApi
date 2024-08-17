@@ -27,8 +27,7 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
         return await DbSet
             .Where(tr => tr.RoundId == roundId)
             .SelectMany(tr => tr.Painting)
-            .Where(p => p.Status == PaintingStatus.Accepted.ToString())
-            .Where(p => p.ScheduleId == null)
+            .Where(p => p.Status == PaintingStatus.Accepted.ToString() && p.ScheduleId == null)
             .OrderBy(p => Guid.NewGuid())
             .Take(number)
             .ToListAsync();

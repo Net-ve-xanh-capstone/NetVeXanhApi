@@ -385,4 +385,72 @@ public class ContestController : Controller
     }
 
     #endregion
+
+
+    #region DashBoard
+
+    #region Get Quantity Painting For Contest
+    /// <summary>
+    /// Lấy danh sách số lượng bức tranh dự thi 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getquantitypaintingforyear")]
+    public async Task<IActionResult> QuantiyPaintingForYear()
+    {
+        try
+        {
+            var list = await _contestService.QuantiyPaintingForYear();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = list
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get Quantity Painting For Contest
+    /// <summary>
+    /// Lấy danh sách số lượng bức tranh dự thi 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getawardquantityforyear")]
+    public async Task<IActionResult> AwardQuantiyForYear()
+    {
+        try
+        {
+            var list = await _contestService.AwardQuantiy();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = list
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #endregion
+    
 }

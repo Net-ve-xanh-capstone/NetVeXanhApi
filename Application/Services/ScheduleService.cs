@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
+using Application.SendModels.Notification;
 using Application.SendModels.Schedule;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -21,22 +22,24 @@ public class ScheduleService : IScheduleService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
     private readonly IMailService _mailService;
+    private readonly INotificationService _notificationService;
 
     public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
-        IExcelService excelService, IMailService mailService)
+        IExcelService excelService, IMailService mailService, INotificationService notificationService)
     {
         _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validatorFactory = validatorFactory;
+        _notificationService = notificationService;
     }
 
     #region Get For Website
 
-    public async Task<List<ListScheduleViewModel>> GetListSchedule(Guid id)
+    public async Task<List<ListScheduleViewModel>> GetListScheduleByContestId(Guid id)
     {
-        var listSchedule = await _unitOfWork.RoundRepo.GetRoundByContestId(id);
+        var listSchedule = await _unitOfWork.RoundRepo.GetScheduleByContestId(id);
         var result = _mapper.Map<List<ListScheduleViewModel>>(listSchedule);
         foreach (var s in result)
         {
@@ -45,7 +48,7 @@ public class ScheduleService : IScheduleService
             s.PaintingWithSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsHaveSchedule(s.RoundId);
             foreach (var l in s.Schedules)
             {
-                l.PaintingCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
+                l.JudgeCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
             }
         }
         return result;
@@ -139,45 +142,49 @@ public class ScheduleService : IScheduleService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         //Get Painting 
-        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId, schedule.JudgedCount);
-        var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
-        var award = round?.Award.ToList();
-        if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
-
-        var newSchedule = new Schedule();
-        newSchedule.Id = Guid.NewGuid();
-        newSchedule.ExaminerId = schedule.ExaminerId;
-        newSchedule.EndDate = schedule.EndDate;
-        newSchedule.RoundId = schedule.RoundId;
-        newSchedule.Description = schedule.Description;
-        newSchedule.Status = ScheduleStatus.Rating.ToString();
-        newSchedule.CreatedBy = schedule.CurrentUserId;
-
-        //Add award schudele
-        var listAwardSchedule = new List<AwardSchedule>();
-        foreach (var a in schedule.Awards)
+        foreach (var e in schedule.ListExaminer)
         {
-            var newAwardSchedule = new AwardSchedule();
-            newAwardSchedule.ScheduleId = newSchedule.Id;
-            newAwardSchedule.AwardId = a.AwardId;
-            newAwardSchedule.Quantity = a.AwardCount;
-            newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-            newAwardSchedule.CreatedBy = schedule.CurrentUserId;
-            listAwardSchedule.Add(newAwardSchedule);
+            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId, schedule.JudgedCount);
+            var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
+            var award = round?.Award.ToList();
+            if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
+
+            var newSchedule = new Schedule();
+            newSchedule.Id = Guid.NewGuid();
+            newSchedule.ExaminerId = e;
+            newSchedule.EndDate = schedule.EndDate;
+            newSchedule.RoundId = schedule.RoundId;
+            newSchedule.Description = schedule.Description;
+            newSchedule.Status = ScheduleStatus.Rating.ToString();
+            newSchedule.CreatedBy = schedule.CurrentUserId;
+
+            //Add award schudele
+            var listAwardSchedule = new List<AwardSchedule>();
+            foreach (var a in schedule.Awards)
+            {
+                var newAwardSchedule = new AwardSchedule();
+                newAwardSchedule.ScheduleId = newSchedule.Id;
+                newAwardSchedule.AwardId = a.AwardId;
+                newAwardSchedule.Quantity = a.AwardCount;
+                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+                listAwardSchedule.Add(newAwardSchedule);
+            }
+            newSchedule.AwardSchedule = listAwardSchedule;
+
+            foreach (var p in listPainting)
+            {
+                p.ScheduleId = newSchedule.Id;
+            }
+
+            await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+            var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(e);
+            await _mailService.SendScheduleToExaminer(examiner);
+            await _unitOfWork.SaveChangesAsync();
         }
-        newSchedule.AwardSchedule = listAwardSchedule;
-
-        foreach (var p in listPainting)
-        {
-            p.ScheduleId = newSchedule.Id;
-        }
-
-        await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
-        var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
-        await _mailService.SendScheduleToExaminer(examiner);
 
 
-        return await _unitOfWork.SaveChangesAsync() > 0;
+        return true;
     }
 
     public async Task<bool> CreateSchedule(ScheduleForFinalRequest schedule)
@@ -188,43 +195,54 @@ public class ScheduleService : IScheduleService
             throw new ValidationException(validationResult.Errors);*/
 
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
-        //Get Painting 
-        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount);
-        var award = round?.Award.ToList();
-        if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
-
-        //Create new Schedule
-        var newSchedule = new Schedule();
-        newSchedule.Id = Guid.NewGuid();
-        newSchedule.ExaminerId = schedule.ExaminerId;
-        newSchedule.EndDate = schedule.EndDate;
-        newSchedule.RoundId = schedule.RoundId;
-        newSchedule.Description = schedule.Description;
-        newSchedule.Status = ScheduleStatus.Rating.ToString();
-        newSchedule.CreatedBy = schedule.CurrentUserId;
-
-        var listAwardSchedule = new List<AwardSchedule>();
-        foreach (var a in schedule.Awards)
+        foreach (var e in schedule.ListExaminer)
         {
-            var newAwardSchedule = new AwardSchedule();
-            newAwardSchedule.ScheduleId = newSchedule.Id;
-            newAwardSchedule.AwardId = a.AwardId;
-            newAwardSchedule.Quantity = a.AwardCount;
-            newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-            newAwardSchedule.CreatedBy = schedule.CurrentUserId;
-            listAwardSchedule.Add(newAwardSchedule);
-        }
-        newSchedule.AwardSchedule = listAwardSchedule;
+            //Get Painting 
+            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount);
+            var award = round?.Award.ToList();
+            if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
-        foreach (var p in listPainting)
-        {
-            p.ScheduleId = newSchedule.Id;
-        }
+            //Create new Schedule
+            var newSchedule = new Schedule();
+            newSchedule.Id = Guid.NewGuid();
+            newSchedule.ExaminerId = e;
+            newSchedule.EndDate = schedule.EndDate;
+            newSchedule.RoundId = schedule.RoundId;
+            newSchedule.Description = schedule.Description;
+            newSchedule.Status = ScheduleStatus.Rating.ToString();
+            newSchedule.CreatedBy = schedule.CurrentUserId;
 
-        await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
-        var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
-        await _mailService.SendScheduleToExaminer(examiner);
-        return await _unitOfWork.SaveChangesAsync() > 0;
+            var listAwardSchedule = new List<AwardSchedule>();
+            foreach (var a in schedule.Awards)
+            {
+                var newAwardSchedule = new AwardSchedule();
+                newAwardSchedule.ScheduleId = newSchedule.Id;
+                newAwardSchedule.AwardId = a.AwardId;
+                newAwardSchedule.Quantity = a.AwardCount;
+                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+                listAwardSchedule.Add(newAwardSchedule);
+            }
+            newSchedule.AwardSchedule = listAwardSchedule;
+
+            foreach (var p in listPainting)
+            {
+                p.ScheduleId = newSchedule.Id;
+                p.RatingStatus = RatingStatus.InProcess.ToString();
+            }
+
+            await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+            var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(e);
+            await _mailService.SendScheduleToExaminer(examiner);
+
+            //Create Notification
+            NotificationRequest notification = new NotificationRequest("Lịch Chấm Mới", "Bạn có lịch chấm thi mới xin hãy vào Phần Lịch Chấm để xem chi tiết!", e);
+
+            await _notificationService.CreateNotification(notification);
+            await _unitOfWork.SaveChangesAsync();
+        }
+        
+        return true;
 
     }
 
@@ -328,6 +346,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
     #endregion
+    
     #region Rating 
 
     public async Task<bool> RatingPainting(RatingRequest ratingPainting)
@@ -384,14 +403,14 @@ public class ScheduleService : IScheduleService
             if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
                 schedules.Status = ScheduleStatus.Done.ToString();
 
+            
             await _unitOfWork.SaveChangesAsync();
         }
 
         return true;
     }
     #endregion
-
-
+    
     #region Rating
 
     public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)

@@ -3,8 +3,10 @@ using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Painting;
+using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -103,10 +105,7 @@ public class PaintingService : IPaintingService
             painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                var notification = new NotificationRequest();
-                notification.Message = "Bạn đã nột bài thành công";
-                notification.Title = "Nét Vẽ Xanh 2024";
-                notification.AccountId = request.AccountId;
+                NotificationRequest notification = new NotificationRequest("Bạn đã nột bài thành công","Bạn đã nột bài thành công",request.AccountId);
                 await _notificationService.CreateNotification(notification);
             }
 
@@ -553,4 +552,5 @@ public class PaintingService : IPaintingService
         return await _validatorFactory.StaffUpdatePaintingRequestValidator.ValidateAsync(painting);
     }
     #endregion
+    
 }

@@ -1,5 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
+using Infracstructures.ViewModels.NotificationViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -40,6 +41,53 @@ public class NotificationController : Controller
             {
                 Status = Ok().StatusCode,
                 Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    
+    #region Get All Notification
+    /// <summary>
+    /// Lấy danh sách người thong bao có phân trang
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getallnotificationbyacountwithpagination")]
+    public async Task<IActionResult> GetAllNotiWithPagination([FromQuery] ListModels listCompetitorModel, Guid accountId)
+    {
+        try
+        {
+            var (list, totalPage) = await _notificationService.GetNotificationByAccountId(listCompetitorModel, accountId);
+            if (totalPage < listCompetitorModel.PageNumber)
+                return NotFound(new BaseResponseModel
+                {
+                    Status = NotFound().StatusCode,
+                    Message = "Trang vượt quá số lượng trang cho phép."
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = new
+                {
+                    List = list,
+                    TotalPage = totalPage
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new
+                {
+                    List = new List<NotificationViewModel>(),
+                    TotalPage = 0
+                },
                 Errors = ex
             });
         }

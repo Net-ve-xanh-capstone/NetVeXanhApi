@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
+using Application.SendModels.Notification;
 using Application.SendModels.Schedule;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -21,15 +22,17 @@ public class ScheduleService : IScheduleService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
     private readonly IMailService _mailService;
+    private readonly INotificationService _notificationService;
 
     public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
-        IExcelService excelService, IMailService mailService)
+        IExcelService excelService, IMailService mailService, INotificationService notificationService)
     {
         _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _validatorFactory = validatorFactory;
+        _notificationService = notificationService;
     }
 
     #region Get For Website
@@ -219,13 +222,17 @@ public class ScheduleService : IScheduleService
         foreach (var p in listPainting)
         {
             p.ScheduleId = newSchedule.Id;
+            p.RatingStatus = RatingStatus.InProcess.ToString();
         }
 
         await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
         var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(schedule.ExaminerId);
         await _mailService.SendScheduleToExaminer(examiner);
         
-        
+        //Create Notification
+        NotificationRequest notification = new NotificationRequest("Lịch Chấm Mới","Bạn có lịch chấm thi mới xin hãy vào Phần Lịch Chấm để xem chi tiết!",schedule.ExaminerId);
+
+        await _notificationService.CreateNotification(notification);
         
         return await _unitOfWork.SaveChangesAsync() > 0;
 
@@ -331,6 +338,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
     #endregion
+    
     #region Rating 
 
     public async Task<bool> RatingPainting(RatingRequest ratingPainting)
@@ -387,14 +395,14 @@ public class ScheduleService : IScheduleService
             if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
                 schedules.Status = ScheduleStatus.Done.ToString();
 
+            
             await _unitOfWork.SaveChangesAsync();
         }
 
         return true;
     }
     #endregion
-
-
+    
     #region Rating
 
     public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)

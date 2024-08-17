@@ -103,10 +103,7 @@ public class PaintingService : IPaintingService
             painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                var notification = new NotificationRequest();
-                notification.Message = "Bạn đã nột bài thành công";
-                notification.Title = "Nét Vẽ Xanh 2024";
-                notification.AccountId = request.AccountId;
+                NotificationRequest notification = new NotificationRequest("Bạn đã nột bài thành công","Bạn đã nột bài thành công",request.AccountId);
                 await _notificationService.CreateNotification(notification);
             }
 

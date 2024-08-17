@@ -1,4 +1,6 @@
-﻿namespace Application.ViewModels.ScheduleViewModels;
+﻿using Application.ViewModels.AwardViewModels;
+
+namespace Application.ViewModels.ScheduleViewModels;
 
 public class ScheduleViewModel
 {
@@ -11,4 +13,6 @@ public class ScheduleViewModel
     public string? ExaminerName { get; set; }
     public string? Status { get; set; }
     public DateTime EndDate { get; set; }
+    public int PaintingCount {  get; set; }
+    public List<ListAwardInScheduleViewModel>? Awards { get; set; }
 }

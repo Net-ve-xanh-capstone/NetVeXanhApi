@@ -38,7 +38,7 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardSendModel model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Chung Kết")
+        if (round!.Name != "Vòng Chung Kết")
         {
             throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
         }
@@ -49,8 +49,8 @@ public class AwardService : IAwardService
         var validationResult = await ValidateAwardRequest(model);
         if (!validationResult.IsValid)throw new ValidationException(validationResult.Errors);
         var award = _mapper.Map<Award>(model);
-        award.Rank = RankAward.OtherAward.ToString();
-        award.Description = model.Rank;
+/*        award.Rank = RankAward.OtherAward.ToString();
+        award.Description = model.Rank;*/
         award.Status = AwardStatus.Active.ToString();
         await _unitOfWork.AwardRepo.AddAsync(award);
         award.CreatedTime = _currentTime.GetCurrentTime();
@@ -92,10 +92,10 @@ public class AwardService : IAwardService
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
         if (award == null) throw new Exception("Khong tim thay Award");
-        if (award.Rank != RankAward.OtherAward.ToString())
+        /*if (award.Rank != RankAward.OtherAward.ToString())
         {
             throw new Exception("Bạn Không Thể Xóa những giải chính !");
-        }
+        }*/
         award.Status = AwardStatus.Inactive.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

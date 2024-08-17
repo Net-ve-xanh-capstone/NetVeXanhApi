@@ -323,6 +323,7 @@ public class PaintingService : IPaintingService
         else
             painting.Status = PaintingStatus.Rejected.ToString();
         painting.ReviewedTimestamp = DateTime.Now;
+        painting.Reviewer = request.CurrentUserId;
         painting.ReviewReason = request.Reason;
 
         await _unitOfWork.SaveChangesAsync();
@@ -379,6 +380,17 @@ public class PaintingService : IPaintingService
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
         if (painting == null) throw new Exception("Khong tim thay Painting");
         return _mapper.Map<PaintingViewModel>(painting);
+    }
+
+    #endregion
+
+    #region Get Painting By ScheduleId
+
+    public async Task<List<PaintingForScheduleViewModel>> GetPaintingByScheduleId(Guid scheduleId)
+    {
+        var listPainting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
+        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        return _mapper.Map<List<PaintingForScheduleViewModel>>(listPainting);
     }
 
     #endregion

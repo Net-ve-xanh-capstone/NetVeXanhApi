@@ -139,6 +139,7 @@ public class EducationalLevelService : IEducationalLevelService
         {
             round.Status = RoundStatus.Delete.ToString();
             foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
+            foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
         }
 
         //award

@@ -5,6 +5,7 @@ using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
 using Domain.Enums;
 using Domain.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Application.Mappers;
 
@@ -23,13 +24,13 @@ public partial class MapperConfigs : Profile
 
 
         CreateMap<Painting, PaintingViewModel>()
-            .ForPath(dest => dest.Award, opt => opt.MapFrom(src =>
-                src.Award == null ? "Không có giải" :
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award.Rank
+                /*src.Award == null ? "Không có giải" :
                 src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
                 src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
                 src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
                 src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
-                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ))
             .ForPath(dest => dest.Status, opt => opt.MapFrom(src =>
                 src.Status == PaintingStatus.Draft.ToString() ? "Bản nháp" :
@@ -63,6 +64,22 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.ContestId,
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
+
+        CreateMap<Painting, PaintingForScheduleViewModel>()
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award.Rank
+                /*src.Award == null ? "Không có giải" :
+                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
+            ))
+            .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
+            .ForPath(dest => dest.CompetitorCode, opt => opt.MapFrom(src => src.Account.Code))
+            .ForPath(dest => dest.Reason, opt => opt.MapFrom(src => src.JudgementReason))
+            .ForPath(dest => dest.Email, opt => opt.MapFrom(src => src.Account.Email))
+            .ForPath(dest => dest.IsJudged, opt => opt.MapFrom(src => !src.JudgementReason.IsNullOrEmpty()));
+
 
         CreateMap<Painting, PaintingTrackingViewModel>()
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
@@ -131,13 +148,13 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.TopicName, opt => opt.MapFrom(src => src.RoundTopic.Topic.Name))
             .ForPath(dest => dest.ContestName,
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
-            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
-                src.Award == null ? "Không có giải" :
-                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
-                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
-                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
-                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
-                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Award.Rank
+            /*src.Award == null ? "Không có giải" :
+            src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+            src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+            src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+            src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+            src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ));
         CreateMap<Painting, CompetitorViewModel>()
             .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))

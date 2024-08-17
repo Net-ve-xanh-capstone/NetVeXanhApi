@@ -38,11 +38,9 @@ public partial class MapperConfigs : Profile
                     .FirstOrDefault()
                     .Image
             ))
-            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
-                src.Painting != null && src.Painting.Any()
-                    ? GetRankInVietnamese(src.Painting.Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
-                        .FirstOrDefault().Award.Rank)
-                    : "Không có giải"
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Painting
+                                                        .Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
+                                                        .FirstOrDefault().Award.Rank
             ))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Gender! == true ? "Nữ" :

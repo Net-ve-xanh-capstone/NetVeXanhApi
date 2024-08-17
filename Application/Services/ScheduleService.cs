@@ -142,7 +142,7 @@ public class ScheduleService : IScheduleService
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         //Get Painting 
-        foreach (var e in schedule.ExaminerId)
+        foreach (var e in schedule.ListExaminer)
         {
             var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId, schedule.JudgedCount);
             var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
@@ -195,7 +195,7 @@ public class ScheduleService : IScheduleService
             throw new ValidationException(validationResult.Errors);*/
 
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
-        foreach (var e in schedule.ExaminerId)
+        foreach (var e in schedule.ListExaminer)
         {
             //Get Painting 
             var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount);

@@ -60,7 +60,33 @@ public class AuthenticationController : ControllerBase
             };
         }
 
-        return await _authenticationService.CreateAccount(account);
+        return await _authenticationService.CreateCompetitor(account);
+    }
+
+    #endregion
+    
+    #region Create Account
+
+    [AllowAnonymous]
+    [HttpPost("registerforstaffandexaminer")]
+    public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)
+    {
+        if (!ModelState.IsValid)
+        {
+            var errorMessages = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return new RegisterResponse
+            {
+                Success = false,
+                Message = "Invalid input data. " + string.Join("; ", errorMessages),
+                Data = ""
+            };
+        }
+
+        return await _authenticationService.AdminCreateAccount(account);
     }
 
     #endregion

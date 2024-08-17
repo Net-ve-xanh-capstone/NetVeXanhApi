@@ -141,7 +141,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     }
     public async Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync()
     {
-        /*var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
+        var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
             .OrderByDescending(c => c.CreatedTime)
             .FirstOrDefaultAsync();
 
@@ -151,7 +151,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         var accounts = await DbSet
             .Where(c => c.Id == mostRecentContest.Id)
             .SelectMany(c => c.EducationalLevel)
-            .SelectMany(l => l.Award)
+            .SelectMany(l => l.Round)
+            .SelectMany(r => r.Award)
             .SelectMany(a => a.Painting)
             .Where(p => p.Award.Rank != RankAward.Preliminary.ToString())
             .Select(p => new AccountAwardViewModel
@@ -162,8 +163,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .Distinct() // Loại bỏ các đối tượng trùng lặp nếu cần
             .ToListAsync();
 
-        return accounts;*/
-        throw new NotImplementedException();
+        return accounts;
+
     }
 
     public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
@@ -228,4 +229,21 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     #endregion
     
     
+    public async Task<List<NumberPaintingViewModel>> GetNumberOfPaintingsByContestAsync()
+    {
+        var result = await DbSet.Select(c => new NumberPaintingViewModel
+        {
+            Year = c.StartTime.Year,
+            Quantity = c.EducationalLevel
+                .SelectMany(el => el.Round)
+                .SelectMany(r => r.RoundTopic)
+                .SelectMany(rt => rt.Painting)
+                .Count(p => p.Status != PaintingStatus.Draft.ToString() 
+                            && p.Status != PaintingStatus.Delete.ToString())
+        }).ToListAsync();
+
+        return result;
+    }
+
+
 }

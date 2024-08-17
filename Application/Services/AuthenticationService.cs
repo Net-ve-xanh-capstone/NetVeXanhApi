@@ -71,7 +71,7 @@ public class AuthenticationService : IAuthenticationService
 
     #region Create Account
 
-    public async Task<RegisterResponse> CreateAccount(CreateAccountRequest createAccount)
+    public async Task<RegisterResponse> CreateCompetitor(CreateAccountRequest createAccount)
     {
         var response = new RegisterResponse();
         if (!Enum.IsDefined(typeof(Role), createAccount.Role))
@@ -129,6 +129,57 @@ public class AuthenticationService : IAuthenticationService
         mail.Body = $"Link ID {account.Id}";
         await _mailService.SendEmail(mail);
 
+        return response;
+    }
+
+    public async Task<RegisterResponse> AdminCreateAccount(CreateAccountV2Request createAccount)
+    {
+        var response = new RegisterResponse();
+        if (createAccount.Role != Role.Examiner.ToString() && createAccount.Role != Role.Staff.ToString())
+        {
+            response.Message = "!";
+            response.Success = false;
+            return response;
+        }
+
+        if (await _unitOfWork.AccountRepo.CheckDuplicateEmail(createAccount.Email))
+        {
+            response.Message = "Email đã có tài khoản sử dụng!";
+            response.Success = false;
+            return response;
+        }
+
+        if (await _unitOfWork.AccountRepo.CheckDuplicatePhone(createAccount.Phone))
+        {
+            response.Message = "Số điện thoại đã có tài khoản sử dụng!";
+            response.Success = false;
+            return response;
+        }
+
+        var account = _mapper.Map<Account>(createAccount);
+        //if not exist
+        var password = RandomPassword();
+        account.Password = _authentication.Hash(password);
+        account.Status = AccountStatus.Active.ToString();
+
+        //Generate Code
+        account.Code = await GenerateAccountCode((Role)Enum.Parse(typeof(Role), account.Role));
+        account.Username = account.Code;
+
+        await _unitOfWork.AccountRepo.AddAsync(account);
+        var check = await _unitOfWork.SaveChangesAsync() > 0;
+
+        if (check is false)
+        {
+            response.Message = "Tạo thất bại!";
+            response.Success = true;
+            return response;
+        }
+
+        response.Message = "Tạo thành công";
+        response.Success = true;
+        
+        await _mailService.SendAccountInformation(account , password);
         return response;
     }
 
@@ -203,4 +254,14 @@ public class AuthenticationService : IAuthenticationService
     }
 
     #endregion
+
+    public string RandomPassword()
+    {
+        Random random = new Random();
+        int length = 16; // Length of the random string
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        string randomString = new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        return randomString;
+    }
 }

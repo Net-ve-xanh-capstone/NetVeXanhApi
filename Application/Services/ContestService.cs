@@ -485,4 +485,14 @@ public class ContestService : IContestService
     }
 
     #endregion
+    
+    
+    #region DashBoard
+
+    public async Task<List<NumberPaintingViewModel>> QuantiyPaintingForYear()
+    {
+        return await _unitOfWork.ContestRepo.GetNumberOfPaintingsByContestAsync();
+    }
+
+    #endregion
 }

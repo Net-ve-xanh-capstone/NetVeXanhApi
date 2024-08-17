@@ -3,8 +3,10 @@ using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Painting;
+using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.PaintingViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -550,4 +552,5 @@ public class PaintingService : IPaintingService
         return await _validatorFactory.StaffUpdatePaintingRequestValidator.ValidateAsync(painting);
     }
     #endregion
+    
 }

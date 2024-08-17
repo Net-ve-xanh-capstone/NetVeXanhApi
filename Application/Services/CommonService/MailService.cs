@@ -44,14 +44,14 @@ public class MailService : IMailService
 
         await smtpClient.SendMailAsync(message);
     }
-
+    
     public async Task SendAccountInformation(Account account, string password)
     {
-        var template = GetEmailTemplate("SendAccountForCompetitor.html");
+        var template = GetEmailTemplate("SendAccount.html");
 
-        template = template.Replace("[Tên Thí Sinh]", account.FullName);
+        template = template.Replace("[Tên Nhân Viên/Giám Khảo]", account.FullName);
         template = template.Replace("[Mật khẩu]", password);
-        template = template.Replace("[Tên tài khoản]", account.Username);
+        template = template.Replace("[Tên tài khoản]", account.Code);
 
         var supportmail = _configuration["NetVeXanh:SupportMail"];
         var supportphone = _configuration["NetVeXanh:SupportPhone"];

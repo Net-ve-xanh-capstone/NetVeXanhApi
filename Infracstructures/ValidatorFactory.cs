@@ -45,7 +45,7 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<CompetitorCreatePaintingRequest> competitorCreatePaintingRequestValidator,
         IValidator<StaffCreatePaintingRequest> staffCreatePaintingRequestValidator,
         IValidator<PaintingUpdateStatusRequest> paintingUpdateStatusRequestValidator,
-        IValidator<RatingRequest> ratingRequestValidator,
+        IValidator<RatingSendModel> ratingRequestValidator,
         IValidator<UpdatePaintingRequest> updatePaintingRequestValidator,
         IValidator<PostRequest> postRequestValidator,
         IValidator<PostUpdateRequest> updatePostRequestValidator,
@@ -64,7 +64,7 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<RoundTopicDeleteRequest> roundTopicDeleteRequestValidator,
         IValidator<FilterPaintingRequest> filterPaintingRequestValidator,
         IValidator<StaffCreatePaintingFinalRoundRequest> staffCreatePaintingFinalRoundRequestValidator,
-        IValidator<StaffUpdatePaintingRequest> staffUpdatePaintingRequestValidator)
+        IValidator<StaffUpdatePaintingSendModel> staffUpdatePaintingRequestValidator)
     {
         TopicRequestValidator = topicRequestValidator;
         TopicUpdateRequestValidator = topicUpdateRequestValidator;
@@ -128,7 +128,7 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<CompetitorCreatePaintingRequest> CompetitorCreatePaintingRequestValidator { get; }
     public IValidator<StaffCreatePaintingRequest> StaffCreatePaintingRequestValidator { get; }
     public IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
-    public IValidator<RatingRequest> RatingRequestValidator { get; }
+    public IValidator<RatingSendModel> RatingRequestValidator { get; }
     public IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }
     public IValidator<PostRequest> PostRequestValidator { get; }
     public IValidator<PostUpdateRequest> UpdatePostRequestValidator { get; }
@@ -149,5 +149,5 @@ public class ValidatorFactory : IValidatorFactory
 
     public IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
 
-    public IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
+    public IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
 }

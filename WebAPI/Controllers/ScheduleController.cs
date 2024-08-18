@@ -464,7 +464,7 @@ public class ScheduleController : Controller
     /// <param name="rating">không có award thì cho awardId = null</param>
     /// <returns></returns>
     [HttpPut("Rating")]
-    public async Task<IActionResult> RatingPainting(RatingRequest rating)
+    public async Task<IActionResult> RatingPainting(RatingSendModel rating)
     {
         try
         {

@@ -131,7 +131,7 @@ public partial class MapperConfigs : Profile
                 });
             });
 
-        CreateMap<StaffUpdatePaintingRequest, Painting>()
+        CreateMap<StaffUpdatePaintingSendModel, Painting>()
             .ForPath(x => x.Account.Birthday, x => x.MapFrom(x => x.Birthday))
             .ForPath(x => x.Account.Phone, x => x.MapFrom(x => x.Phone))
             .ForPath(x => x.Account.FullName, x => x.MapFrom(x => x.FullName))

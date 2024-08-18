@@ -1,6 +1,6 @@
 ﻿namespace Application.SendModels.Schedule;
 
-public class RatingRequest
+public class RatingSendModel
 {
     public Guid ScheduleId { get; set; }
     public List<PaintingRatingViewModel> Paintings { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Application.SendModels.Painting;
 
-public class StaffUpdatePaintingRequest
+public class StaffUpdatePaintingSendModel
 {
     public Guid Id { get; set; }
     public string FullName { get; set; }

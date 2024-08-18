@@ -253,7 +253,7 @@ public class PaintingController : Controller
     #region Update Painting
 
     [HttpPut("satffupdate")]
-    public async Task<IActionResult> UpdatePaintingstaffpermisson(StaffUpdatePaintingRequest updatePaintingViewModel)
+    public async Task<IActionResult> UpdatePaintingForStaff(StaffUpdatePaintingSendModel updatePaintingViewModel)
     {
         try
         {

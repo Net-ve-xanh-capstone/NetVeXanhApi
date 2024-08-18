@@ -281,7 +281,7 @@ public class PaintingService : IPaintingService
 
     #region Update Painting
 
-    public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingRequest updatePainting)
+    public async Task<bool> UpdatePaintingStaffPermission(StaffUpdatePaintingSendModel updatePainting)
     {
         var validationResult = await ValidateStaffUpdatePaintingRequest(updatePainting);
         if (!validationResult.IsValid)
@@ -547,7 +547,7 @@ public class PaintingService : IPaintingService
     {
         return await _validatorFactory.StaffCreatePaintingFinalRoundRequestValidator.ValidateAsync(painting);
     }
-    public async Task<ValidationResult> ValidateStaffUpdatePaintingRequest(StaffUpdatePaintingRequest painting)
+    public async Task<ValidationResult> ValidateStaffUpdatePaintingRequest(StaffUpdatePaintingSendModel painting)
     {
         return await _validatorFactory.StaffUpdatePaintingRequestValidator.ValidateAsync(painting);
     }

@@ -43,7 +43,7 @@ public interface IValidatorFactory
     IValidator<CompetitorCreatePaintingRequest> CompetitorCreatePaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingRequest> StaffCreatePaintingRequestValidator { get; }
     IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
-    IValidator<RatingRequest> RatingRequestValidator { get; }
+    IValidator<RatingSendModel> RatingRequestValidator { get; }
     IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }
     IValidator<PostRequest> PostRequestValidator { get; }
     IValidator<PostUpdateRequest> UpdatePostRequestValidator { get; }
@@ -62,5 +62,5 @@ public interface IValidatorFactory
     IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
     IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
-    IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
+    IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
 }

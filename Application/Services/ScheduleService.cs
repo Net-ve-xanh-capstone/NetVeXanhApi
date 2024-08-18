@@ -299,7 +299,7 @@ public class ScheduleService : IScheduleService
 
     #region New Rating
 
-    public async Task<bool> RatingFinalRound(RatingRequest ratingPainting)
+    public async Task<bool> RatingFinalRound(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -349,7 +349,7 @@ public class ScheduleService : IScheduleService
     
     #region Rating 
 
-    public async Task<bool> RatingPainting(RatingRequest ratingPainting)
+    public async Task<bool> RatingPainting(RatingSendModel ratingPainting)
     {
         /*var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -413,7 +413,7 @@ public class ScheduleService : IScheduleService
     
     #region Rating
 
-    public async Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting)
+    public async Task<bool> RatingPreliminaryRound(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -468,7 +468,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> RatingFirstPrize(RatingRequest ratingPainting)
+    public async Task<bool> RatingFirstPrize(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -511,7 +511,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> RatingSecondPrize(RatingRequest ratingPainting)
+    public async Task<bool> RatingSecondPrize(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -554,7 +554,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> RatingThirdPrize(RatingRequest ratingPainting)
+    public async Task<bool> RatingThirdPrize(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -597,7 +597,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> RatingConsolationPrize(RatingRequest ratingPainting)
+    public async Task<bool> RatingConsolationPrize(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -654,7 +654,7 @@ public class ScheduleService : IScheduleService
         return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
     }
 
-    public async Task<ValidationResult> ValidateRatingRequest(RatingRequest painting)
+    public async Task<ValidationResult> ValidateRatingRequest(RatingSendModel painting)
     {
         return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
     }

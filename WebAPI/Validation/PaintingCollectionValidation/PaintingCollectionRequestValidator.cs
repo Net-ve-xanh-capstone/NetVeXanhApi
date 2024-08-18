@@ -34,7 +34,7 @@ public class PaintingCollectionRequestValidator : AbstractValidator<PaintingColl
         });
 
 
-        RuleFor(x => x.PaintingId)
+        /*RuleFor(x => x.PaintingId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.");
 
         When(x => !string.IsNullOrEmpty(x.PaintingId.ToString()), () =>
@@ -60,6 +60,6 @@ public class PaintingCollectionRequestValidator : AbstractValidator<PaintingColl
                 return !await _validationServiceManager.PaintingCollectionValidationService.IsPaintingInCollection(
                     x.PaintingId, x.CollectionId);
             })
-            .WithMessage("Đã có painting trong collection.");
+            .WithMessage("Đã có painting trong collection.");*/
     }
 }

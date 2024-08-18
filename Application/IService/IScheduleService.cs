@@ -15,15 +15,15 @@ public interface IScheduleService
     Task<ScheduleRatingViewModel?> GetScheduleById(Guid id);
     Task<List<ScheduleViewModel?>> GetScheduleByExaminerId(Guid id);
     Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId/*, Guid contestId*/);
-    Task<bool> RatingPainting(RatingRequest ratingPainting);
+    Task<bool> RatingPainting(RatingSendModel ratingPainting);
 
-    Task<bool> RatingFinalRound(RatingRequest ratingPainting);
+    Task<bool> RatingFinalRound(RatingSendModel ratingPainting);
 
-    Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting);
-    Task<bool> RatingFirstPrize(RatingRequest ratingPainting);
-    Task<bool> RatingSecondPrize(RatingRequest ratingPainting);
-    Task<bool> RatingConsolationPrize(RatingRequest ratingPainting);
-    Task<bool> RatingThirdPrize(RatingRequest ratingPainting);
+    Task<bool> RatingPreliminaryRound(RatingSendModel ratingPainting);
+    Task<bool> RatingFirstPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingSecondPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingConsolationPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingThirdPrize(RatingSendModel ratingPainting);
     Task<bool> UpdateSchedule(ScheduleUpdateRequest updateSchedule);
     Task<bool> DeleteSchedule(Guid id);
     Task<bool> IsExistedId(Guid id);

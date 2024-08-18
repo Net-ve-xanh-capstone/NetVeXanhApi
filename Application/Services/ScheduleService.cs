@@ -136,7 +136,7 @@ public class ScheduleService : IScheduleService
 
     #region Create
 
-    public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
+    public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleForPreliminarySendModel schedule)
     {
         var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
@@ -187,7 +187,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> CreateSchedule(ScheduleForFinalRequest schedule)
+    public async Task<bool> CreateScheduleForFinal(ScheduleForFinalSendModel schedule)
     {
 
         /*var validationResult = await ValidateScheduleRequest(schedule);
@@ -644,7 +644,7 @@ public class ScheduleService : IScheduleService
 
     #region Validate
 
-    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule)
+    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminarySendModel schedule)
     {
         return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
     }

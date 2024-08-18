@@ -54,9 +54,9 @@ public interface IValidatorFactory
     IValidator<RoundTopicRequest> RoundTopicRequestValidator { get; }
     IValidator<RoundRequest> RoundRequestValidator { get; }
     IValidator<RoundUpdateRequest> RoundUpdateRequestValidator { get; }
-    IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
+    IValidator<ScheduleForPreliminarySendModel> ScheduleRequestValidator { get; }
     IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
-    IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
+    IValidator<ScheduleForFinalSendModel> ScheduleForFinalRequestValidator { get; }
     IValidator<SponsorRequest> SponsorRequestValidator { get; }
     IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }

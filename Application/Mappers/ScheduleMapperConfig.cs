@@ -9,7 +9,7 @@ public partial class MapperConfigs : Profile
 {
     partial void AddScheduleMapperConfig()
     {
-        CreateMap<ScheduleRequest, Schedule>().ReverseMap()
+        CreateMap<ScheduleForPreliminarySendModel, Schedule>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy));
         CreateMap<ScheduleUpdateRequest, Schedule>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))

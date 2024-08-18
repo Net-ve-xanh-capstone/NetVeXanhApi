@@ -15,7 +15,7 @@ public partial class MapperConfigs : Profile
 
         CreateMap<Collection, CollectionViewModel>()
             .ForMember(dest => dest.Image,
-                opt => opt.MapFrom(src => src.PaintingCollection.Select(pc => pc.Painting.Image)));
+                opt => opt.MapFrom(src => src.PaintingCollection.Select(pc => pc.Painting.Image).ToList()));
 
         CreateMap<Collection, UpdateCollectionRequest>().ReverseMap()
             .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId))

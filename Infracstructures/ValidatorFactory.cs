@@ -56,9 +56,9 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<RoundTopicRequest> roundTopicRequestValidator,
         IValidator<RoundRequest> roundRequestValidator,
         IValidator<RoundUpdateRequest> roundUpdateRequestValidator,
-        IValidator<ScheduleRequest> scheduleRequestValidator,
+        IValidator<ScheduleForPreliminarySendModel> scheduleRequestValidator,
         IValidator<ScheduleUpdateRequest> scheduleUpdateRequestValidator,
-        IValidator<ScheduleForFinalRequest> scheduleForFinalRequestValidator,
+        IValidator<ScheduleForFinalSendModel> scheduleForFinalRequestValidator,
         IValidator<SponsorRequest> sponsorRequestValidator,
         IValidator<SponsorUpdateRequest> sponsorUpdateRequestValidator,
         IValidator<RoundTopicDeleteRequest> roundTopicDeleteRequestValidator,
@@ -139,9 +139,9 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<RoundTopicRequest> RoundTopicRequestValidator { get; }
     public IValidator<RoundRequest> RoundRequestValidator { get; }
     public IValidator<RoundUpdateRequest> RoundUpdateRequestValidator { get; }
-    public IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
+    public IValidator<ScheduleForPreliminarySendModel> ScheduleRequestValidator { get; }
     public IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
-    public IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
+    public IValidator<ScheduleForFinalSendModel> ScheduleForFinalRequestValidator { get; }
     public IValidator<SponsorRequest> SponsorRequestValidator { get; }
     public IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }

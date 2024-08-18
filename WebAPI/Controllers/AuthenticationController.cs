@@ -43,7 +43,7 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<RegisterResponse>> CreateAccount(CreateAccountRequest account)
+    public async Task<ActionResult<RegisterResponse>> Register(CreateAccountRequest account)
     {
         if (!ModelState.IsValid)
         {

@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
 
-public class ScheduleRequestValidator : AbstractValidator<ScheduleRequest>
+public class ScheduleRequestValidator : AbstractValidator<ScheduleForPreliminarySendModel>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 

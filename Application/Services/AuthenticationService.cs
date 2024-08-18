@@ -34,12 +34,12 @@ public class AuthenticationService : IAuthenticationService
     public async Task<LoginResponse> Login(LoginRequest accountLogin)
     {
         var response = new LoginResponse();
-        var account = await _unitOfWork.AccountRepo.Login(accountLogin.Username);
+        var account = await _unitOfWork.AccountRepo.FindUserByUsername(accountLogin.Username);
         //check null
         if (account != null)
         {
             //Verify Password
-            var check = _authentication.Verify(account.Password, accountLogin.Password);
+            var check = _authentication.VerifyPassword(account.Password, accountLogin.Password);
             if (check is true)
             {
                 response.Success = true;

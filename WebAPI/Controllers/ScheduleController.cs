@@ -29,7 +29,7 @@ public class ScheduleController : Controller
     /// <returns></returns>
     [HttpPost("preliminary")]
     
-    public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
+    public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleForPreliminarySendModel schedule)
     {
         try
         {
@@ -84,7 +84,7 @@ public class ScheduleController : Controller
     /// </param>
     /// <returns></returns>
     [HttpPost("final")]
-    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalSendModel schedule)
     {
         try
         {
@@ -101,7 +101,7 @@ public class ScheduleController : Controller
                 };
                 return BadRequest(response);
             }*/
-            var result = await _scheduleService.CreateSchedule(schedule);
+            var result = await _scheduleService.CreateScheduleForFinal(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {

@@ -27,14 +27,14 @@ public interface IValidatorFactory
     IValidator<TopicUpdateRequest> TopicUpdateRequestValidator { get; }
     IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
-    IValidator<CreateAwardSendModel> AwardRequestValidator { get; }
+    IValidator<CreateAwardRequest> AwardRequestValidator { get; }
     IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
     IValidator<CategoryRequest> CategoryRequestValidator { get; }
     IValidator<UpdateCategoryRequest> UpdateCategoryRequestValidator { get; }
     IValidator<CollectionRequest> CollectionRequestValidator { get; }
     IValidator<UpdateCollectionRequest> UpdateCollectionRequestValidator { get; }
     IValidator<ContestRequest> ContestRequestValidator { get; }
-    IValidator<UpdateContest> UpdateContestRequestValidator { get; }
+    IValidator<UpdateContestRequest> UpdateContestRequestValidator { get; }
     IValidator<EducationalLevelRequest> EducationalLevelRequestValidator { get; }
     IValidator<EducationalLevelUpdateRequest> EducationalLevelUpdateRequestValidator { get; }
     IValidator<ImageRequest> ImageRequestValidator { get; }
@@ -54,13 +54,13 @@ public interface IValidatorFactory
     IValidator<RoundTopicRequest> RoundTopicRequestValidator { get; }
     IValidator<RoundRequest> RoundRequestValidator { get; }
     IValidator<RoundUpdateRequest> RoundUpdateRequestValidator { get; }
-    IValidator<ScheduleForPreliminarySendModel> ScheduleRequestValidator { get; }
+    IValidator<ScheduleForPreliminaryRequest> ScheduleRequestValidator { get; }
     IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
-    IValidator<ScheduleForFinalSendModel> ScheduleForFinalRequestValidator { get; }
+    IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
     IValidator<SponsorRequest> SponsorRequestValidator { get; }
     IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
     IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
-    IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
+    IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
 }

@@ -6,7 +6,7 @@ namespace Application.IValidators;
 
 public interface IPaintingValidator
 {
-    IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
+    IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
     IValidator<CompetitorCreatePaintingRequest> PaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingSendModel> PaintingRequest2Validator { get; }

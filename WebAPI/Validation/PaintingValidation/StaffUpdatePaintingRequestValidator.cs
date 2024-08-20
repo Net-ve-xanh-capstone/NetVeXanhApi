@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace WebAPI.Validation.PaintingValidation;
 
-public class StaffUpdatePaintingRequestValidator : AbstractValidator<StaffUpdatePaintingSendModel>
+public class StaffUpdatePaintingRequestValidator : AbstractValidator<StaffUpdatePaintingRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 

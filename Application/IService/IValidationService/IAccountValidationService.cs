@@ -12,5 +12,5 @@ public interface IAccountValidationService
     Task<bool> IsExistEmail(string email);
     Task<bool> IsExistUsername(string username);
 
-    Task<AccountValidationInfoViewModel> GetAccountByPaintingId(Guid paintingId);
+    Task<AccountValidationInfoResponse> GetAccountByPaintingId(Guid paintingId);
 }

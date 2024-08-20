@@ -4,7 +4,7 @@ namespace Application.IService;
 
 public interface IAwardScheduleService
 {
-    public Task<List<AwardScheduleModels>> GetListByScheduleId(Guid id);
-    public Task<AwardScheduleModels> GetById(Guid id);
+    public Task<List<AwardScheduleResponse>> GetListByScheduleId(Guid id);
+    public Task<AwardScheduleResponse> GetById(Guid id);
     Task<bool> IsExistedId(Guid id);
 }

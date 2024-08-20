@@ -38,30 +38,30 @@ public class NotificationService : INotificationService
 
     #region Get All
 
-    public async Task<List<NotificationViewModel>> Get5Notification(Guid id)
+    public async Task<List<NotificationResponse>> Get5Notification(Guid id)
     {
         var list = await _unitOfWork.NotificationRepo.Get5NotificationOfUser(id);
 
-        return _mapper.Map<List<NotificationViewModel>>(list);
+        return _mapper.Map<List<NotificationResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<NotificationDetailViewModel?> GetNotificationById(Guid id)
+    public async Task<NotificationDetailResponse?> GetNotificationById(Guid id)
     {
         var notification = await _unitOfWork.NotificationRepo.GetByIdAsync(id);
         if (notification == null) throw new Exception("Khong tim thay Notification");
         await ReadNotification(id);
-        return _mapper.Map<NotificationDetailViewModel>(notification);
+        return _mapper.Map<NotificationDetailResponse>(notification);
     }
 
-    public async Task<(List<NotificationViewModel>?, int)> GetNotificationByAccountId(ListModels listModels, Guid id)
+    public async Task<(List<NotificationResponse>?, int)> GetNotificationByAccountId(ListModels listModels, Guid id)
     {
         var accountList = await _unitOfWork.NotificationRepo.GetAllByAccount(id);
         accountList = accountList.Where(x => x.Status == AccountStatus.Inactive.ToString()).ToList();
-        var result = _mapper.Map<List<NotificationViewModel>>(accountList);
+        var result = _mapper.Map<List<NotificationResponse>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -71,12 +71,12 @@ public class NotificationService : INotificationService
         return (result, totalPages);
     }
 
-    public async Task<List<NotificationViewModel>?> GetNotificationByAccountId(Guid id)
+    public async Task<List<NotificationResponse>?> GetNotificationByAccountId(Guid id)
     {
         var notification = await _unitOfWork.NotificationRepo.GetByIdAsync(id);
         if (notification == null) throw new Exception("Khong tim thay Notification");
         await ReadNotification(id);
-        return _mapper.Map<List<NotificationViewModel>?>(notification);
+        return _mapper.Map<List<NotificationResponse>?>(notification);
     }
 
     #endregion

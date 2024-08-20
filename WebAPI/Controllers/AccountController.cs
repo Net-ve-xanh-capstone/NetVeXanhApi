@@ -390,6 +390,36 @@ public class AccountController : ControllerBase
     }
 
     #endregion
+    
+    #region ListAccountHaveAwardIn3NearestContest
+
+    [HttpGet("getlistwinnerin3nearestcontest")]
+    public async Task<IActionResult> ListAccountHaveAwardIn3NearestContest()
+    {
+        try
+        {
+            var result = await _accountService.ListAccountHaveAwardIn3NearestContest();
+
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Result = result,
+                Message = "Lấy thông tin tài khoản có giải trong 3 năm thành công"
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new List<Account>(),
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Update Account
 
@@ -495,33 +525,5 @@ public class AccountController : ControllerBase
 
     #endregion
 
-    #region ListAccountHaveAwardIn3NearestContest
 
-    [HttpGet("getlistwinnerin3nearestcontest")]
-    public async Task<IActionResult> ListAccountHaveAwardIn3NearestContest()
-    {
-        try
-        {
-            var result = await _accountService.ListAccountHaveAwardIn3NearestContest();
-
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Result = result,
-                Message = "Lấy thông tin tài khoản có giải trong 3 năm thành công"
-            });
-        }
-        catch (Exception ex)
-        {
-            return Ok(new BaseFailedResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = new List<Account>(),
-                Errors = ex
-            });
-        }
-    }
-
-    #endregion
 }

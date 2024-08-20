@@ -71,10 +71,10 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     }
 
 
-    public async Task<List<ContestNameYearViewModel>> Get5RecentYearAsync()
+    public async Task<List<ContestNameYearResponse>> Get5RecentYearAsync()
     {
         var result = await DbSet
-            .Select(x => new ContestNameYearViewModel
+            .Select(x => new ContestNameYearResponse
             {
                 ContestId = x.Id,
                 Year = x.Name.Length >= 4 ? x.Name.Substring(x.Name.Length - 4) : x.Name
@@ -139,14 +139,14 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return await DbSet.Include(src => src.EducationalLevel).Where(src =>
             src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
-    public async Task<List<AccountAwardViewModel>> GetAccountsByMostRecentContestAsync()
+    public async Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync()
     {
         var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
             .OrderByDescending(c => c.CreatedTime)
             .FirstOrDefaultAsync();
 
         if (mostRecentContest == null)
-            return new List<AccountAwardViewModel>(); // Hoặc xử lý trường hợp không có cuộc thi nào.
+            return new List<AccountAwardResponse>(); // Hoặc xử lý trường hợp không có cuộc thi nào.
 
         var accounts = await DbSet
             .Where(c => c.Id == mostRecentContest.Id)
@@ -155,7 +155,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .SelectMany(r => r.Award)
             .SelectMany(a => a.Painting)
             .Where(p => p.Award.Rank != RankAward.Preliminary.ToString())
-            .Select(p => new AccountAwardViewModel
+            .Select(p => new AccountAwardResponse
             {
                 FullName = p.Account.FullName,
                 Rank = p.Award.Rank
@@ -230,9 +230,9 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     #endregion
     
     
-    public async Task<List<NumberPaintingViewModel>> GetNumberOfPaintingsByContestAsync()
+    public async Task<List<NumberPaintingResponse>> GetNumberOfPaintingsByContestAsync()
     {
-        var result = await DbSet.Select(c => new NumberPaintingViewModel
+        var result = await DbSet.Select(c => new NumberPaintingResponse
         {
             Year = c.EndTime.Year,
             Quantity = c.EducationalLevel
@@ -247,10 +247,10 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     }
     
     
-    public async Task<List<ContestAwardQuantityViewModel>> GetAwardQuantity()
+    public async Task<List<ContestAwardQuantityResponse>> GetAwardQuantity()
     {
         var result = await DbSet// Filter by contest ID if needed
-            .Select(c => new ContestAwardQuantityViewModel
+            .Select(c => new ContestAwardQuantityResponse
             {
                 Year = c.StartTime.Year,
                 AwardQuanity = c.EducationalLevel

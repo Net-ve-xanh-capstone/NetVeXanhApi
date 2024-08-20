@@ -15,10 +15,10 @@ public partial class MapperConfigs : Profile
     partial void AddEducationalLevelMapperConfig()
     {
         /*//Map For List Award        
-        CreateMap<EducationalLevel, ListAwardViewModels>()
+        CreateMap<EducationalLevel, ListAwardResponse>()
             .ForPath(des => des.AwardViewModels, opt => opt.MapFrom(src => src.Award));*/
 
-        CreateMap<CreateEducationalLevelSendModel, EducationalLevel>()
+        CreateMap<CreateEducationalLevelRequest, EducationalLevel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => EducationalLevelStatus.NotStarted.ToString()))
             .ForPath(dest => dest.Round, opt => opt.MapFrom(src => src.Round));
 
@@ -36,13 +36,13 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<EducationalLevel, EducationalLevelViewModel>()
+        CreateMap<EducationalLevel, EducationalLevelResponse>()
             .ForMember(x => x.ContestId, x => x.MapFrom(x => x.ContestId));
 
         CreateMap<EducationalLevel, EducationalLevelInContest>()
             .ForMember(x => x.Round, x => x.MapFrom(x => x.Round));
 
-        CreateMap<EducationalLevel, ScheduleWebViewModel>()
+        CreateMap<EducationalLevel, ScheduleWebResponse>()
             .ForPath(x => x.ScheduleViewModels, x => x.MapFrom(x => x.Round.SelectMany(x => x.Schedule)));
     }
 }

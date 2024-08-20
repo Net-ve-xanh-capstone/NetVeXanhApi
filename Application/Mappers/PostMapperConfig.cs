@@ -23,11 +23,11 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<Post, PostViewModel>().ReverseMap()
+        CreateMap<Post, PostResponse>().ReverseMap()
             .ForPath(x => x.Category.Id, x => x.MapFrom(x => x.CategoryId))
             .ForPath(x => x.Category.Name, x => x.MapFrom(x => x.CategoryName));
 
-        CreateMap<Post, ListPostViewModel>()
+        CreateMap<Post, ListPostResponse>()
             .ForPath(x => x.Image, x => x.MapFrom(src => src.Images.Any() ? src.Images.First().Url : null))
             .ForPath(x => x.CategoryId, x => x.MapFrom(x => x.CategoryId))
             .ForPath(x => x.CategoryName, x => x.MapFrom(x => x.Category.Name));

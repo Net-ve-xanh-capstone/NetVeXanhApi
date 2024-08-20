@@ -25,7 +25,7 @@ public class EducationalLevelController : Controller
     /// <param name="model"></param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateEducationalLevel(CreateEducationalLevelSendModel model)
+    public async Task<IActionResult> CreateEducationalLevel(CreateEducationalLevelRequest model)
     {
         try
         {

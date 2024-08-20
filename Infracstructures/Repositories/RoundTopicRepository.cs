@@ -22,7 +22,7 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
             .FirstOrDefaultAsync(src => src.Id == id);
     }
 
-    public async Task<List<Painting>> ListPaintingForPreliminaryRound(Guid roundId, int number)
+    public async Task<List<Painting>> ListPaintingForQualifyingRound(Guid roundId, int number)
     {
         return await DbSet
             .Where(tr => tr.RoundId == roundId)

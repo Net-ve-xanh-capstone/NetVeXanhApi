@@ -10,27 +10,27 @@ public interface IContestService
 {
     //Task<bool> AddContest(ContestRequest addContestViewModel);
 
-    Task<bool> CreateContest(CreateContestSendModel model);
+    Task<bool> CreateContest(CreateContestRequest model);
     Task<bool> DeleteContest(Guid contestId);
 
-    Task<bool> UpdateContest(UpdateContest updateContest);
+    Task<bool> UpdateContest(UpdateContestRequest updateContestRequest);
 
-    Task<ContestDetailViewModel?> GetContestById(Guid contestId);
+    Task<ContestDetailResponse?> GetContestById(Guid contestId);
 
-    Task<List<ContestNameYearViewModel>> Get5RecentYear();
+    Task<List<ContestNameYearResponse>> Get5RecentYear();
 
-    Task<List<ContestViewModel?>> GetAllContest();
-    Task<(List<ContestViewModel?>, int)> GetAllContest_v2(ListModels listModel);
-    Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting();
-    Task<ContestDetailViewModel> GetNearestContest();
+    Task<List<ContestResponse?>> GetAllContest();
+    Task<(List<ContestResponse?>, int)> GetAllContest_v2(ListModels listModel);
+    Task<List<FilterPaintingContestResponse>> GetContestForFilterPainting();
+    Task<ContestDetailResponse> GetNearestContest();
     Task<bool> IsExistedId(Guid id);
     Task<ValidationResult> ValidateContestRequest(ContestRequest contest);
 
-    Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate);
-    Task<List<AccountAwardViewModel>> GetAccountWithAwardPainting();
-    Task<ListDropDownContest> GetListForDorpDown(Guid contestId);
+    Task<ValidationResult> ValidateContestUpdateRequest(UpdateContestRequest contestRequestUpdate);
+    Task<List<AccountAwardResponse>> GetAccountWithAwardPainting();
+    Task<ListDropDownContestResponse> GetListForDorpDown(Guid contestId);
 
-    Task<List<NumberPaintingViewModel>> QuantiyPaintingForYear();
-    Task<List<ContestAwardQuantityViewModel>> AwardQuantiy();
+    Task<List<NumberPaintingResponse>> QuantiyPaintingForYear();
+    Task<List<ContestAwardQuantityResponse>> AwardQuantiy();
 
 }

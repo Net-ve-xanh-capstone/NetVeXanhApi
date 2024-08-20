@@ -36,7 +36,7 @@ public class ImageService : IImageService
 
     #region Get All
 
-    public async Task<(List<ImageViewModel>, int)> GetListImage(ListModels listModels)
+    public async Task<(List<ImageResponse>, int)> GetListImage(ListModels listModels)
     {
         var list = await _unitOfWork.ImageRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Image");
@@ -46,18 +46,18 @@ public class ImageService : IImageService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<ImageViewModel>>(result), totalPages);
+        return (_mapper.Map<List<ImageResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<ImageViewModel?> GetImageById(Guid id)
+    public async Task<ImageResponse?> GetImageById(Guid id)
     {
         var Image = await _unitOfWork.ImageRepo.GetByIdAsync(id);
         if (Image == null) throw new Exception("Khong tim thay Image");
-        return _mapper.Map<ImageViewModel>(Image);
+        return _mapper.Map<ImageResponse>(Image);
     }
 
     #endregion

@@ -7,7 +7,7 @@ namespace Infracstructures.Validators;
 public class ContestValidator : IContestValidator
 {
     public ContestValidator(IValidator<ContestRequest> contestvalidator,
-        IValidator<UpdateContest> updatecontestvalidator)
+        IValidator<UpdateContestRequest> updatecontestvalidator)
     {
         ContestRequestValidator = contestvalidator;
         UpdateContestValidator = updatecontestvalidator;
@@ -15,5 +15,5 @@ public class ContestValidator : IContestValidator
 
     public IValidator<ContestRequest> ContestRequestValidator { get; }
 
-    public IValidator<UpdateContest> UpdateContestValidator { get; }
+    public IValidator<UpdateContestRequest> UpdateContestValidator { get; }
 }

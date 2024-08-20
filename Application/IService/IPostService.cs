@@ -8,15 +8,15 @@ namespace Application.IService;
 public interface IPostService
 {
     public Task<bool> CreatePost(PostRequest Post);
-    public Task<(List<ListPostViewModel>, int)> GetListPost(ListModels listModels);
-    public Task<List<PostViewModel>> Get10Post();
-    public Task<PostViewModel?> GetPostById(Guid id);
+    public Task<(List<ListPostResponse>, int)> GetListPost(ListModels listModels);
+    public Task<List<PostResponse>> Get10Post();
+    public Task<PostResponse?> GetPostById(Guid id);
     public Task<bool> UpdatePost(PostUpdateRequest updatePost);
     public Task<bool> DeletePost(Guid id);
-    Task<(List<PostViewModel>, int)> GetPosByStaffId(ListModels listModels, Guid staffId);
-    Task<(List<PostViewModel>, int)> ListPostByCategoryId(ListModels listPostModel, Guid categoryId);
+    Task<(List<PostResponse>, int)> GetPosByStaffId(ListModels listModels, Guid staffId);
+    Task<(List<PostResponse>, int)> ListPostByCategoryId(ListModels listPostModel, Guid categoryId);
 
-    Task<(List<PostViewModel>, int)> SearchByTitleDescription(ListModels listModels, string searchString);
+    Task<(List<PostResponse>, int)> SearchByTitleDescription(ListModels listModels, string searchString);
     Task<bool> IsExistedId(Guid id);
 
     Task<ValidationResult> ValidatePostRequest(PostRequest post);

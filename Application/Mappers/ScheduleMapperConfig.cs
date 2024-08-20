@@ -9,7 +9,7 @@ public partial class MapperConfigs : Profile
 {
     partial void AddScheduleMapperConfig()
     {
-        CreateMap<ScheduleForPreliminarySendModel, Schedule>().ReverseMap()
+        CreateMap<ScheduleForPreliminaryRequest, Schedule>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy));
         CreateMap<ScheduleUpdateRequest, Schedule>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))
@@ -22,12 +22,12 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<Schedule, ScheduleViewModel>()
+        CreateMap<Schedule, ScheduleResponse>()
             .ForMember(x => x.Year, x => x.MapFrom(x => x.EndDate.Year.ToString()))
             .ForPath(x => x.Round, x => x.MapFrom(x => x.Round.Name))
             .ForPath(x => x.ExaminerName, x => x.MapFrom(x => x.Account.FullName))
             .ForMember(dest => dest.Awards, opt => opt.MapFrom(src => src.AwardSchedule.Select(sa => sa.Award)));
 
-        CreateMap<Schedule, ScheduleRatingViewModel>();
+        CreateMap<Schedule, ScheduleRatingResponse>();
     }
 }

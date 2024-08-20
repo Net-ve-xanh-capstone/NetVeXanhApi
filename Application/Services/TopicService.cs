@@ -51,7 +51,7 @@ public class TopicService : ITopicService
 
     #region Get List Topic Pagination
 
-    public async Task<(List<TopicViewModel>, int)> GetListTopic(ListModels listModels)
+    public async Task<(List<TopicResponse>, int)> GetListTopic(ListModels listModels)
     {
         var list = await _unitOfWork.TopicRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Topic nao");
@@ -61,30 +61,30 @@ public class TopicService : ITopicService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<TopicViewModel>>(result), totalPages);
+        return (_mapper.Map<List<TopicResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get All Topic
 
-    public async Task<List<TopicViewModel>> GetAllTopic()
+    public async Task<List<TopicResponse>> GetAllTopic()
     {
         var list = await _unitOfWork.TopicRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Không tìm thấy Topic nào");
 
-        return _mapper.Map<List<TopicViewModel>>(list);
+        return _mapper.Map<List<TopicResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<TopicViewModel?> GetTopicById(Guid id)
+    public async Task<TopicResponse?> GetTopicById(Guid id)
     {
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(id);
         if (Topic == null) throw new Exception("Khong tim thay Topic");
-        return _mapper.Map<TopicViewModel>(Topic);
+        return _mapper.Map<TopicResponse>(Topic);
     }
 
     #endregion

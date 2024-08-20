@@ -22,16 +22,16 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Role, src => src.MapFrom(opt => Role.Competitor.ToString()))
             .ForMember(dest => dest.Username, src => src.MapFrom(opt => Guid.NewGuid()));
         CreateMap<AccountUpdateRequest, Account>().ReverseMap();
-        CreateMap<Account, AccountViewModel>().ReverseMap();
+        CreateMap<Account, AccountResponse>().ReverseMap();
 
-        CreateMap<Account, AccountAwardViewModel>();
+        CreateMap<Account, AccountAwardResponse>();
 
         CreateMap<Account, AccountInPainting>();
 
         CreateMap<Account, AccountInContestViewModel>();
-        CreateMap<Account, AccountValidationInfoViewModel>();
+        CreateMap<Account, AccountValidationInfoResponse>();
 
-        CreateMap<Account, AccountRewardViewModel>()
+        CreateMap<Account, AccountRewardResponse>()
             .ForMember(dest => dest.PaintingId, opt => opt.MapFrom(src => src.Painting.FirstOrDefault().Id))
             .ForMember(dest => dest.PaintingImage, opt => opt.MapFrom(src =>
                 src.Painting

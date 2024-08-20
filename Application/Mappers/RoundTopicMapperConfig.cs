@@ -11,14 +11,14 @@ public partial class MapperConfigs : Profile
     partial void AddRoundTopicMapperConfig()
     {
         CreateMap<RoundTopic, RoundTopicRequest>().ReverseMap();
-        CreateMap<RoundTopic, RoundTopicViewModel>()
+        CreateMap<RoundTopic, RoundTopicResponse>()
             .ForMember(des => des.Id, source => source.MapFrom(round => round.Id))
             .ForMember(des => des.Name, source => source.MapFrom(round => round.Topic.Name));
 
         CreateMap<RoundTopic, RoundTopicInContestViewModel>()
             .ForMember(x => x.Topic, x => x.MapFrom(x => x.Topic));
 
-        CreateMap<RoundTopic, ListRoundTopicViewModel>()
+        CreateMap<RoundTopic, ListRoundTopicResponse>()
             .ForMember(x => x.Name, x => x.MapFrom(x => x.Topic.Name));
     }
 }

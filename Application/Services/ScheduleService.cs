@@ -37,10 +37,10 @@ public class ScheduleService : IScheduleService
 
     #region Get For Website
 
-    public async Task<List<ListScheduleViewModel>> GetListScheduleByContestId(Guid id)
+    public async Task<List<ListScheduleResponse>> GetListScheduleByContestId(Guid id)
     {
         var listSchedule = await _unitOfWork.RoundRepo.GetScheduleByContestId(id);
-        var result = _mapper.Map<List<ListScheduleViewModel>>(listSchedule);
+        var result = _mapper.Map<List<ListScheduleResponse>>(listSchedule);
         foreach (var s in result)
         {
             s.TotalPainting = await _unitOfWork.PaintingRepo.GetNumPaintingInRound(s.RoundId);
@@ -58,7 +58,7 @@ public class ScheduleService : IScheduleService
 
     #region Get All
 
-    public async Task<(List<ScheduleRatingViewModel>, int)> GetListSchedule(ListModels listModels)
+    public async Task<(List<ScheduleRatingResponse>, int)> GetListSchedule(ListModels listModels)
     {
         var list = await _unitOfWork.ScheduleRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Schedule nao");
@@ -68,7 +68,7 @@ public class ScheduleService : IScheduleService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<ScheduleRatingViewModel>>(result), totalPages);
+        return (_mapper.Map<List<ScheduleRatingResponse>>(result), totalPages);
     }
 
     #endregion
@@ -116,27 +116,27 @@ public class ScheduleService : IScheduleService
         if (round!.Name == "Vòng Chung Kết")
             name = "FinalRound";
         else
-            name = "PreliminaryRound";
+            name = "QualifyingRound";
 
         if (round!.EducationalLevel.Description == "Mầm Non")
             name = name + "_A";
         else
             name = name + "_B";
-        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorViewModel>>(list), name);
+        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorResponse>>(list), name);
         return (result, name);
     }
 
-    public async Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId)
+    public async Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId)
     {
         var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
         var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
         var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
-        return _mapper.Map<List<CompetitorViewModel>>(list);
+        return _mapper.Map<List<CompetitorResponse>>(list);
     }
 
     #region Create
 
-    public async Task<bool> CreateScheduleForPreliminaryRound(ScheduleForPreliminarySendModel schedule)
+    public async Task<bool> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
         var validationResult = await ValidateScheduleRequest(schedule);
         if (!validationResult.IsValid)
@@ -144,7 +144,7 @@ public class ScheduleService : IScheduleService
         //Get Painting 
         foreach (var e in schedule.ListExaminer)
         {
-            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForPreliminaryRound(schedule.RoundId, schedule.JudgedCount);
+            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForQualifyingRound(schedule.RoundId, schedule.JudgedCount);
             var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
             var award = round?.Award.ToList();
             if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
@@ -187,7 +187,7 @@ public class ScheduleService : IScheduleService
         return true;
     }
 
-    public async Task<bool> CreateScheduleForFinal(ScheduleForFinalSendModel schedule)
+    public async Task<bool> CreateScheduleForFinal(ScheduleForFinalRequest schedule)
     {
 
         /*var validationResult = await ValidateScheduleRequest(schedule);
@@ -265,21 +265,21 @@ public class ScheduleService : IScheduleService
 
     #region Get By Id
 
-    public async Task<ScheduleRatingViewModel?> GetScheduleById(Guid id)
+    public async Task<ScheduleRatingResponse?> GetScheduleById(Guid id)
     {
         var Schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(id);
         if (Schedule == null) throw new Exception("Khong tim thay Schedule");
-        return _mapper.Map<ScheduleRatingViewModel>(Schedule);
+        return _mapper.Map<ScheduleRatingResponse>(Schedule);
     }
 
-    public async Task<List<ScheduleViewModel?>> GetScheduleByExaminerId(Guid id)
+    public async Task<List<ScheduleResponse?>> GetScheduleByExaminerId(Guid id)
     {
         var schedule = await _unitOfWork.ScheduleRepo.GetByExaminerId(id);
         if (schedule == null) throw new Exception("Khong tim thay Schedule");
-        return _mapper.Map<List<ScheduleViewModel>>(schedule);
+        return _mapper.Map<List<ScheduleResponse>>(schedule);
     }
 
-    public async Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId/*,Guid contestId*/)
+    public async Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId/*,Guid contestId*/)
     {
         var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
         if (contest == null) throw new Exception("Không tìm thấy Contest");
@@ -292,7 +292,7 @@ public class ScheduleService : IScheduleService
 
         if (educationalLevel == null) throw new Exception("Khong tim thay");
 
-        return _mapper.Map<List<ScheduleWebViewModel>>(educationalLevel);
+        return _mapper.Map<List<ScheduleWebResponse>>(educationalLevel);
     }
 
     #endregion
@@ -413,7 +413,7 @@ public class ScheduleService : IScheduleService
     
     #region Rating
 
-    public async Task<bool> RatingPreliminaryRound(RatingSendModel ratingPainting)
+    public async Task<bool> RatingQualifyingRound(RatingSendModel ratingPainting)
     {
         var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
@@ -644,7 +644,7 @@ public class ScheduleService : IScheduleService
 
     #region Validate
 
-    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminarySendModel schedule)
+    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule)
     {
         return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
     }

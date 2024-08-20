@@ -35,7 +35,7 @@ public class AwardService : IAwardService
 
     #region Add Award
 
-    public async Task<bool> AddAward(CreateAwardSendModel model)
+    public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
         if (round!.Name != "Vòng Chung Kết")
@@ -62,11 +62,11 @@ public class AwardService : IAwardService
 
     #region Get List Award
 
-    public async Task<(List<AwardViewModel>, int)> GetListAward(ListModels listAwardModel)
+    public async Task<(List<AwardViewResponse>, int)> GetListAward(ListModels listAwardModel)
     {
         var awardList = await _unitOfWork.AwardRepo.GetAllAsync();
         if (awardList.Count == 0) throw new Exception("Không có Award");
-        var result = _mapper.Map<List<AwardViewModel>>(awardList);
+        var result = _mapper.Map<List<AwardViewResponse>>(awardList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
         int? itemsToSkip = (listAwardModel.PageNumber - 1) * listAwardModel.PageSize;
@@ -79,10 +79,10 @@ public class AwardService : IAwardService
     #endregion
 
     #region Get List Award By ContestId
-    public async Task<List<AwardViewModel>?> GetAwardsByRoundId(Guid roundId)
+    public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
         var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
-        return _mapper.Map<List<AwardViewModel>>(list);
+        return _mapper.Map<List<AwardViewResponse>>(list);
     }
     #endregion
 
@@ -127,11 +127,11 @@ public class AwardService : IAwardService
     
     #region Get Award By Id
 
-    public async Task<AwardViewModel> GetAwardById(Guid awardId)
+    public async Task<AwardViewResponse> GetAwardById(Guid awardId)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
         if (award == null) throw new Exception("Khong tim thay Award");
-        return _mapper.Map<AwardViewModel>(award);
+        return _mapper.Map<AwardViewResponse>(award);
     }
 
     #endregion
@@ -146,7 +146,7 @@ public class AwardService : IAwardService
 
     #region Validate
 
-    public async Task<ValidationResult> ValidateAwardRequest(CreateAwardSendModel createAward)
+    public async Task<ValidationResult> ValidateAwardRequest(CreateAwardRequest createAward)
     {
         return await _validatorFactory.AwardRequestValidator.ValidateAsync(createAward);
     }

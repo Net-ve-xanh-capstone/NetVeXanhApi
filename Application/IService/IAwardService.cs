@@ -7,16 +7,16 @@ namespace Application.IService;
 
 public interface IAwardService
 {
-    Task<bool> AddAward(CreateAwardSendModel addCreateAwardViewModel);
-    Task<(List<AwardViewModel>, int)> GetListAward(ListModels listAwardModel);
+    Task<bool> AddAward(CreateAwardRequest addCreateAwardViewModel);
+    Task<(List<AwardViewResponse>, int)> GetListAward(ListModels listAwardModel);
     Task<bool> DeleteAward(Guid awardId);
     Task<bool> UpdateAward(UpdateAwardRequest updateAward);
-    Task<AwardViewModel> GetAwardById(Guid awardId);
+    Task<AwardViewResponse> GetAwardById(Guid awardId);
 
-    Task<List<AwardViewModel>?> GetAwardsByRoundId(Guid contestId);
+    Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid contestId);
 
     Task<bool> IsExistedId(Guid id);
 
-    Task<ValidationResult> ValidateAwardRequest(CreateAwardSendModel createAward);
+    Task<ValidationResult> ValidateAwardRequest(CreateAwardRequest createAward);
     Task<ValidationResult> ValidateTopicUpdateRequest(UpdateAwardRequest awardUpdate);
 }

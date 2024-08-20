@@ -29,14 +29,14 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<TopicUpdateRequest> topicUpdateRequestValidator,
         IValidator<AccountUpdateRequest> accountUpdateRequestValidator,
         IValidator<SubAccountRequest> subAccountRequestValidator,
-        IValidator<CreateAwardSendModel> awardRequestValidator,
+        IValidator<CreateAwardRequest> awardRequestValidator,
         IValidator<UpdateAwardRequest> updateAwardRequestValidator,
         IValidator<CategoryRequest> categoryRequestValidator,
         IValidator<UpdateCategoryRequest> updateCategoryRequestValidator,
         IValidator<CollectionRequest> collectionRequestValidator,
         IValidator<UpdateCollectionRequest> updateCollectionRequestValidator,
         IValidator<ContestRequest> contestRequestValidator,
-        IValidator<UpdateContest> updateContestRequestValidator,
+        IValidator<UpdateContestRequest> updateContestRequestValidator,
         IValidator<EducationalLevelRequest> educationalLevelRequestValidator,
         IValidator<EducationalLevelUpdateRequest> educationalLevelUpdateRequestValidator,
         IValidator<ImageRequest> imageRequestValidator,
@@ -56,15 +56,15 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<RoundTopicRequest> roundTopicRequestValidator,
         IValidator<RoundRequest> roundRequestValidator,
         IValidator<RoundUpdateRequest> roundUpdateRequestValidator,
-        IValidator<ScheduleForPreliminarySendModel> scheduleRequestValidator,
+        IValidator<ScheduleForPreliminaryRequest> scheduleRequestValidator,
         IValidator<ScheduleUpdateRequest> scheduleUpdateRequestValidator,
-        IValidator<ScheduleForFinalSendModel> scheduleForFinalRequestValidator,
+        IValidator<ScheduleForFinalRequest> scheduleForFinalRequestValidator,
         IValidator<SponsorRequest> sponsorRequestValidator,
         IValidator<SponsorUpdateRequest> sponsorUpdateRequestValidator,
         IValidator<RoundTopicDeleteRequest> roundTopicDeleteRequestValidator,
         IValidator<FilterPaintingRequest> filterPaintingRequestValidator,
         IValidator<StaffCreatePaintingFinalRoundRequest> staffCreatePaintingFinalRoundRequestValidator,
-        IValidator<StaffUpdatePaintingSendModel> staffUpdatePaintingRequestValidator)
+        IValidator<StaffUpdatePaintingRequest> staffUpdatePaintingRequestValidator)
     {
         TopicRequestValidator = topicRequestValidator;
         TopicUpdateRequestValidator = topicUpdateRequestValidator;
@@ -112,14 +112,14 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<TopicUpdateRequest> TopicUpdateRequestValidator { get; }
     public IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     public IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
-    public IValidator<CreateAwardSendModel> AwardRequestValidator { get; }
+    public IValidator<CreateAwardRequest> AwardRequestValidator { get; }
     public IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
     public IValidator<CategoryRequest> CategoryRequestValidator { get; }
     public IValidator<UpdateCategoryRequest> UpdateCategoryRequestValidator { get; }
     public IValidator<CollectionRequest> CollectionRequestValidator { get; }
     public IValidator<UpdateCollectionRequest> UpdateCollectionRequestValidator { get; }
     public IValidator<ContestRequest> ContestRequestValidator { get; }
-    public IValidator<UpdateContest> UpdateContestRequestValidator { get; }
+    public IValidator<UpdateContestRequest> UpdateContestRequestValidator { get; }
     public IValidator<EducationalLevelRequest> EducationalLevelRequestValidator { get; }
     public IValidator<EducationalLevelUpdateRequest> EducationalLevelUpdateRequestValidator { get; }
     public IValidator<ImageRequest> ImageRequestValidator { get; }
@@ -139,9 +139,9 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<RoundTopicRequest> RoundTopicRequestValidator { get; }
     public IValidator<RoundRequest> RoundRequestValidator { get; }
     public IValidator<RoundUpdateRequest> RoundUpdateRequestValidator { get; }
-    public IValidator<ScheduleForPreliminarySendModel> ScheduleRequestValidator { get; }
+    public IValidator<ScheduleForPreliminaryRequest> ScheduleRequestValidator { get; }
     public IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
-    public IValidator<ScheduleForFinalSendModel> ScheduleForFinalRequestValidator { get; }
+    public IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
     public IValidator<SponsorRequest> SponsorRequestValidator { get; }
     public IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
@@ -149,5 +149,5 @@ public class ValidatorFactory : IValidatorFactory
 
     public IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
 
-    public IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
+    public IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
 }

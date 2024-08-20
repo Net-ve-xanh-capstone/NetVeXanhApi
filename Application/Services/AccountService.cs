@@ -42,13 +42,13 @@ public class AccountService : IAccountService
         throw new NotImplementedException();
     }
 
-    public async Task<(List<AccountViewModel>, int)> GetListExaminer(ListModels listModels)
+    public async Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels)
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Examiner.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy giám khảo nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -58,24 +58,24 @@ public class AccountService : IAccountService
         return (result, totalPages);
     }
 
-    public async Task<List<AccountViewModel>> GetAllExaminer()
+    public async Task<List<AccountResponse>> GetAllExaminer()
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Examiner.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy giám khảo nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
         return result;
     }
 
-    public async Task<(List<AccountViewModel>, int)> GetListCompetitor(ListModels listModels)
+    public async Task<(List<AccountResponse>, int)> GetListCompetitor(ListModels listModels)
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Competitor.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy thí sinh nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -85,24 +85,24 @@ public class AccountService : IAccountService
         return (result, totalPages);
     }
 
-    public async Task<List<AccountViewModel>> GetAllCompetitor()
+    public async Task<List<AccountResponse>> GetAllCompetitor()
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Competitor.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy thí sinh nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
         return result;
     }
 
-    public async Task<(List<AccountViewModel>, int)> GetListStaff(ListModels listModels)
+    public async Task<(List<AccountResponse>, int)> GetListStaff(ListModels listModels)
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Staff.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy nhân viên nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
@@ -113,23 +113,23 @@ public class AccountService : IAccountService
         return (result, totalPages);
     }
 
-    public async Task<List<AccountViewModel>> GetAllStaff()
+    public async Task<List<AccountResponse>> GetAllStaff()
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList
             .Where(x => x.Role == Role.Staff.ToString()).ToList();
         if (accountList.Count == 0) throw new Exception("Không tìm thấy nhân viên nào.");
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
 
         return result;
     }
 
-    public async Task<(List<AccountViewModel>, int)> GetListInactiveAccount(ListModels listModels)
+    public async Task<(List<AccountResponse>, int)> GetListInactiveAccount(ListModels listModels)
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
         accountList = accountList.Where(x => x.Status == AccountStatus.Inactive.ToString()).ToList();
-        var result = _mapper.Map<List<AccountViewModel>>(accountList);
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -139,25 +139,25 @@ public class AccountService : IAccountService
         return (result, totalPages);
     }
 
-    public async Task<AccountViewModel?> GetAccountById(Guid id)
+    public async Task<AccountResponse?> GetAccountById(Guid id)
     {
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(id);
         if (account == null) throw new Exception("Không tìm thấy Account");
-        return _mapper.Map<AccountViewModel>(account);
+        return _mapper.Map<AccountResponse>(account);
     }
 
-    public async Task<AccountViewModel?> GetCompetitorById(Guid id)
+    public async Task<AccountResponse?> GetCompetitorById(Guid id)
     {
         var account = await _unitOfWork.AccountRepo.GetCompetitorByIdAsync(id);
         if (account == null) throw new Exception("Không tìm thấy Account");
-        return _mapper.Map<AccountViewModel>(account);
+        return _mapper.Map<AccountResponse>(account);
     }
 
-    public async Task<AccountViewModel?> GetAccountByCode(string code)
+    public async Task<AccountResponse?> GetAccountByCode(string code)
     {
         var account = await _unitOfWork.AccountRepo.GetAccountByCodeAsync(code);
         if (account == null) throw new Exception("Không tìm thấy Account");
-        return _mapper.Map<AccountViewModel>(account);
+        return _mapper.Map<AccountResponse>(account);
     }
 
     public async Task<bool?> UpdateAccount(AccountUpdateRequest updateAccount)
@@ -187,7 +187,7 @@ public class AccountService : IAccountService
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<ContestRewardViewModel>> ListAccountHaveAwardIn3NearestContest()
+    public async Task<List<ContestRewardResponse>> ListAccountHaveAwardIn3NearestContest()
     {
         var listContestId = await _unitOfWork.ContestRepo.Get3NearestContestId();
         if (listContestId.Count == 0) throw new Exception("Không tìm thấy cuộc thi");
@@ -195,7 +195,7 @@ public class AccountService : IAccountService
         var listContestAward = await _unitOfWork.ContestRepo.GetContestRewardByListContestId(listContestId);
         if (listContestAward.Count == 0) throw new Exception("Không tìm thấy Account");
 
-        return _mapper.Map<List<ContestRewardViewModel>>(listContestAward);
+        return _mapper.Map<List<ContestRewardResponse>>(listContestAward);
     }
 
 

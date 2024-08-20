@@ -7,12 +7,12 @@ namespace Application.IService;
 
 public interface IEducationalLevelService
 {
-    Task<bool> CreateEducationalLevel(CreateEducationalLevelSendModel model);
-    Task<(List<EducationalLevelViewModel>, int)> GetListEducationalLevel(ListModels listModels);
-    Task<List<EducationalLevelViewModel>> GetAllEducationalLevel();
-    Task<EducationalLevelViewModel?> GetEducationalLevelById(Guid id);
+    Task<bool> CreateEducationalLevel(CreateEducationalLevelRequest model);
+    Task<(List<EducationalLevelResponse>, int)> GetListEducationalLevel(ListModels listModels);
+    Task<List<EducationalLevelResponse>> GetAllEducationalLevel();
+    Task<EducationalLevelResponse?> GetEducationalLevelById(Guid id);
 
-    Task<(List<EducationalLevelViewModel>, int)> GetEducationalLevelByContestId(ListModels listLevelModel,
+    Task<(List<EducationalLevelResponse>, int)> GetEducationalLevelByContestId(ListModels listLevelModel,
         Guid contestId);
 
     Task<bool> UpdateEducationalLevel(EducationalLevelUpdateRequest updateEducationalLevel);

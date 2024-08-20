@@ -23,7 +23,7 @@ public partial class MapperConfigs : Profile
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
 
 
-        CreateMap<Painting, PaintingViewModel>()
+        CreateMap<Painting, PaintingResponse>()
             .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award.Rank
                 /*src.Award == null ? "Không có giải" :
                 src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
@@ -65,7 +65,7 @@ public partial class MapperConfigs : Profile
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.RoundTopicId, opt => opt.MapFrom(src => src.RoundTopic.Id));
 
-        CreateMap<Painting, PaintingForScheduleViewModel>()
+        CreateMap<Painting, PaintingForScheduleResponse>()
             .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award.Rank
                 /*src.Award == null ? "Không có giải" :
                 src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
@@ -81,7 +81,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.IsJudged, opt => opt.MapFrom(src => !src.JudgementReason.IsNullOrEmpty()));
 
 
-        CreateMap<Painting, PaintingTrackingViewModel>()
+        CreateMap<Painting, PaintingTrackingResponse>()
             .ForPath(dest => dest.OwnerName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForPath(dest => dest.History.Created.Time, opt =>
                 opt.MapFrom(src => src.CreatedTime.HasValue ? src.CreatedTime : null))
@@ -110,7 +110,7 @@ public partial class MapperConfigs : Profile
                 opt.MapFrom(src => src.SubmittedTimestamp.HasValue ? "Đã nộp bài" : null));
 
 
-        CreateMap<PaintingViewModel, Painting>()
+        CreateMap<PaintingResponse, Painting>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.OwnerName))
             .ForPath(dest => dest.RoundTopic.Topic.Id, opt => opt.MapFrom(src => src.TopicId))
             .ForPath(dest => dest.RoundTopic.Topic.Name, opt => opt.MapFrom(src => src.TopicName))
@@ -131,7 +131,7 @@ public partial class MapperConfigs : Profile
                 });
             });
 
-        CreateMap<StaffUpdatePaintingSendModel, Painting>()
+        CreateMap<StaffUpdatePaintingRequest, Painting>()
             .ForPath(x => x.Account.Birthday, x => x.MapFrom(x => x.Birthday))
             .ForPath(x => x.Account.Phone, x => x.MapFrom(x => x.Phone))
             .ForPath(x => x.Account.FullName, x => x.MapFrom(x => x.FullName))
@@ -156,7 +156,7 @@ public partial class MapperConfigs : Profile
             src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
             src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ));
-        CreateMap<Painting, CompetitorViewModel>()
+        CreateMap<Painting, CompetitorResponse>()
             .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))
             .ForPath(dest => dest.Prize, opt => opt.MapFrom(src => src.Award.Rank))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))

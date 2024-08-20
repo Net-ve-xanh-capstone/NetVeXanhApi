@@ -12,12 +12,12 @@ public partial class MapperConfigs : Profile
     partial void AddAwardMapperConfig()
     {
         
-        CreateMap<Award, AwardViewModel>().ReverseMap();
+        CreateMap<Award, AwardViewResponse>().ReverseMap();
 
-        CreateMap<CreateDependentAwardSendModel, Award>()
+        CreateMap<CreateDependentAwardRequest, Award>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => AwardStatus.Active));
 
-        CreateMap<Award, CreateAwardSendModel>().ReverseMap();
+        CreateMap<Award, CreateAwardRequest>().ReverseMap();
         CreateMap<Award, UpdateAwardRequest>().ReverseMap().ForAllMembers(opt =>
             {
                 opt.Condition((src, dest, srcMember) => srcMember != null); // Kiểm tra srcMember không null
@@ -27,9 +27,9 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<Award, AwardViewModel>();
+        CreateMap<Award, AwardViewResponse>();
         CreateMap<Award, AwardInLevelViewModel>();
-        CreateMap<Award, ListAwardInScheduleViewModel>()
+        CreateMap<Award, ListAwardInScheduleResponse>()
             .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.AwardSchedule.FirstOrDefault().Quantity));
 
     }

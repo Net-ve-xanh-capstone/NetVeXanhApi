@@ -85,7 +85,7 @@ public class NotificationController : Controller
                 Message = ex.Message,
                 Result = new
                 {
-                    List = new List<NotificationViewModel>(),
+                    List = new List<NotificationResponse>(),
                     TotalPage = 0
                 },
                 Errors = ex

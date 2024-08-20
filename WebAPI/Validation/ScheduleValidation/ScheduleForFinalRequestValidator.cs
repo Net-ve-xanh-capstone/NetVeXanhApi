@@ -3,6 +3,6 @@ using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
 
-public class ScheduleForFinalRequestValidator : AbstractValidator<ScheduleForFinalSendModel>
+public class ScheduleForFinalRequestValidator : AbstractValidator<ScheduleForFinalRequest>
 {
 }

@@ -5,7 +5,7 @@ namespace Application.IValidators;
 
 public interface IScheduleValidator
 {
-    IValidator<ScheduleForPreliminarySendModel> ScheduleRequestValidator { get; }
+    IValidator<ScheduleForPreliminaryRequest> ScheduleRequestValidator { get; }
     IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
-    IValidator<ScheduleForFinalSendModel> ScheduleForFinalRequestValidator { get; }
+    IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
 }

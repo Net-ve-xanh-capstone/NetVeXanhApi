@@ -26,7 +26,7 @@ public class ContestController : Controller
     /// <param name="contest">không cần để contestid, createby trong level và không cần để Levellist, createby trong round</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateContest(CreateContestSendModel contest)
+    public async Task<IActionResult> CreateContest(CreateContestRequest contest)
     {
         try
         {
@@ -69,11 +69,11 @@ public class ContestController : Controller
     #region Update Contest
 
     [HttpPut]
-    public async Task<IActionResult> UpdateContest(UpdateContest updateContest)
+    public async Task<IActionResult> UpdateContest(UpdateContestRequest updateContestRequest)
     {
         try
         {
-            var result = await _contestService.UpdateContest(updateContest);
+            var result = await _contestService.UpdateContest(updateContestRequest);
             if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {

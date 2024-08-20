@@ -15,7 +15,7 @@ public partial class MapperConfigs : Profile
     {
         CreateMap<Painting, CompetitorCreatePaintingRequest>().ReverseMap();
 
-        CreateMap<Painting, StaffCreatePaintingRequest>().ReverseMap()
+        CreateMap<Painting, StaffCreatePaintingSendModel>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
 
         CreateMap<Painting, StaffCreatePaintingFinalRoundRequest>().ReverseMap()

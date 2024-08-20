@@ -119,7 +119,7 @@ public class PaintingController : Controller
 
     [HttpPost("submitepainting1stroundforCompetitor")]
     public async Task<IActionResult> SubmitPaintingForPreliminaryRoundForCompetitor(
-        StaffCreatePaintingRequest staffCreatePainting)
+        StaffCreatePaintingSendModel staffCreatePainting)
     {
         try
         {

@@ -11,7 +11,7 @@ public class PaintingValidator : IPaintingValidator
         IValidator<StaffUpdatePaintingSendModel> staffUpdatePaintingRequestValidator,
         IValidator<StaffCreatePaintingFinalRoundRequest> staffCreatePaintingFinalRoundRequestValidator,
         IValidator<CompetitorCreatePaintingRequest> paintingvalidator,
-        IValidator<StaffCreatePaintingRequest> painting2validator,
+        IValidator<StaffCreatePaintingSendModel> painting2validator,
         IValidator<PaintingUpdateStatusRequest> paintingupdatestatusvalidator,
         IValidator<UpdatePaintingRequest> updatepaintingvalidator,
         IValidator<FilterPaintingRequest> filterpaintingvalidator)
@@ -27,7 +27,7 @@ public class PaintingValidator : IPaintingValidator
 
     public IValidator<CompetitorCreatePaintingRequest> PaintingRequestValidator { get; }
 
-    public IValidator<StaffCreatePaintingRequest> PaintingRequest2Validator { get; }
+    public IValidator<StaffCreatePaintingSendModel> PaintingRequest2Validator { get; }
 
     public IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
 

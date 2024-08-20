@@ -9,7 +9,7 @@ public interface IPaintingValidator
     IValidator<StaffUpdatePaintingSendModel> StaffUpdatePaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
     IValidator<CompetitorCreatePaintingRequest> PaintingRequestValidator { get; }
-    IValidator<StaffCreatePaintingRequest> PaintingRequest2Validator { get; }
+    IValidator<StaffCreatePaintingSendModel> PaintingRequest2Validator { get; }
     IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
     IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }
     IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }

@@ -88,11 +88,11 @@ public class CategoryService : ICategoryService
 
     #region List All Category
 
-    public async Task<(List<CategoryViewModel>, int)> ListCategory(ListModels listCategoryModel)
+    public async Task<(List<CategoryResponse>, int)> ListCategory(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Không tìm thấy danh mục nào phù hợp");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
         int? itemsToSkip = (listCategoryModel.PageNumber - 1) * listCategoryModel.PageSize;
@@ -106,11 +106,11 @@ public class CategoryService : ICategoryService
 
     #region List All Category
 
-    public async Task<List<CategoryViewModel>> ListAllCategory()
+    public async Task<List<CategoryResponse>> ListAllCategory()
     {
         var list = await _unitOfWork.CategoryRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Không tìm thấy danh mục nào phù hợp");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
 
         return result;
     }
@@ -119,11 +119,11 @@ public class CategoryService : ICategoryService
 
     #region List Category Unused With Pagination
 
-    public async Task<(List<CategoryViewModel>, int)> ListCategoryUnused(ListModels listCategoryModel)
+    public async Task<(List<CategoryResponse>, int)> ListCategoryUnused(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUnused();
         if (list.Count == 0) throw new Exception("Không có danh mục nào đang không được sử dụng");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
         int? itemsToSkip = (listCategoryModel.PageNumber - 1) * listCategoryModel.PageSize;
@@ -138,11 +138,11 @@ public class CategoryService : ICategoryService
 
     #region List Category Used With Pagination
 
-    public async Task<(List<CategoryViewModel>, int)> ListCategoryUsed(ListModels listCategoryModel)
+    public async Task<(List<CategoryResponse>, int)> ListCategoryUsed(ListModels listCategoryModel)
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUsed();
         if (list.Count == 0) throw new Exception("Không có danh mục nào đang được sử dụng");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCategoryModel.PageSize);
         int? itemsToSkip = (listCategoryModel.PageNumber - 1) * listCategoryModel.PageSize;
@@ -156,11 +156,11 @@ public class CategoryService : ICategoryService
 
     #region List All Category Unused
 
-    public async Task<List<CategoryViewModel>> ListAllCategoryUnused()
+    public async Task<List<CategoryResponse>> ListAllCategoryUnused()
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUnused();
         if (list.Count == 0) throw new Exception("Không có danh mục nào đang không được sử dụng");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
         return result;
     }
 
@@ -169,11 +169,11 @@ public class CategoryService : ICategoryService
 
     #region List All Category Used With Pagination
 
-    public async Task<List<CategoryViewModel>> ListAllCategoryUsed()
+    public async Task<List<CategoryResponse>> ListAllCategoryUsed()
     {
         var list = await _unitOfWork.CategoryRepo.GetCategoryUsed();
         if (list.Count == 0) throw new Exception("Không có danh mục nào đang được sử dụng");
-        var result = _mapper.Map<List<CategoryViewModel>>(list);
+        var result = _mapper.Map<List<CategoryResponse>>(list);
         return result;
     }
 

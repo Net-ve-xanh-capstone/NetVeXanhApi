@@ -267,7 +267,7 @@ public class ContestService : IContestService
 
     #region Create Contest
 
-    public async Task<bool> CreateContest(CreateContestSendModel model)
+    public async Task<bool> CreateContest(CreateContestRequest model)
     {
         var contest = _mapper.Map<Contest>(model);
         foreach (var educationalLevel in contest.EducationalLevel)
@@ -282,6 +282,7 @@ public class ContestService : IContestService
                 }
             }
         }
+        contest.StaffId = contest.CreatedBy;
         if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
             throw new Exception("Thời gian bị trùng lặp");
 
@@ -329,16 +330,16 @@ public class ContestService : IContestService
 
     #region Update Contest
 
-    public async Task<bool> UpdateContest(UpdateContest updateContest)
+    public async Task<bool> UpdateContest(UpdateContestRequest updateContestRequest)
     {
-        var validationResult = await ValidateContestUpdateRequest(updateContest);
+        var validationResult = await ValidateContestUpdateRequest(updateContestRequest);
         if (!validationResult.IsValid)
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        var contest = await _unitOfWork.ContestRepo.GetByIdAsync(updateContest.Id);
+        var contest = await _unitOfWork.ContestRepo.GetByIdAsync(updateContestRequest.Id);
         if (contest == null) throw new Exception("Khong tim thay Contest");
 
-        _mapper.Map(updateContest, contest);
+        _mapper.Map(updateContestRequest, contest);
         contest.UpdatedTime = _currentTime.GetCurrentTime();
 
 
@@ -349,11 +350,11 @@ public class ContestService : IContestService
 
     #region Get Contest By Id
 
-    public async Task<ContestDetailViewModel> GetContestById(Guid contestId)
+    public async Task<ContestDetailResponse> GetContestById(Guid contestId)
     {
         var contest = await _unitOfWork.ContestRepo.GetAllContestInformationAsync(contestId);
         if (contest == null) throw new Exception("Không tìm thấy cuộc thi nào!");
-        var result = _mapper.Map<ContestDetailViewModel>(contest);
+        var result = _mapper.Map<ContestDetailResponse>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
         result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
         return result;
@@ -363,7 +364,7 @@ public class ContestService : IContestService
 
     #region Get 5 recent contest year
 
-    public async Task<List<ContestNameYearViewModel>> Get5RecentYear()
+    public async Task<List<ContestNameYearResponse>> Get5RecentYear()
     {
         var result = await _unitOfWork.ContestRepo.Get5RecentYearAsync();
         if (result == null) throw new Exception("Không có Cuộc thi nào!");
@@ -374,11 +375,11 @@ public class ContestService : IContestService
 
     #region Get All Contest
 
-    public async Task<List<ContestViewModel?>> GetAllContest()
+    public async Task<List<ContestResponse?>> GetAllContest()
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
-        var result = _mapper.Map<List<ContestViewModel>>(contest);
+        var result = _mapper.Map<List<ContestResponse>>(contest);
         foreach (var item in result)
         {
             item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
@@ -392,11 +393,11 @@ public class ContestService : IContestService
     
     #region Get All Contest
 
-    public async Task<(List<ContestViewModel?>, int)> GetAllContest_v2(ListModels listModel)
+    public async Task<(List<ContestResponse?>, int)> GetAllContest_v2(ListModels listModel)
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
-        var result = _mapper.Map<List<ContestViewModel>>(contest);
+        var result = _mapper.Map<List<ContestResponse>>(contest);
         foreach (var item in result)
         {
             item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
@@ -415,11 +416,11 @@ public class ContestService : IContestService
 
     #region get contest for filter painting
 
-    public async Task<List<FilterPaintingContestViewModel>> GetContestForFilterPainting()
+    public async Task<List<FilterPaintingContestResponse>> GetContestForFilterPainting()
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
-        var result = _mapper.Map<List<FilterPaintingContestViewModel>>(contest);
+        var result = _mapper.Map<List<FilterPaintingContestResponse>>(contest);
 
         return result;
     }
@@ -428,7 +429,7 @@ public class ContestService : IContestService
 
     #region Get Account Award Information
 
-    public async Task<List<AccountAwardViewModel>> GetAccountWithAwardPainting()
+    public async Task<List<AccountAwardResponse>> GetAccountWithAwardPainting()
     {
         var contest = await _unitOfWork.ContestRepo.GetAccountsByMostRecentContestAsync();
         if (contest.Count == 0) throw new Exception("Khong co Contest nao");
@@ -439,12 +440,12 @@ public class ContestService : IContestService
 
     #region Get Nearest Contest
 
-    public async Task<ContestDetailViewModel> GetNearestContest()
+    public async Task<ContestDetailResponse> GetNearestContest()
     {
         var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
         if (contest == null) throw new Exception("Không có Contest nào");
 
-        return _mapper.Map<ContestDetailViewModel>(contest);
+        return _mapper.Map<ContestDetailResponse>(contest);
     }
 
     #endregion
@@ -465,23 +466,38 @@ public class ContestService : IContestService
         return await _validatorFactory.ContestRequestValidator.ValidateAsync(contest);
     }
 
-    public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContest contestUpdate)
+    public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContestRequest contestRequestUpdate)
     {
-        return await _validatorFactory.UpdateContestRequestValidator.ValidateAsync(contestUpdate);
+        return await _validatorFactory.UpdateContestRequestValidator.ValidateAsync(contestRequestUpdate);
     }
 
     #endregion
 
     #region list dropDown Infor
 
-    public async Task<ListDropDownContest> GetListForDorpDown(Guid contestId)
+    public async Task<ListDropDownContestResponse> GetListForDorpDown(Guid contestId)
     {
         var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
         var listRound = await _unitOfWork.ContestRepo.GetListRoundName(contestId);
-        var result = new ListDropDownContest();
+        var result = new ListDropDownContestResponse();
         result.Rounds = listRound;
         result.EducationalLevels = listLevel;
         return result;
+    }
+
+    #endregion
+    
+    
+    #region DashBoard
+
+    public async Task<List<NumberPaintingResponse>> QuantiyPaintingForYear()
+    {
+        return await _unitOfWork.ContestRepo.GetNumberOfPaintingsByContestAsync();
+    }
+    
+    public async Task<List<ContestAwardQuantityResponse>> AwardQuantiy()
+    {
+        return await _unitOfWork.ContestRepo.GetAwardQuantity();
     }
 
     #endregion

@@ -24,7 +24,7 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<Resources, ResourcesViewModel>()
+        CreateMap<Resources, ResourcesResponse>()
             .ForPath(dest => dest.SponsorName, opt => opt.MapFrom(src => src.Sponsor.Name))
             .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.Contest.Name));
 

@@ -36,7 +36,7 @@ public class RoundService : IRoundService
 
     #region Create
 
-    public async Task<bool> CreateRound(CreateRoundSendModel model)
+    public async Task<bool> CreateRound(CreateRoundRequest model)
     {
         foreach (var level in model.LevelList)
         {
@@ -83,24 +83,24 @@ public class RoundService : IRoundService
 
     #region Get All Round
 
-    public async Task<List<RoundViewModel>> GetListRound(ListModels listModels)
+    public async Task<List<RoundResponse>> GetListRound(ListModels listModels)
     {
         var list = await _unitOfWork.RoundRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Round nao");
 
-        return _mapper.Map<List<RoundViewModel>>(list);
+        return _mapper.Map<List<RoundResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<RoundViewModel?> GetRoundById(Guid id)
+    public async Task<RoundResponse?> GetRoundById(Guid id)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(id);
         if (round == null) throw new Exception("Khong tim thay Round");
 
-        return _mapper.Map<RoundViewModel>(round);
+        return _mapper.Map<RoundResponse>(round);
     }
 
     #endregion
@@ -116,6 +116,8 @@ public class RoundService : IRoundService
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(updateRound.Id);
         if (round == null) throw new Exception("Khong tim thay Round");
         _mapper.Map(updateRound, round);
+        round.UpdatedBy = updateRound.CurrentUserId;
+        round.UpdatedTime = DateTime.Now;
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -130,6 +132,7 @@ public class RoundService : IRoundService
         if (round == null) throw new Exception("Khong tim thay Round");
         round.Status = RoundStatus.Delete.ToString();
         foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
+        foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -138,7 +141,7 @@ public class RoundService : IRoundService
 
     #region Get Topic
 
-    public async Task<(List<TopicViewModel>, int)> GetTopicInRound(Guid id, ListModels listModels)
+    public async Task<(List<TopicResponse>, int)> GetTopicInRound(Guid id, ListModels listModels)
     {
         var list = await _unitOfWork.RoundRepo.GetTopic(id);
         if (list.Count == 0) throw new Exception("Khong tim thay Topic nao trong Round");
@@ -148,14 +151,14 @@ public class RoundService : IRoundService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<TopicViewModel>>(result), totalPages);
+        return (_mapper.Map<List<TopicResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get Round By Educational LevelId
 
-    public async Task<(List<RoundViewModel>, int)> GetRoundByEducationalLevelId(ListModels listRoundModel, Guid levelId)
+    public async Task<(List<RoundResponse>, int)> GetRoundByEducationalLevelId(ListModels listRoundModel, Guid levelId)
     {
         var list = await _unitOfWork.RoundRepo.GetRoundByLevelId(levelId);
         if (list.Count == 0) throw new Exception("Khong tim thay Round nao");
@@ -165,18 +168,18 @@ public class RoundService : IRoundService
         var result = list.Skip((int)itemsToSkip)
             .Take(listRoundModel.PageSize)
             .ToList();
-        return (_mapper.Map<List<RoundViewModel>>(result), totalPages);
+        return (_mapper.Map<List<RoundResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get
 
-    public async Task<List<RoundViewModel>> GetListRoundForCompetitor()
+    public async Task<List<RoundResponse>> GetListRoundForCompetitor()
     {
         var today = _currentTime.GetCurrentTime();
         var result = await _unitOfWork.RoundRepo.GetRoundsOfThisYear();
-        return _mapper.Map<List<RoundViewModel>>(result);
+        return _mapper.Map<List<RoundResponse>>(result);
     }
 
     #endregion

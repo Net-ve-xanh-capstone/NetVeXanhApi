@@ -25,7 +25,7 @@ public partial class MapperConfigs : Profile
                 });
             });
 
-        CreateMap<Sponsor, SponsorViewModel>().ReverseMap();
+        CreateMap<Sponsor, SponsorResponse>().ReverseMap();
 
         CreateMap<Sponsor, SponsorInResourceViewModel>();
     }

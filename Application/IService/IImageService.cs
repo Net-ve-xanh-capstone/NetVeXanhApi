@@ -8,8 +8,8 @@ namespace Application.IService;
 public interface IImageService
 {
     public Task<bool> CreateImage(ImageRequest Image);
-    public Task<(List<ImageViewModel>, int)> GetListImage(ListModels listModels);
-    public Task<ImageViewModel?> GetImageById(Guid id);
+    public Task<(List<ImageResponse>, int)> GetListImage(ListModels listModels);
+    public Task<ImageResponse?> GetImageById(Guid id);
     public Task<bool> DeleteImage(Guid id);
 
     Task<bool> IsExistedId(Guid id);

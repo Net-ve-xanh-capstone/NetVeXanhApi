@@ -4,7 +4,8 @@ namespace Application.IRepositories;
 
 public interface IAccountRepository : IGenericRepository<Account>
 {
-    Task<Account?> Login(string email);
+    Task<Account?> FindUserByUsername(string email);
+    Task<Account?> GetByRefreshToken(string token);
     Task<bool> CheckDuplicateEmail(string email);
     Task<bool> CheckDuplicatePhone(string phone);
     Task<bool> CheckDuplicateUsername(string username);

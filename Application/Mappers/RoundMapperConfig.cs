@@ -13,7 +13,7 @@ public partial class MapperConfigs : Profile
 {
     partial void AddRoundMapperConfig()
     {
-        CreateMap<CreateRoundSendModel, Round>()
+        CreateMap<CreateRoundRequest, Round>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RoundStatus.NotStarted.ToString()))
             .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award));
 
@@ -32,18 +32,18 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<Round, RoundViewModel>()
+        CreateMap<Round, RoundResponse>()
             .ForPath(dest => dest.EducationalLevelName, opt => opt.MapFrom(src => src.EducationalLevel.Level))
             .ForPath(dest => dest.ContestId, opt => opt.MapFrom(src => src.EducationalLevel.Contest.Id))
             .ForPath(dest => dest.ContestName, opt => opt.MapFrom(src => src.EducationalLevel.Contest.Name));
-        CreateMap<Round, ListTopicViewModel>().ReverseMap();
+        CreateMap<Round, ListTopicResponse>().ReverseMap();
 
         CreateMap<Round, RoundInLevelViewModel>()
             .ForMember(dest => dest.Award, opt => opt.MapFrom(src => src.Award))
             .ForMember(dest => dest.RoundTopic, opt => opt.MapFrom(src => src.RoundTopic));
 
 
-        CreateMap<Round, ListScheduleViewModel>()
+        CreateMap<Round, ListScheduleResponse>()
             .ForMember(des => des.RoundId, src => src.MapFrom(opt => opt.Id))
             .ForMember(des => des.RoundName, src => src.MapFrom(opt => opt.Name))
             .ForMember(des => des.EducationName, src => src.MapFrom(opt => opt.EducationalLevel.Level))

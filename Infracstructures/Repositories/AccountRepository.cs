@@ -22,7 +22,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         return await DbSet.FirstOrDefaultAsync(a => a.Id == id && a.Role == Role.Competitor.ToString());
     }
 
-    public async Task<Account?> Login(string username)
+    public async Task<Account?> FindUserByUsername(string username)
     {
         return await DbSet.FirstOrDefaultAsync(a =>
             a.Username == username && a.Status == AccountStatus.Active.ToString());

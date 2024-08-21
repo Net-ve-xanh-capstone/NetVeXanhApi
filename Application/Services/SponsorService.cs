@@ -44,7 +44,7 @@ public class SponsorService : ISponsorService
 
     #region Get All With Pagination
 
-    public async Task<(List<SponsorViewModel>, int)> GetListSponsor(ListModels listModels)
+    public async Task<(List<SponsorResponse>, int)> GetListSponsor(ListModels listModels)
     {
         var list = await _unitOfWork.SponsorRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Sponsor nao");
@@ -54,30 +54,30 @@ public class SponsorService : ISponsorService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<SponsorViewModel>>(result), totalPages);
+        return (_mapper.Map<List<SponsorResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get All
 
-    public async Task<List<SponsorViewModel>> GetAllSponsor()
+    public async Task<List<SponsorResponse>> GetAllSponsor()
     {
         var result = await _unitOfWork.SponsorRepo.GetAllAsync();
         if (result.Count == 0) throw new Exception("Khong tim thay Sponsor nao");
 
-        return _mapper.Map<List<SponsorViewModel>>(result);
+        return _mapper.Map<List<SponsorResponse>>(result);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<SponsorViewModel?> GetSponsorById(Guid id)
+    public async Task<SponsorResponse?> GetSponsorById(Guid id)
     {
         var sponsor = await _unitOfWork.SponsorRepo.GetByIdAsync(id);
         if (sponsor == null) throw new Exception("Khong tim thay Sponsor");
-        return _mapper.Map<SponsorViewModel>(sponsor);
+        return _mapper.Map<SponsorResponse>(sponsor);
     }
 
     #endregion

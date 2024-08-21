@@ -8,26 +8,27 @@ namespace Application.IService;
 
 public interface IScheduleService
 {
-    Task<List<ListScheduleViewModel>> GetListSchedule(Guid id);
-    Task<bool> CreateScheduleForPreliminaryRound(ScheduleRequest schedule);
-    Task<bool> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule);
-    Task<(List<ScheduleRatingViewModel>, int)> GetListSchedule(ListModels listModels);
-    Task<ScheduleRatingViewModel?> GetScheduleById(Guid id);
-    Task<List<ScheduleViewModel?>> GetScheduleByExaminerId(Guid id);
-    Task<List<ScheduleWebViewModel?>> GetScheduleForWeb(Guid examinerId);
+    Task<List<ListScheduleResponse>> GetListScheduleByContestId(Guid id);
+    Task<bool> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule);
+    Task<bool> CreateScheduleForFinal(ScheduleForFinalRequest schedule);
+    Task<(List<ScheduleRatingResponse>, int)> GetListSchedule(ListModels listModels);
+    Task<ScheduleRatingResponse?> GetScheduleById(Guid id);
+    Task<List<ScheduleResponse?>> GetScheduleByExaminerId(Guid id);
+    Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId/*, Guid contestId*/);
+    Task<bool> RatingPainting(RatingSendModel ratingPainting);
 
-    Task<bool> RatingFinalRound(RatingRequest ratingPainting);
+    Task<bool> RatingFinalRound(RatingSendModel ratingPainting);
 
-    Task<bool> RatingPreliminaryRound(RatingRequest ratingPainting);
-    Task<bool> RatingFirstPrize(RatingRequest ratingPainting);
-    Task<bool> RatingSecondPrize(RatingRequest ratingPainting);
-    Task<bool> RatingConsolationPrize(RatingRequest ratingPainting);
-    Task<bool> RatingThirdPrize(RatingRequest ratingPainting);
+    Task<bool> RatingQualifyingRound(RatingSendModel ratingPainting);
+    Task<bool> RatingFirstPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingSecondPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingConsolationPrize(RatingSendModel ratingPainting);
+    Task<bool> RatingThirdPrize(RatingSendModel ratingPainting);
     Task<bool> UpdateSchedule(ScheduleUpdateRequest updateSchedule);
     Task<bool> DeleteSchedule(Guid id);
     Task<bool> IsExistedId(Guid id);
-    Task<ValidationResult> ValidateScheduleRequest(ScheduleRequest schedule);
+    Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
     Task<(byte[], string)> GetListCompetitorPass(Guid roundId);
-    public Task<List<CompetitorViewModel>> GetListCompetitorFinalRound(Guid roundId);
+    public Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId);
 }

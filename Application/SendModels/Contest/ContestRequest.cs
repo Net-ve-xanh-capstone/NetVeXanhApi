@@ -8,7 +8,7 @@ public class ContestRequest
     public string Name { get; set; }
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
-    public string Content { get; set; }
+    public string Content { get; set; } 
     public string Logo { get; set; } = AppConstants.DefaultImageUrl;
     public Guid CurrentUserId { get; set; }
     public DateTime Round1StartTime { get; set; }

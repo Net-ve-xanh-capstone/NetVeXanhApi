@@ -6,5 +6,5 @@ namespace Application.IValidators;
 public interface IContestValidator
 {
     IValidator<ContestRequest> ContestRequestValidator { get; }
-    IValidator<UpdateContest> UpdateContestValidator { get; }
+    IValidator<UpdateContestRequest> UpdateContestValidator { get; }
 }

@@ -23,7 +23,7 @@ public class Authentication : IAuthentication
         _configuration = configuration;
     }
 
-    public bool Verify(string HashPassword, string InputPassword)
+    public bool VerifyPassword(string HashPassword, string InputPassword)
     {
         var elments = HashPassword.Split(Delimiter);
         var salt = Convert.FromBase64String(elments[0]);

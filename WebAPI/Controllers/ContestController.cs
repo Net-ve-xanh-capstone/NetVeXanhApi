@@ -26,7 +26,7 @@ public class ContestController : Controller
     /// <param name="contest">không cần để contestid, createby trong level và không cần để Levellist, createby trong round</param>
     /// <returns></returns>
     [HttpPost]
-    public async Task<IActionResult> CreateContest(CreateContestSendModel contest)
+    public async Task<IActionResult> CreateContest(CreateContestRequest contest)
     {
         try
         {
@@ -69,11 +69,11 @@ public class ContestController : Controller
     #region Update Contest
 
     [HttpPut]
-    public async Task<IActionResult> UpdateContest(UpdateContest updateContest)
+    public async Task<IActionResult> UpdateContest(UpdateContestRequest updateContestRequest)
     {
         try
         {
-            var result = await _contestService.UpdateContest(updateContest);
+            var result = await _contestService.UpdateContest(updateContestRequest);
             if (!result) return NotFound();
             return Ok(new BaseResponseModel
             {
@@ -385,4 +385,72 @@ public class ContestController : Controller
     }
 
     #endregion
+
+
+    #region DashBoard
+
+    #region Get Quantity Painting For Contest
+    /// <summary>
+    /// Lấy danh sách số lượng bức tranh dự thi 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getquantitypaintingforyear")]
+    public async Task<IActionResult> QuantiyPaintingForYear()
+    {
+        try
+        {
+            var list = await _contestService.QuantiyPaintingForYear();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = list
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get Quantity Painting For Contest
+    /// <summary>
+    /// Lấy danh sách số lượng bức tranh dự thi 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getawardquantityforyear")]
+    public async Task<IActionResult> AwardQuantiyForYear()
+    {
+        try
+        {
+            var list = await _contestService.AwardQuantiy();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = list
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
+    #endregion
+    
 }

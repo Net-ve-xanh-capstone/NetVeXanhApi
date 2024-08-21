@@ -27,23 +27,23 @@ public interface IValidatorFactory
     IValidator<TopicUpdateRequest> TopicUpdateRequestValidator { get; }
     IValidator<AccountUpdateRequest> AccountUpdateRequestValidator { get; }
     IValidator<SubAccountRequest> SubAccountRequestValidator { get; }
-    IValidator<CreateAwardSendModel> AwardRequestValidator { get; }
+    IValidator<CreateAwardRequest> AwardRequestValidator { get; }
     IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
     IValidator<CategoryRequest> CategoryRequestValidator { get; }
     IValidator<UpdateCategoryRequest> UpdateCategoryRequestValidator { get; }
     IValidator<CollectionRequest> CollectionRequestValidator { get; }
     IValidator<UpdateCollectionRequest> UpdateCollectionRequestValidator { get; }
     IValidator<ContestRequest> ContestRequestValidator { get; }
-    IValidator<UpdateContest> UpdateContestRequestValidator { get; }
+    IValidator<UpdateContestRequest> UpdateContestRequestValidator { get; }
     IValidator<EducationalLevelRequest> EducationalLevelRequestValidator { get; }
     IValidator<EducationalLevelUpdateRequest> EducationalLevelUpdateRequestValidator { get; }
     IValidator<ImageRequest> ImageRequestValidator { get; }
     IValidator<NotificationRequest> NotificationRequestValidator { get; }
     IValidator<PaintingCollectionRequest> PaintingCollectionRequestValidator { get; }
     IValidator<CompetitorCreatePaintingRequest> CompetitorCreatePaintingRequestValidator { get; }
-    IValidator<StaffCreatePaintingRequest> StaffCreatePaintingRequestValidator { get; }
+    IValidator<StaffCreatePaintingSendModel> StaffCreatePaintingRequestValidator { get; }
     IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
-    IValidator<RatingRequest> RatingRequestValidator { get; }
+    IValidator<RatingSendModel> RatingRequestValidator { get; }
     IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }
     IValidator<PostRequest> PostRequestValidator { get; }
     IValidator<PostUpdateRequest> UpdatePostRequestValidator { get; }
@@ -54,7 +54,7 @@ public interface IValidatorFactory
     IValidator<RoundTopicRequest> RoundTopicRequestValidator { get; }
     IValidator<RoundRequest> RoundRequestValidator { get; }
     IValidator<RoundUpdateRequest> RoundUpdateRequestValidator { get; }
-    IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
+    IValidator<ScheduleForPreliminaryRequest> ScheduleRequestValidator { get; }
     IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
     IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
     IValidator<SponsorRequest> SponsorRequestValidator { get; }

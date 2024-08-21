@@ -21,9 +21,6 @@
         <ProjectReference Include="..\Domain\Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="ViewModels\PaintingCollectionViewModels\"/>
-    </ItemGroup>
 
 
 </Project>

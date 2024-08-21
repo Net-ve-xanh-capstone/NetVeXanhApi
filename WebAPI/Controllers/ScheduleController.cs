@@ -18,14 +18,22 @@ public class ScheduleController : Controller
     }
 
 
-    #region Create Schedule For Preliminary Round
-
+    #region Create Schedule For Qualifying Round
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
     [HttpPost("preliminary")]
-    public async Task<IActionResult> CreateScheduleForPreliminaryRound(ScheduleRequest schedule)
+    
+    public async Task<IActionResult> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
         try
         {
-            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
             if (!validationResult.IsValid)
             {
                 var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
@@ -37,8 +45,8 @@ public class ScheduleController : Controller
                     Errors = errors
                 };
                 return BadRequest(response);
-            }*/
-            var result = await _scheduleService.CreateScheduleForPreliminaryRound(schedule);
+            }
+            var result = await _scheduleService.CreateScheduleForQualifyingRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
@@ -64,10 +72,17 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion
+    #endregion 
 
     #region Create Schedule For Final Round
-
+    /// <summary>
+    /// Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">    
+    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
     [HttpPost("final")]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
@@ -86,12 +101,12 @@ public class ScheduleController : Controller
                 };
                 return BadRequest(response);
             }*/
-            var result = await _scheduleService.CreateScheduleForFinalRound(schedule);
+            var result = await _scheduleService.CreateScheduleForFinal(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
                     Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
+                    Message = "Hệ thống bị lỗi vui lòng thử lại"
                 });
             return Ok(new BaseResponseModel
             {
@@ -190,7 +205,7 @@ public class ScheduleController : Controller
     {
         try
         {
-            var result = await _scheduleService.GetListSchedule(id);
+            var result = await _scheduleService.GetListScheduleByContestId(id);
             if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
@@ -289,13 +304,13 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id for Web
-
-    [HttpGet("examiner/{examinerId}/")]
-    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId)
+    /*/contest/{contestId}*/
+    [HttpGet("examiner/{examinerId}")]
+    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId/*, [FromRoute] Guid contestId*/)
     {
         try
         {
-            var result = await _scheduleService.GetScheduleForWeb(examinerId);
+            var result = await _scheduleService.GetScheduleForWeb(examinerId/*, contestId*/);
             if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
@@ -390,14 +405,19 @@ public class ScheduleController : Controller
     }
 
     #endregion
-
-    #region New Rating Final Round
-    [HttpPost("RatingFinalRound")]
-    public async Task<IActionResult> RatingFinalRound(RatingRequest rating)
+    
+    #region  Rating 
+    /// <summary>
+    /// Chấm điểm 
+    /// </summary>
+    /// <param name="rating">không có award thì cho awardId = null</param>
+    /// <returns></returns>
+    [HttpPut("Rating")]
+    public async Task<IActionResult> RatingPainting(RatingSendModel rating)
     {
         try
         {
-            var result = await _scheduleService.RatingFinalRound(rating);
+            var result = await _scheduleService.RatingPainting(rating);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
                 {
@@ -437,259 +457,5 @@ public class ScheduleController : Controller
         }
     }
     #endregion
-
-    #region Rating
-    /// <summary>
-    /// Chấm điểm vòng loại
-    /// </summary>
-    /// <param name="rating"></param>
-    /// <returns></returns>
-    [HttpPost("RatingPreliminaryRound")]
-    public async Task<IActionResult> RatingPreliminaryRound(RatingRequest rating)
-    {
-        try
-        {
-            var result = await _scheduleService.RatingPreliminaryRound(rating);
-            if (result == false)
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
-                });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Chấm điểm thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
-    }
-
-
-    /// <summary>
-    /// Chấm điểm cho giải 1
-    /// </summary>
-    /// <param name="rating"></param>
-    /// <returns></returns>
-    [HttpPost("RatingFirstPrize")]
-    public async Task<IActionResult> RatingFirstPrize(RatingRequest rating)
-    {
-        try
-        {
-            var result = await _scheduleService.RatingFirstPrize(rating);
-            if (result == false)
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
-                });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Chấm điểm thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
-    }
-
-
-    /// <summary>
-    /// Chấm điểm cho giải 2
-    /// </summary>
-    /// <param name="rating"></param>
-    /// <returns></returns>
-    [HttpPost("RatingSecondPrize")]
-    public async Task<IActionResult> RatingSecondPrize(RatingRequest rating)
-    {
-        try
-        {
-            var result = await _scheduleService.RatingSecondPrize(rating);
-            if (result == false)
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
-                });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Chấm điểm thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
-    }
-
-
-    /// <summary>
-    /// Chấm điểm cho giải 3
-    /// </summary>
-    /// <param name="rating"></param>
-    /// <returns></returns>
-    [HttpPost("RatingThirdPrize")]
-    public async Task<IActionResult> RatingThirdPrize(RatingRequest rating)
-    {
-        try
-        {
-            var result = await _scheduleService.RatingThirdPrize(rating);
-            if (result == false)
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
-                });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Chấm điểm thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
-    }
-    /// <summary>
-    /// Chấm điểm cho giải khuyến khích
-    /// </summary>
-    /// <param name="rating"></param>
-    /// <returns></returns>
-    [HttpPost("RatingConsolationPrize")]
-    public async Task<IActionResult> RatingConsolationPrize(RatingRequest rating)
-    {
-        try
-        {
-            var result = await _scheduleService.RatingConsolationPrize(rating);
-            if (result == false)
-                return BadRequest(new BaseFailedResponseModel
-                {
-                    Status = BadRequest().StatusCode,
-                    Message = "There is a certain painting that has an inappropriate status"
-                });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Chấm điểm thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
-    }
-
-    #endregion
+    
 }

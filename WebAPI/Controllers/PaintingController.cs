@@ -119,7 +119,7 @@ public class PaintingController : Controller
 
     [HttpPost("submitepainting1stroundforCompetitor")]
     public async Task<IActionResult> SubmitPaintingForPreliminaryRoundForCompetitor(
-        StaffCreatePaintingRequest staffCreatePainting)
+        StaffCreatePaintingSendModel staffCreatePainting)
     {
         try
         {
@@ -253,7 +253,7 @@ public class PaintingController : Controller
     #region Update Painting
 
     [HttpPut("satffupdate")]
-    public async Task<IActionResult> UpdatePaintingstaffpermisson(StaffUpdatePaintingRequest updatePaintingViewModel)
+    public async Task<IActionResult> UpdatePaintingForStaff(StaffUpdatePaintingRequest updatePaintingViewModel)
     {
         try
         {
@@ -325,7 +325,11 @@ public class PaintingController : Controller
     #endregion
 
     #region Review Decision of Painting
-
+    /// <summary>
+    /// Review painting của staff ( có thay đổi thêm Id của user hiện tại)
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
     [HttpPatch("review")]
     public async Task<IActionResult> ReviewDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
@@ -455,6 +459,39 @@ public class PaintingController : Controller
             {
                 Status = Ok().StatusCode,
                 Message = "Lấy chi tiết bài dự thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    #region Get Painting By ScheduleId
+    /// <summary>
+    /// Lấy danh sách bài dự thi theo schedule
+    /// </summary>
+    /// <param name="scheduleId"></param>
+    /// <returns></returns>
+    [HttpGet("Schedule/{scheduleId}")]
+    public async Task<IActionResult> GetPaintingByScheduleId([FromRoute] Guid scheduleId)
+    {
+        try
+        {
+            var result = await _paintingService.GetPaintingByScheduleId(scheduleId);
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy bài dự thi" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy bài dự thi theo lịch thành công",
                 Result = result
             });
         }

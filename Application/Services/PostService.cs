@@ -49,7 +49,7 @@ public class PostService : IPostService
 
     #region Get All
 
-    public async Task<(List<ListPostViewModel>, int)> GetListPost(ListModels listModels)
+    public async Task<(List<ListPostResponse>, int)> GetListPost(ListModels listModels)
     {
         var list = await _unitOfWork.PostRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
@@ -60,29 +60,29 @@ public class PostService : IPostService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<ListPostViewModel>>(result), totalPages);
+        return (_mapper.Map<List<ListPostResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get 10 Post
 
-    public async Task<List<PostViewModel>> Get10Post()
+    public async Task<List<PostResponse>> Get10Post()
     {
         var list = await _unitOfWork.PostRepo.Get10Post();
         if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
-        return _mapper.Map<List<PostViewModel>>(list);
+        return _mapper.Map<List<PostResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<PostViewModel?> GetPostById(Guid id)
+    public async Task<PostResponse?> GetPostById(Guid id)
     {
         var Post = await _unitOfWork.PostRepo.GetByIdAsync(id);
         if (Post == null) throw new Exception("Khong tim thay Post");
-        var reusult = _mapper.Map<PostViewModel>(Post);
+        var reusult = _mapper.Map<PostResponse>(Post);
         return reusult;
     }
 
@@ -90,7 +90,7 @@ public class PostService : IPostService
 
     #region Get By Staff Id
 
-    public async Task<(List<PostViewModel>, int)> GetPosByStaffId(ListModels listModels, Guid staffId)
+    public async Task<(List<PostResponse>, int)> GetPosByStaffId(ListModels listModels, Guid staffId)
     {
         var staff = await _unitOfWork.AccountRepo.GetByIdAsync(staffId);
         if (staff == null) throw new Exception("Khong tim thay Staff");
@@ -103,14 +103,14 @@ public class PostService : IPostService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<PostViewModel>>(result), totalPages);
+        return (_mapper.Map<List<PostResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region List Post By Category Id
 
-    public async Task<(List<PostViewModel>, int)> ListPostByCategoryId(ListModels listPostModel, Guid categoryId)
+    public async Task<(List<PostResponse>, int)> ListPostByCategoryId(ListModels listPostModel, Guid categoryId)
     {
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryId);
         if (category == null) throw new Exception("Khong tim thay Category");
@@ -118,7 +118,7 @@ public class PostService : IPostService
         var listPost = await _unitOfWork.PostRepo.GetPostByCategory(categoryId);
         if (listPost.Count == 0) throw new Exception("Khong co Post nao trong Category");
 
-        var result = _mapper.Map<List<PostViewModel>>(listPost);
+        var result = _mapper.Map<List<PostResponse>>(listPost);
 
         #region pagination
 
@@ -181,7 +181,7 @@ public class PostService : IPostService
 
     #region Search By Title Description
 
-    public async Task<(List<PostViewModel>, int)> SearchByTitleDescription(ListModels listModels, string searchString)
+    public async Task<(List<PostResponse>, int)> SearchByTitleDescription(ListModels listModels, string searchString)
     {
         var list = await _unitOfWork.PostRepo.SearchTitleDescription(searchString);
         if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
@@ -191,7 +191,7 @@ public class PostService : IPostService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<PostViewModel>>(result), totalPages);
+        return (_mapper.Map<List<PostResponse>>(result), totalPages);
     }
 
     #endregion

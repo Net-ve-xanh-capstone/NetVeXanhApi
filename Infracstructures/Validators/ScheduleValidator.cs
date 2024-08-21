@@ -6,8 +6,8 @@ namespace Infracstructures.Validators;
 
 public class ScheduleValidator : IScheduleValidator
 {
-    public ScheduleValidator(IValidator<ScheduleRequest> schedulevalidator,
-        IValidator<RatingRequest> ratingvalidator,
+    public ScheduleValidator(IValidator<ScheduleForPreliminaryRequest> schedulevalidator,
+        IValidator<RatingSendModel> ratingvalidator,
         IValidator<ScheduleUpdateRequest> scheduleupdatevalidator,
         IValidator<ScheduleForFinalRequest> scheduleforfinalvalidator)
     {
@@ -17,9 +17,9 @@ public class ScheduleValidator : IScheduleValidator
         ScheduleForFinalRequestValidator = scheduleforfinalvalidator;
     }
 
-    public IValidator<RatingRequest> RatingRequestValidator { get; }
+    public IValidator<RatingSendModel> RatingRequestValidator { get; }
 
-    public IValidator<ScheduleRequest> ScheduleRequestValidator { get; }
+    public IValidator<ScheduleForPreliminaryRequest> ScheduleRequestValidator { get; }
     public IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
 
     public IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }

@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
 
-public class RatingRequestValidator : AbstractValidator<RatingRequest>
+public class RatingRequestValidator : AbstractValidator<RatingSendModel>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 

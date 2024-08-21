@@ -24,8 +24,8 @@ public partial class MapperConfigs : Profile
                     return true; // Cho phép ánh xạ nếu không phải kiểu Guid
                 });
             });
-        CreateMap<CategoryViewModel, Category>();
+        CreateMap<CategoryResponse, Category>();
 
-        CreateMap<Category, CategoryViewModel>();
+        CreateMap<Category, CategoryResponse>();
     }
 }

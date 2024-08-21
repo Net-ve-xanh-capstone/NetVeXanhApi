@@ -34,7 +34,7 @@ public class EducationalLevelService : IEducationalLevelService
 
     #region Create
 
-    public async Task<bool> CreateEducationalLevel(CreateEducationalLevelSendModel model)
+    public async Task<bool> CreateEducationalLevel(CreateEducationalLevelRequest model)
     {
         var educationalLevel = _mapper.Map<EducationalLevel>(model);
             foreach (var round in educationalLevel.Round)
@@ -53,7 +53,7 @@ public class EducationalLevelService : IEducationalLevelService
 
     #region Get All Pagination
 
-    public async Task<(List<EducationalLevelViewModel>, int)> GetListEducationalLevel(ListModels listModels)
+    public async Task<(List<EducationalLevelResponse>, int)> GetListEducationalLevel(ListModels listModels)
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay EducationalLevel");
@@ -63,38 +63,38 @@ public class EducationalLevelService : IEducationalLevelService
         var result = list.Skip((int)itemsToSkip)
             .Take(listModels.PageSize)
             .ToList();
-        return (_mapper.Map<List<EducationalLevelViewModel>>(result), totalPages);
+        return (_mapper.Map<List<EducationalLevelResponse>>(result), totalPages);
     }
 
     #endregion
 
     #region Get All
 
-    public async Task<List<EducationalLevelViewModel>> GetAllEducationalLevel()
+    public async Task<List<EducationalLevelResponse>> GetAllEducationalLevel()
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay EducationalLevel");
 
-        return _mapper.Map<List<EducationalLevelViewModel>>(list);
+        return _mapper.Map<List<EducationalLevelResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<EducationalLevelViewModel?> GetEducationalLevelById(Guid levelId)
+    public async Task<EducationalLevelResponse?> GetEducationalLevelById(Guid levelId)
     {
         var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(levelId);
         if (educationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
 
-        return _mapper.Map<EducationalLevelViewModel>(educationalLevel);
+        return _mapper.Map<EducationalLevelResponse>(educationalLevel);
     }
 
     #endregion
 
     #region Get Level By ContestId
 
-    public async Task<(List<EducationalLevelViewModel>, int)> GetEducationalLevelByContestId(ListModels listLevelModel,
+    public async Task<(List<EducationalLevelResponse>, int)> GetEducationalLevelByContestId(ListModels listLevelModel,
         Guid contestId)
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
@@ -105,7 +105,7 @@ public class EducationalLevelService : IEducationalLevelService
         var result = list.Skip((int)itemsToSkip)
             .Take(listLevelModel.PageSize)
             .ToList();
-        return (_mapper.Map<List<EducationalLevelViewModel>>(result), totalPages);
+        return (_mapper.Map<List<EducationalLevelResponse>>(result), totalPages);
     }
 
     #endregion
@@ -121,6 +121,7 @@ public class EducationalLevelService : IEducationalLevelService
         var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
         if (EducationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
         _mapper.Map(updateEducationalLevel, EducationalLevel);
+        EducationalLevel.UpdatedBy = updateEducationalLevel.CurrentUserId;
         EducationalLevel.UpdatedTime = _currentTime.GetCurrentTime();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
@@ -138,6 +139,7 @@ public class EducationalLevelService : IEducationalLevelService
         {
             round.Status = RoundStatus.Delete.ToString();
             foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
+            foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
         }
 
         //award

@@ -9,22 +9,22 @@ namespace Application.IService;
 public interface IAccountService
 {
     Task<bool?> CreateSubAccount(SubAccountRequest request);
-    Task<(List<AccountViewModel>, int)> GetListExaminer(ListModels listModels);
-    Task<(List<AccountViewModel>, int)> GetListCompetitor(ListModels listModels);
-    Task<(List<AccountViewModel>, int)> GetListStaff(ListModels listModels);
-    Task<List<AccountViewModel>> GetAllStaff();
-    Task<List<AccountViewModel>> GetAllCompetitor();
-    Task<List<AccountViewModel>> GetAllExaminer();
-    Task<(List<AccountViewModel>, int)> GetListInactiveAccount(ListModels listModels);
-    Task<AccountViewModel?> GetAccountById(Guid id);
-    Task<AccountViewModel?> GetCompetitorById(Guid id);
+    Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels);
+    Task<(List<AccountResponse>, int)> GetListCompetitor(ListModels listModels);
+    Task<(List<AccountResponse>, int)> GetListStaff(ListModels listModels);
+    Task<List<AccountResponse>> GetAllStaff();
+    Task<List<AccountResponse>> GetAllCompetitor();
+    Task<List<AccountResponse>> GetAllExaminer();
+    Task<(List<AccountResponse>, int)> GetListInactiveAccount(ListModels listModels);
+    Task<AccountResponse?> GetAccountById(Guid id);
+    Task<AccountResponse?> GetCompetitorById(Guid id);
     Task<bool?> UpdateAccount(AccountUpdateRequest updateAccount);
     Task<bool?> InactiveAccount(Guid id);
     Task<bool?> ActiveAccount(Guid id);
 
-    Task<List<ContestRewardViewModel>> ListAccountHaveAwardIn3NearestContest();
+    Task<List<ContestRewardResponse>> ListAccountHaveAwardIn3NearestContest();
 
-    Task<AccountViewModel?> GetAccountByCode(string code);
+    Task<AccountResponse?> GetAccountByCode(string code);
     Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account);
     Task<ValidationResult> ValidateSubAccountRequest(SubAccountRequest accountUpdate);
 }

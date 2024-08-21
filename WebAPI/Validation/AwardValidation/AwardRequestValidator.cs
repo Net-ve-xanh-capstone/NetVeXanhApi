@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace WebAPI.Validation.AwardValidation;
 
-public class AwardRequestValidator : AbstractValidator<CreateAwardSendModel>
+public class AwardRequestValidator : AbstractValidator<CreateAwardRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 

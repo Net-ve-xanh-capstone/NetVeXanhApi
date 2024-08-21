@@ -14,7 +14,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     public override async Task<Round?> GetByIdAsync(Guid? id)
     {
         return await DbSet.Include(src => src.Award).Include(src => src.Schedule)
-            .Include(r => r.EducationalLevel).ThenInclude(e => e.Round)
+            .Include(r => r.EducationalLevel)
             .FirstOrDefaultAsync(src => src.Id == id && src.Status != RoundStatus.Delete.ToString());
     }
 
@@ -46,11 +46,19 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
             .ToListAsync();
     }
 
-    public async Task<List<Round>> GetRoundByContestId(Guid id)
+    public async Task<List<Round>> GetScheduleByContestId(Guid id)
     {
-        var list = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Contest)
-            .Include(src => src.Schedule).ThenInclude(src => src.Account).Where(src =>
-                src.EducationalLevel.ContestId == id && src.Status != RoundStatus.Delete.ToString())
+        var list = await DbSet
+            .Include(src => src.EducationalLevel )
+            .ThenInclude(src => src.Contest)
+            .Include(src => src.Schedule.Where(s => s.Status != ScheduleStatus.Delete.ToString()))
+            .ThenInclude(src => src.Account)
+            .Include(src => src.Schedule.Where(s => s.Status != ScheduleStatus.Delete.ToString()))
+            .ThenInclude(src => src.AwardSchedule)
+            .ThenInclude(src => src.Award)
+            .Where(src => src.EducationalLevel.ContestId == id 
+            && src.Status != RoundStatus.Delete.ToString()
+            && src.EducationalLevel.Status != EducationalLevelStatus.Delete.ToString())
             .ToListAsync();
         return list;
     }

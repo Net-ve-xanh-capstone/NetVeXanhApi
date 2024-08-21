@@ -42,23 +42,23 @@ public class ResourcesService : IResourcesService
 
     #region Get All
 
-    public async Task<List<ResourcesViewModel>> GetListResources()
+    public async Task<List<ResourcesResponse>> GetListResources()
     {
         var list = await _unitOfWork.ResourcesRepo.GetAllAsync();
         if (list.Count == 0) throw new Exception("Khong tim thay Resource nao");
 
-        return _mapper.Map<List<ResourcesViewModel>>(list);
+        return _mapper.Map<List<ResourcesResponse>>(list);
     }
 
     #endregion
 
     #region Get By Id
 
-    public async Task<ResourcesViewModel?> GetResourcesById(Guid id)
+    public async Task<ResourcesResponse?> GetResourcesById(Guid id)
     {
         var resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(id);
         if (resources == null) throw new Exception("Khong tim thay Resource");
-        return _mapper.Map<ResourcesViewModel>(resources);
+        return _mapper.Map<ResourcesResponse>(resources);
     }
 
     #endregion

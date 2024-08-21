@@ -97,24 +97,24 @@ public class CollectionService : ICollectionService
 
     #region Get Collection By Id
 
-    public async Task<CollectionViewModel> GetCollectionById(Guid collectionId)
+    public async Task<CollectionResponse> GetCollectionById(Guid collectionId)
     {
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(collectionId);
         if (collection == null) throw new Exception("Khong tim thay Collection");
-        return _mapper.Map<CollectionViewModel>(collection);
+        return _mapper.Map<CollectionResponse>(collection);
     }
 
     #endregion
 
     #region Get Painting By Collection
 
-    public async Task<GetPaintingInCollection> GetPaintingByCollection(ListModels listPaintingModel,
+    public async Task<GetPaintingInCollectionResponse> GetPaintingByCollection(ListModels listPaintingModel,
         Guid collectionId)
     {
         var collection = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
         if (collection == null) throw new Exception("Khong co Painting nao trong Collection");
 
-        return _mapper.Map<GetPaintingInCollection>(collection);
+        return _mapper.Map<GetPaintingInCollectionResponse>(collection);
     }
 
     #endregion
@@ -122,11 +122,11 @@ public class CollectionService : ICollectionService
 
     #region Get All Collection
 
-    public async Task<(List<CollectionViewModel>, int)> GetAllCollection(ListModels listCollectionModel)
+    public async Task<(List<CollectionResponse>, int)> GetAllCollection(ListModels listCollectionModel)
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetAllAsync();
         if (listCollection.Count == 0) throw new Exception("Khong co Collection nao");
-        var result = _mapper.Map<List<CollectionViewModel>>(listCollection);
+        var result = _mapper.Map<List<CollectionResponse>>(listCollection);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCollectionModel.PageSize);
         int? itemsToSkip = (listCollectionModel.PageNumber - 1) * listCollectionModel.PageSize;
@@ -140,12 +140,12 @@ public class CollectionService : ICollectionService
 
     #region Get Collection By AccountId
 
-    public async Task<(List<CollectionViewModel>, int)> GetCollectionByAccountId(ListModels listCollectionModel,
+    public async Task<(List<CollectionResponse>, int)> GetCollectionByAccountId(ListModels listCollectionModel,
         Guid accountId)
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetCollectionByAccountIdAsync(accountId);
         if (listCollection.Count == 0) throw new Exception("Khong co Collection nao");
-        var result = _mapper.Map<List<CollectionViewModel>>(listCollection);
+        var result = _mapper.Map<List<CollectionResponse>>(listCollection);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCollectionModel.PageSize);
         int? itemsToSkip = (listCollectionModel.PageNumber - 1) * listCollectionModel.PageSize;
@@ -159,11 +159,11 @@ public class CollectionService : ICollectionService
 
     #region Get 6 Staff Collection
 
-    public async Task<List<CollectionPaintingViewModel>> Get6StaffCollection()
+    public async Task<List<CollectionPaintingResponse>> Get6StaffCollection()
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetCollectionsWithStaffAccountsAsync();
         if (listCollection.Count == 0) throw new Exception("Không có Collection nào tạo bởi Staff");
-        var result = _mapper.Map<List<CollectionPaintingViewModel>>(listCollection);
+        var result = _mapper.Map<List<CollectionPaintingResponse>>(listCollection);
 
         return result;
     }

@@ -50,11 +50,11 @@ public class ReportService : IReportService
 
     #region Get All Report Pending
 
-    public async Task<(List<ReportViewModel>, int)> GetAllReportPending(ListModels listAwardModel)
+    public async Task<(List<ReportResponse>, int)> GetAllReportPending(ListModels listAwardModel)
     {
         var reportList = await _unitOfWork.ReportRepo.GetAllReportPendingAsync();
         if (reportList.Count == 0) throw new Exception("Khong tim thay Report nao Pending");
-        var result = _mapper.Map<List<ReportViewModel>>(reportList);
+        var result = _mapper.Map<List<ReportResponse>>(reportList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
         int? itemsToSkip = (listAwardModel.PageNumber - 1) * listAwardModel.PageSize;
@@ -68,11 +68,11 @@ public class ReportService : IReportService
 
     #region Get All Report
 
-    public async Task<(List<ReportViewModel>, int)> GetAllReport(ListModels listAwardModel)
+    public async Task<(List<ReportResponse>, int)> GetAllReport(ListModels listAwardModel)
     {
         var reportList = await _unitOfWork.ReportRepo.GetAllAsync();
         if (reportList.Count == 0) throw new Exception("Khong tim thay Report nao");
-        var result = _mapper.Map<List<ReportViewModel>>(reportList);
+        var result = _mapper.Map<List<ReportResponse>>(reportList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
         int? itemsToSkip = (listAwardModel.PageNumber - 1) * listAwardModel.PageSize;
@@ -121,11 +121,11 @@ public class ReportService : IReportService
 
     #region Get Report By Id
 
-    public async Task<ReportViewModel> GetReportById(Guid reportId)
+    public async Task<ReportResponse> GetReportById(Guid reportId)
     {
         var result = await _unitOfWork.ReportRepo.GetByIdAsync(reportId);
         if (result == null) throw new Exception("Khong tim thay Report");
-        return _mapper.Map<ReportViewModel>(result);
+        return _mapper.Map<ReportResponse>(result);
     }
 
     #endregion

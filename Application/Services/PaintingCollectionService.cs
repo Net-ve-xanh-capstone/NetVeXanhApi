@@ -32,11 +32,22 @@ public class PaintingCollectionService : IPaintingCollectionService
     {
         var validationResult = await ValidatePaintingCollectionRequest(addPaintingCollectionViewModel);
         if (!validationResult.IsValid)
-            // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        var paintingCollection = _mapper.Map<PaintingCollection>(addPaintingCollectionViewModel);
-        await _unitOfWork.PaintingCollectionRepo.AddAsync(paintingCollection);
 
+        foreach (var paintingId in addPaintingCollectionViewModel.ListPainting)
+        {
+            // Tạo đối tượng PaintingCollection với CollectionId và PaintingId tương ứng
+            var paintingCollection = new PaintingCollection
+            {
+                CollectionId = addPaintingCollectionViewModel.CollectionId,
+                PaintingId = paintingId
+            };
+
+            // Thêm vào repository
+            await _unitOfWork.PaintingCollectionRepo.AddAsync(paintingCollection);
+        }
+
+        // Lưu thay đổi và trả về kết quả
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 

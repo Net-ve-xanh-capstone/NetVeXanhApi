@@ -33,6 +33,14 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Code == code);
     }
+    public virtual async Task<List<Painting>?> GetByScheduleIdAsync(Guid scheduleId)
+    {
+        return await DbSet.Where(x => x.ScheduleId == scheduleId)
+            .Include(x => x.RoundTopic)
+            .ThenInclude(x => x.Topic)
+            .Include(x => x.Award)
+            .Include(x => x.Account).ToListAsync();
+    }
 
     public override async Task<Painting?> GetByIdAsync(Guid? id)
     {
@@ -193,6 +201,46 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .ThenInclude(r => r.Round)
             .ThenInclude(r => r.EducationalLevel)
             .Where(p => p.RoundTopic.Round.EducationalLevel.ContestId == contestId)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInRound(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInRoundIsHaveSchedule(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId && p.ScheduleId != null)
+            .CountAsync();
+    }
+    public async Task<int> GetNumPaintingInRoundIsNotHaveSchedule(Guid roundId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .Where(p => p.RoundTopic.Round.Id == roundId && p.ScheduleId == null)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInSchedule(Guid scheduleId)
+    {
+        return await DbSet
+            .Where(p => p.ScheduleId == scheduleId)
+            .CountAsync();
+    }
+
+    public async Task<int> CountPaintingHaveAward(Guid scheduleId, Guid awardId)
+    {
+        return await DbSet
+            .Where(p => p.ScheduleId == scheduleId && p.AwardId == awardId)
             .CountAsync();
     }
 }

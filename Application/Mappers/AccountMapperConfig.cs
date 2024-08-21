@@ -15,22 +15,23 @@ public partial class MapperConfigs : Profile
     partial void AddAccountMapperConfig()
     {
         CreateMap<CreateAccountRequest, Account>();
-        CreateMap<StaffCreatePaintingRequest, Account>()
+        CreateMap<CreateAccountV2Request, Account>();
+        CreateMap<StaffCreatePaintingSendModel, Account>()
             //.ForMember(dest => dest.Id, src => src.MapFrom(opt => Guid.NewGuid()))
             .ForMember(dest => dest.Status, src => src.MapFrom(opt => AccountStatus.Active.ToString()))
             .ForMember(dest => dest.Role, src => src.MapFrom(opt => Role.Competitor.ToString()))
             .ForMember(dest => dest.Username, src => src.MapFrom(opt => Guid.NewGuid()));
         CreateMap<AccountUpdateRequest, Account>().ReverseMap();
-        CreateMap<Account, AccountViewModel>().ReverseMap();
+        CreateMap<Account, AccountResponse>().ReverseMap();
 
-        CreateMap<Account, AccountAwardViewModel>();
+        CreateMap<Account, AccountAwardResponse>();
 
         CreateMap<Account, AccountInPainting>();
 
         CreateMap<Account, AccountInContestViewModel>();
-        CreateMap<Account, AccountValidationInfoViewModel>();
+        CreateMap<Account, AccountValidationInfoResponse>();
 
-        CreateMap<Account, AccountRewardViewModel>()
+        CreateMap<Account, AccountRewardResponse>()
             .ForMember(dest => dest.PaintingId, opt => opt.MapFrom(src => src.Painting.FirstOrDefault().Id))
             .ForMember(dest => dest.PaintingImage, opt => opt.MapFrom(src =>
                 src.Painting
@@ -38,11 +39,9 @@ public partial class MapperConfigs : Profile
                     .FirstOrDefault()
                     .Image
             ))
-            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src =>
-                src.Painting != null && src.Painting.Any()
-                    ? GetRankInVietnamese(src.Painting.Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
-                        .FirstOrDefault().Award.Rank)
-                    : "Không có giải"
+            .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Painting
+                                                        .Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
+                                                        .FirstOrDefault().Award.Rank
             ))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Gender! == true ? "Nữ" :

@@ -24,17 +24,17 @@ public class RoundTopicService : IRoundTopicService
 
     #region Get All Round Topic
 
-    public async Task<List<ListRoundTopicViewModel>> GetAll()
+    public async Task<List<ListRoundTopicResponse>> GetAll()
     {
         var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
-        return _mapper.Map<List<ListRoundTopicViewModel>>(list);
+        return _mapper.Map<List<ListRoundTopicResponse>>(list);
     }
 
     #endregion
 
     #region Get List Round Topic For Competitor
 
-    public async Task<List<RoundTopicViewModel>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
+    public async Task<List<RoundTopicResponse>> GetListRoundTopicForCompetitor(GetListRoundTopicRequest request)
     {
         var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
 
@@ -61,7 +61,7 @@ public class RoundTopicService : IRoundTopicService
             throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
         }
 
-        return _mapper.Map<List<RoundTopicViewModel>>(list);
+        return _mapper.Map<List<RoundTopicResponse>>(list);
     }
 
     #endregion
@@ -107,10 +107,10 @@ public class RoundTopicService : IRoundTopicService
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
-    public async Task<List<RoundTopicViewModel>> GetListRoundTopicForStaff(Guid id)
+    public async Task<List<RoundTopicResponse>> GetListRoundTopicForStaff(Guid id)
     {
         var list = await _unitOfWork.RoundTopicRepo.ListRoundTopicByRoundId(id);
-        return _mapper.Map<List<RoundTopicViewModel>>(list);
+        return _mapper.Map<List<RoundTopicResponse>>(list);
     }
 
     #endregion

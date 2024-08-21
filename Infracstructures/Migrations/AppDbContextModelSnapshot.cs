@@ -498,6 +498,9 @@ namespace Infracstructures.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RatingStatus")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ReviewReason")
                         .HasColumnType("nvarchar(max)");
 

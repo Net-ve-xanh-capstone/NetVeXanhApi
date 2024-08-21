@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace WebAPI.Validation.ContestValidation;
 
-public class UpdateContestValidator : AbstractValidator<UpdateContest>
+public class UpdateContestValidator : AbstractValidator<UpdateContestRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 

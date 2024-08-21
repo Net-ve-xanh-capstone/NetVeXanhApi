@@ -11,11 +11,11 @@ public partial class MapperConfigs : Profile
     partial void AddContestMapperConfig()
     {
 
-        CreateMap<CreateContestSendModel, Contest>()
+        CreateMap<CreateContestRequest, Contest>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ContestStatus.NotStarted.ToString()))
             .ForPath(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel));
         
-        CreateMap<Contest, ContestViewModel>()
+        CreateMap<Contest, ContestResponse>()
             .ForMember(dest => dest.AccountFullName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                 src.Status == ContestStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
@@ -23,7 +23,7 @@ public partial class MapperConfigs : Profile
                 src.Status == ContestStatus.Complete.ToString() ? "Đã Hoàn thành" :
                 src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
             ));
-        CreateMap<ContestViewModel, Contest>()
+        CreateMap<ContestResponse, Contest>()
             .ForPath(dest => dest.Account.FullName, opt => opt.MapFrom(src => src.AccountFullName));
 
         CreateMap<Contest, ContestRequest>().ReverseMap()
@@ -39,10 +39,10 @@ public partial class MapperConfigs : Profile
                 });
             });
 
-        CreateMap<Contest, UpdateContest>().ReverseMap()
+        CreateMap<Contest, UpdateContestRequest>().ReverseMap()
             .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId));
 
-        CreateMap<Contest, ContestDetailViewModel>()
+        CreateMap<Contest, ContestDetailResponse>()
             .ForMember(dest => dest.Account, opt => opt.MapFrom(src => src.Account))
             .ForMember(dest => dest.Resource, opt => opt.MapFrom(src => src.Resources))
             .ForMember(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel))
@@ -53,11 +53,11 @@ public partial class MapperConfigs : Profile
                 src.Status == ContestStatus.Delete.ToString() ? "Đã xóa" : null
             ));
 
-        CreateMap<Contest, FilterPaintingContestViewModel>();
+        CreateMap<Contest, FilterPaintingContestResponse>();
 
 
         /*
-        CreateMap<Contest, ContestRewardViewModel>()
+        CreateMap<Contest, ContestRewardResponse>()
             .ForMember(dest => dest.ListAccount, opt => opt.MapFrom(src =>
                 src.EducationalLevel
                     .SelectMany(el => el.Award) // Lấy tất cả Awards từ từng EducationalLevel

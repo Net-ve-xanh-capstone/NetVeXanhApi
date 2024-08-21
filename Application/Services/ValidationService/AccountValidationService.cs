@@ -50,9 +50,9 @@ public class AccountValidationService : IAccountValidationService
         return await _unitOfWork.AccountRepo.IsExistUsername(username);
     }
 
-    public async Task<AccountValidationInfoViewModel> GetAccountByPaintingId(Guid paintingId)
+    public async Task<AccountValidationInfoResponse> GetAccountByPaintingId(Guid paintingId)
     {
         var result = await _unitOfWork.PaintingRepo.GetAccountByPaintingIdAsync(paintingId);
-        return _mapper.Map<AccountValidationInfoViewModel>(result);
+        return _mapper.Map<AccountValidationInfoResponse>(result);
     }
 }

@@ -19,6 +19,5 @@ public class Round : BaseModel
     public EducationalLevel EducationalLevel { get; set; }
     public ICollection<Schedule> Schedule { get; set; }
     public ICollection<RoundTopic> RoundTopic { get; set; }
-
-    public ICollection<RoundJudgingCriteria> RoundJudgingCriteria { get; set; }
+    
 }

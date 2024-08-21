@@ -17,15 +17,6 @@ public class Account : BaseModel
     public string? Code { get; set; }
     public string? Avatar { get; set; }
     public bool Gender { get; set; } = true;
-    public string? RefreshToken { get; set; }
-
-
-    // Foreign key to represent guardian
-    public Guid? GuardianId { get; set; }
-    public Account? Guardian { get; set; } // Navigation property for guardian
-
-    // Collection navigation properties for sub-accounts
-    public ICollection<Account?> SubAccounts { get; set; } = new List<Account>();
 
     // Other properties and relationships
     public ICollection<Contest> CreateContest { get; set; }

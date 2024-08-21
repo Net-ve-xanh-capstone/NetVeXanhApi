@@ -100,22 +100,5 @@ public class AuthenticationController : ControllerBase
     }
 
     #endregion
-
-    #region Logout Account
-
-    [AllowAnonymous]
-    [HttpGet("{id}")]
-    public async Task<ActionResult> LogoutAccount(Guid id)
-    {
-        var result = await _authenticationService.Logout(id);
-        if (result == false) return NotFound();
-        return Ok(new BaseResponseModel
-        {
-            Status = Ok().StatusCode,
-            Result = result,
-            Message = "Successfully"
-        });
-    }
-
-    #endregion
+    
 }

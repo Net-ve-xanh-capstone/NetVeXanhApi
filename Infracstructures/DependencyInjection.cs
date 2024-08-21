@@ -113,10 +113,7 @@ public static class DependencyInjection
         //RoundTopic
         services.AddTransient<IRoundTopicRepository, RoundTopicRepository>();
         services.AddTransient<IRoundTopicService, RoundTopicService>();
-
-        //District
-        services.AddTransient<IDistrictRepository, DistrictRepository>();
-        services.AddTransient<IDistrictService, DistrictService>();
+        
 
 
         //Validation Service

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="@mssql-178535-0.cloudclusters.net" uuid="d1d75bdb-8399-4881-a0e4-1f4e8715d407">
+      <driver-ref>sqlserver.jb</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.jetbrains.jdbc.sqlserver.SqlServerDriver</jdbc-driver>
+      <jdbc-url>Server=mssql-178535-0.cloudclusters.net,19868; Database=netvexanh; User Id=qaz; Password=4b@KdY2-+sF5; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="@db6542.public.databaseasp.net" uuid="3ec1bacf-f5d5-4475-bcf9-43ab418a6add">
+      <driver-ref>sqlserver.jb</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.jetbrains.jdbc.sqlserver.SqlServerDriver</jdbc-driver>
+      <jdbc-url>Server=db6542.public.databaseasp.net; Database=db6542; User Id=db6542; Password=4b@KdY2-+sF5; Encrypt=True; TrustServerCertificate=True; MultipleActiveResultSets=True;</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="NetVeXanh@localhost" uuid="23833771-4d05-4527-b3d8-b645d4ae054f">
+      <driver-ref>sqlserver.jb</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>com.jetbrains.jdbc.sqlserver.SqlServerDriver</jdbc-driver>
+      <jdbc-url>Server=localhost;uid=sa;pwd=123456;Database=NetVeXanh;Trusted_Connection=true;TrustServerCertificate=True</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

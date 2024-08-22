@@ -27,8 +27,7 @@ public class UnitOfWork : IUnitOfWork
         IContestRepository contestRepository,
         ICategoryRepository categoryRepository,
         IReportRepository reportRepository,
-        IRoundTopicRepository roundTopicRepo,
-        IDistrictRepository districtRepo)
+        IRoundTopicRepository roundTopicRepo)
 
     {
         _context = context;
@@ -51,7 +50,6 @@ public class UnitOfWork : IUnitOfWork
         CategoryRepo = categoryRepository;
         ReportRepo = reportRepository;
         RoundTopicRepo = roundTopicRepo;
-        DistrictRepo = districtRepo;
     }
 
     public IAccountRepository AccountRepo { get; }
@@ -91,8 +89,7 @@ public class UnitOfWork : IUnitOfWork
     public IReportRepository ReportRepo { get; }
 
     public IRoundTopicRepository RoundTopicRepo { get; }
-
-    public IDistrictRepository DistrictRepo { get; }
+    
 
     public async Task<int> SaveChangesAsync()
     {

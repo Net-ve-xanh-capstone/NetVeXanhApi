@@ -31,7 +31,7 @@ public class AwardConfiguration : IEntityTypeConfiguration<Award>
         builder.Property(u => u.Status);
 
         //Rank
-        builder.Property(u => u.Rank);
+        builder.Property(u => u.Rank).HasMaxLength(50);
 
         //Quantity
         builder.Property(u => u.Quantity);

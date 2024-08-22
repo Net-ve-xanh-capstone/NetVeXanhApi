@@ -9,7 +9,6 @@ public class Award : BaseModel
     public double Cash { get; set; }
     public string Artifact { get; set; }
     public string? Description { get; set; }
-    public Guid? EducationalLevelId { get; set; }
     public Guid? RoundId { get; set; }
 
     //Relation

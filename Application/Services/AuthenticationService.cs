@@ -46,11 +46,6 @@ public class AuthenticationService : IAuthenticationService
                 response.Message = "Đăng nhập thành công";
                 response.JwtToken =
                     _authentication.GenerateToken(account);
-                response.RefreshToken = new RefreshToken();
-                response.RefreshToken.Token = RefreshToken();
-
-                //add refresh token to DB
-                account.RefreshToken = response.RefreshToken.Token;
                 _unitOfWork.AccountRepo.Update(account);
                 await _unitOfWork.SaveChangesAsync();
 
@@ -66,7 +61,7 @@ public class AuthenticationService : IAuthenticationService
         response.Message = "Tên đăng nhập không đúng";
         return response;
     }
-
+    
     #endregion
 
     #region Create Account
@@ -196,22 +191,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
     #endregion
-
-    #region Logout Account
-
-    public async Task<bool> Logout(Guid id)
-    {
-        var account = await _unitOfWork.AccountRepo.GetByIdAsync(id);
-        if (account != null)
-        {
-            account.RefreshToken = "";
-            return true;
-        }
-
-        return false;
-    }
-
-    #endregion
+    
 
     #region Verify Email
 

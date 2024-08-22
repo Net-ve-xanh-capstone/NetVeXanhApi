@@ -21,14 +21,6 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
         return await DbSet.FirstOrDefaultAsync(x => x.Id == id && x.Status == AwardStatus.Active.ToString());
     }
 
-    public async Task<List<Guid>> GetAwardIdByListLevelId(List<Guid> listLevelId)
-    {
-        return await DbSet
-            .Where(x => listLevelId.Contains((Guid)x.EducationalLevelId))
-            .Select(x => x.Id)
-            .ToListAsync();
-    }
-
     public async Task<List<Award>?> GetAwardsByRoundId(Guid roundId)
     {
         return await DbSet

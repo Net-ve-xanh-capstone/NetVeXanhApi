@@ -4,6 +4,7 @@ using Infracstructures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infracstructures.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240812150720_update1")]
+    partial class update1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,6 +143,9 @@ namespace Infracstructures.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("");
 
+                    b.Property<Guid?>("EducationalLevelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -210,6 +216,48 @@ namespace Infracstructures.Migrations
                     b.HasIndex("ScheduleId");
 
                     b.ToTable("AwardSchedule", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.Base.District", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("District", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Models.Base.Ward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("DistrictId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.ToTable("Ward", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>
@@ -413,6 +461,21 @@ namespace Infracstructures.Migrations
                     b.ToTable("Image", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Models.JudgingCriteria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JudgingCriteria");
+                });
+
             modelBuilder.Entity("Domain.Models.Notification", b =>
                 {
                     b.Property<Guid>("Id")
@@ -496,9 +559,6 @@ namespace Infracstructures.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RatingStatus")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ReviewReason")
@@ -765,6 +825,31 @@ namespace Infracstructures.Migrations
                     b.ToTable("Round", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Models.RoundJudgingCriteria", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("JudgingCriteriaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoundId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JudgingCriteriaId");
+
+                    b.HasIndex("RoundId");
+
+                    b.ToTable("RoundJudgingCriteria");
+                });
+
             modelBuilder.Entity("Domain.Models.RoundTopic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -955,6 +1040,16 @@ namespace Infracstructures.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("Domain.Models.Base.Ward", b =>
+                {
+                    b.HasOne("Domain.Models.Base.District", "District")
+                        .WithMany("Wards")
+                        .HasForeignKey("DistrictId")
+                        .IsRequired();
+
+                    b.Navigation("District");
+                });
+
             modelBuilder.Entity("Domain.Models.Collection", b =>
                 {
                     b.HasOne("Domain.Models.Account", "Account")
@@ -1103,6 +1198,25 @@ namespace Infracstructures.Migrations
                     b.Navigation("EducationalLevel");
                 });
 
+            modelBuilder.Entity("Domain.Models.RoundJudgingCriteria", b =>
+                {
+                    b.HasOne("Domain.Models.JudgingCriteria", "JudgingCriteria")
+                        .WithMany("RoundJudgingCriteria")
+                        .HasForeignKey("JudgingCriteriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Models.Round", "Round")
+                        .WithMany("RoundJudgingCriteria")
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JudgingCriteria");
+
+                    b.Navigation("Round");
+                });
+
             modelBuilder.Entity("Domain.Models.RoundTopic", b =>
                 {
                     b.HasOne("Domain.Models.Round", "Round")
@@ -1163,6 +1277,11 @@ namespace Infracstructures.Migrations
                     b.Navigation("Painting");
                 });
 
+            modelBuilder.Entity("Domain.Models.Base.District", b =>
+                {
+                    b.Navigation("Wards");
+                });
+
             modelBuilder.Entity("Domain.Models.Category", b =>
                 {
                     b.Navigation("Post");
@@ -1185,6 +1304,11 @@ namespace Infracstructures.Migrations
                     b.Navigation("Round");
                 });
 
+            modelBuilder.Entity("Domain.Models.JudgingCriteria", b =>
+                {
+                    b.Navigation("RoundJudgingCriteria");
+                });
+
             modelBuilder.Entity("Domain.Models.Painting", b =>
                 {
                     b.Navigation("PaintingCollection");
@@ -1198,6 +1322,8 @@ namespace Infracstructures.Migrations
             modelBuilder.Entity("Domain.Models.Round", b =>
                 {
                     b.Navigation("Award");
+
+                    b.Navigation("RoundJudgingCriteria");
 
                     b.Navigation("RoundTopic");
 

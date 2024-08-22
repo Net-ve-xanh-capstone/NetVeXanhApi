@@ -58,18 +58,10 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
         //Status
         builder.Property(u => u.Status).HasDefaultValue("False");
 
-        //IdentifyNumber
-        builder.Property(u => u.GuardianId);
-
-        //RefreshToken
-        builder.Property(u => u.RefreshToken);
-
 
         //Relation
         builder.HasMany(u => u.CreateContest).WithOne(u => u.Account).HasForeignKey(u => u.StaffId)
             .OnDelete(DeleteBehavior.ClientSetNull);
-        builder.HasOne(u => u.Guardian).WithMany(u => u.SubAccounts).HasForeignKey(u => u.GuardianId)
-            .OnDelete(DeleteBehavior.Restrict);
         builder.HasMany(u => u.Collection).WithOne(u => u.Account).HasForeignKey(u => u.AccountId)
             .OnDelete(DeleteBehavior.ClientSetNull);
         builder.HasMany(u => u.Collection).WithOne(u => u.Account).HasForeignKey(u => u.AccountId)

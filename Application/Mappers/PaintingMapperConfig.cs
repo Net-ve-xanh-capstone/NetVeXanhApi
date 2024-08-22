@@ -156,7 +156,7 @@ public partial class MapperConfigs : Profile
             src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
             src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ));
-        CreateMap<Painting, CompetitorResponse>()
+        /*CreateMap<Painting, CompetitorResponse>()
             .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))
             .ForPath(dest => dest.Prize, opt => opt.MapFrom(src => src.Award.Rank))
             .ForPath(dest => dest.Phone, opt => opt.MapFrom(src => src.Account.Phone))
@@ -167,7 +167,7 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Account.Birthday!.Value)))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Account.Gender! == true ? "Nữ" :
-                src.Account.Gender! == false ? "Nam" : null));
+                src.Account.Gender! == false ? "Nam" : null));*/
     }
 
     public static string GetFinalDecisionMessage(DateTime? finalDecisionTimestamp, string status)

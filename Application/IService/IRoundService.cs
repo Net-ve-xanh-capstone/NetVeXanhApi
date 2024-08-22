@@ -17,7 +17,11 @@ public interface IRoundService
     Task<(List<TopicResponse>, int)> GetTopicInRound(Guid id, ListModels listModels);
     Task<(List<RoundResponse>, int)> GetRoundByEducationalLevelId(ListModels listLevelModel, Guid levelId);
     Task<bool> IsExistedId(Guid id);
-
     Task<ValidationResult> ValidateRoundRequest(RoundRequest round);
     Task<ValidationResult> ValidateRoundUpdateRequest(RoundUpdateRequest roundUpdate);
+
+
+    #region Export
+    Task<(byte[], string)> GetListCompetitorOfRound(Guid roundId);
+    #endregion
 }

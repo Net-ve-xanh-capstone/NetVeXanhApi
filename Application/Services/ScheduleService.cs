@@ -107,33 +107,7 @@ public class ScheduleService : IScheduleService
     {
         return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
     }
-
-    public async Task<(byte[], string)> GetListCompetitorPass(Guid roundId)
-    {
-        var round = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
-        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(roundId);
-        var name = "";
-        if (round!.Name == "Vòng Chung Kết")
-            name = "FinalRound";
-        else
-            name = "QualifyingRound";
-
-        if (round!.EducationalLevel.Description == "Mầm Non")
-            name = name + "_A";
-        else
-            name = name + "_B";
-        var result = await _excelService.GenerateExcel(_mapper.Map<List<CompetitorResponse>>(list), name);
-        return (result, name);
-    }
-
-    public async Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId)
-    {
-        var finalRound = await _unitOfWork.RoundRepo.GetByIdAsync(roundId);
-        var preliminaryRound = finalRound!.EducationalLevel.Round.FirstOrDefault(src => src.Name == "Vòng Sơ Khảo");
-        var list = await _unitOfWork.ScheduleRepo.GetListByRoundId(preliminaryRound!.Id);
-        return _mapper.Map<List<CompetitorResponse>>(list);
-    }
-
+    
     #region Create
 
     public async Task<bool> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)

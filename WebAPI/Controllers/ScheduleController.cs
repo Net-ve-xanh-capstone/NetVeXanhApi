@@ -363,48 +363,48 @@ public class ScheduleController : Controller
 
     #endregion
 
-    #region Get List Accoutn Pass
-
-    [HttpGet("export-round-results")]
-    public async Task<IActionResult> ExportRound1Results(Guid roundId)
-    {
-        var result = await _scheduleService.GetListCompetitorPass(roundId);
-        var list = result.Item1;
-        var name = $"{result.Item2}.xlsx";
-        return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
-    }
-
-    #endregion
-
-    #region Get Schedule for examiner by examiner Id
-
-    [HttpGet("/finalround/{id}")]
-    public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
-    {
-        try
-        {
-            var result = await _scheduleService.GetListCompetitorFinalRound(id);
-            if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Lấy danh sách lịch chấm thành công",
-                Result = result
-            });
-        }
-        catch (Exception ex)
-        {
-            return Ok(new BaseFailedResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = ex.Message,
-                Result = null,
-                Errors = ex
-            });
-        }
-    }
-
-    #endregion
+    // #region Get List Accoutn Pass
+    //
+    // [HttpGet("export-round-results")]
+    // public async Task<IActionResult> ExportRound1Results(Guid roundId)
+    // {
+    //     var result = await _scheduleService.GetListCompetitorPass(roundId);
+    //     var list = result.Item1;
+    //     var name = $"{result.Item2}.xlsx";
+    //     return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
+    // }
+    //
+    // #endregion
+    //
+    // #region Get Schedule for examiner by examiner Id
+    //
+    // [HttpGet("/finalround/{id}")]
+    // public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
+    // {
+    //     try
+    //     {
+    //         var result = await _scheduleService.GetListCompetitorFinalRound(id);
+    //         if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
+    //         return Ok(new BaseResponseModel
+    //         {
+    //             Status = Ok().StatusCode,
+    //             Message = "Lấy danh sách lịch chấm thành công",
+    //             Result = result
+    //         });
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         return Ok(new BaseFailedResponseModel
+    //         {
+    //             Status = Ok().StatusCode,
+    //             Message = ex.Message,
+    //             Result = null,
+    //             Errors = ex
+    //         });
+    //     }
+    // }
+    //
+    // #endregion
     
     #region  Rating 
     /// <summary>

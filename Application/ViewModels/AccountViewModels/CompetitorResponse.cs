@@ -11,5 +11,7 @@ public class CompetitorResponse
     public string? Code { get; set; }
     public string? Phone { get; set; }
     public string? Gender { get; set; }
+    public string Status { get; set; } = null!;
     public string? Prize { get; set; }
+    public string RoundName { get; set; } = null!;
 }

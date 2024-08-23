@@ -2,6 +2,7 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Round;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
@@ -15,22 +16,19 @@ namespace Application.Services;
 
 public class RoundService : IRoundService
 {
-    private readonly IClaimsService _claimsService;
-    private readonly IConfiguration _configuration;
+    private readonly IExcelService _excelService;
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
     public RoundService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration,
-        IClaimsService claimsService, IValidatorFactory validatorFactory)
+        IExcelService excelService ,IValidatorFactory validatorFactory)
     {
+        _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _currentTime = currentTime;
-        _configuration = configuration;
-        _claimsService = claimsService;
         _validatorFactory = validatorFactory;
     }
 
@@ -184,14 +182,24 @@ public class RoundService : IRoundService
 
     #endregion
 
+    #region Export
+
+    public async Task<(byte[], string)> GetListCompetitorOfRound(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
+        var competitors = _mapper.Map<List<CompetitorResponse>>(round); 
+        var result = await _excelService.GenerateExcel(competitors, round.Name);
+        return (result,  round.Name);
+    }
+
+    #endregion 
+
+
+    #region Validate
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.RoundRepo.IsExistIdAsync(id);
     }
-
-
-    #region Validate
-
     public async Task<ValidationResult> ValidateRoundRequest(RoundRequest round)
     {
         return await _validatorFactory.RoundRequestValidator.ValidateAsync(round);

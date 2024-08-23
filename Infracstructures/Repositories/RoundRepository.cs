@@ -26,10 +26,17 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
             .ToListAsync();
     }
 
-    public Task<Round?> GetRoundDetail(Guid id)
+    public async Task<Round?> GetRoundDetail(Guid id)
     {
-        throw new NotImplementedException();
-    }
+        return await DbSet
+            .AsNoTracking()
+            .Include(r => r.RoundTopic)
+            .ThenInclude(rt => rt.Painting)
+            .ThenInclude(p => p.Account)
+            .Include(r => r.RoundTopic)
+            .ThenInclude(rt => rt.Painting)
+            .ThenInclude(p => p.Award)
+            .FirstOrDefaultAsync(r => r.Id == id);    }
 
     public async Task<List<Topic>> GetTopic(Guid roundId)
     {

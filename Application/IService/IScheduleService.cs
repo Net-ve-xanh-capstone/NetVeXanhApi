@@ -29,6 +29,5 @@ public interface IScheduleService
     Task<bool> IsExistedId(Guid id);
     Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
-    Task<(byte[], string)> GetListCompetitorPass(Guid roundId);
-    public Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId);
+
 }

@@ -23,8 +23,7 @@ public interface IUnitOfWork
     public ICategoryRepository CategoryRepo { get; }
     public IReportRepository ReportRepo { get; }
     public IRoundTopicRepository RoundTopicRepo { get; }
-
-    public IDistrictRepository DistrictRepo { get; }
+    
 
     public Task<int> SaveChangesAsync();
 }

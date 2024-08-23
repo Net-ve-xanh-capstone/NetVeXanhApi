@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infracstructures.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240808075045_IntialMigration")]
-    partial class IntialMigration
+    [Migration("20240820163819_update2")]
+    partial class update2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,21 +143,19 @@ namespace Infracstructures.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("");
 
-                    b.Property<Guid?>("EducationalLevelId")
-                        .IsRequired()
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.Property<string>("Rank")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("RoundId")
+                        .IsRequired()
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Status")
                         .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("False");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -167,7 +165,7 @@ namespace Infracstructures.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EducationalLevelId");
+                    b.HasIndex("RoundId");
 
                     b.ToTable("Award", (string)null);
                 });
@@ -566,7 +564,7 @@ namespace Infracstructures.Migrations
                     b.Property<DateTime?>("ReviewedTimestamp")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("Reviewer")
+                    b.Property<Guid?>("Reviewer")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("RoundTopicId")
@@ -1014,12 +1012,12 @@ namespace Infracstructures.Migrations
 
             modelBuilder.Entity("Domain.Models.Award", b =>
                 {
-                    b.HasOne("Domain.Models.EducationalLevel", "EducationalLevel")
+                    b.HasOne("Domain.Models.Round", "Round")
                         .WithMany("Award")
-                        .HasForeignKey("EducationalLevelId")
+                        .HasForeignKey("RoundId")
                         .IsRequired();
 
-                    b.Navigation("EducationalLevel");
+                    b.Navigation("Round");
                 });
 
             modelBuilder.Entity("Domain.Models.AwardSchedule", b =>
@@ -1300,8 +1298,6 @@ namespace Infracstructures.Migrations
 
             modelBuilder.Entity("Domain.Models.EducationalLevel", b =>
                 {
-                    b.Navigation("Award");
-
                     b.Navigation("Round");
                 });
 
@@ -1322,6 +1318,8 @@ namespace Infracstructures.Migrations
 
             modelBuilder.Entity("Domain.Models.Round", b =>
                 {
+                    b.Navigation("Award");
+
                     b.Navigation("RoundJudgingCriteria");
 
                     b.Navigation("RoundTopic");

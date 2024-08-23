@@ -15,15 +15,15 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
         _validationServiceManager = validationServiceManager;
 
         RuleFor(user => user.Username)
-            .NotEmpty().WithMessage("tên không được để trống.")
+            .NotEmpty().WithMessage("Tên đăng nhập không được để trống.")
             .MustAsync(async (username, cancellation) =>
             {
                 return !await _validationServiceManager.AccountValidationService.IsExistUsername(username);
             })
-            .WithMessage("Tên đăng nhập đã có tài khoản sử dụng!");
+            .WithMessage("Tên đăng nhập đã có tài khoản sử dụng");
 
         RuleFor(x => x.FullName)
-            .NotEmpty().WithMessage("Họ và tên không được để trống.");
+            .NotEmpty().WithMessage("Tên không được để trống.");
 
         // Validate Email
         RuleFor(user => user.Email)
@@ -49,12 +49,12 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
             .Matches("[^a-zA-Z0-9]").WithMessage("Mật khẩu phải chứa ít nhất một ký tự đặc biệt.");
 
         RuleFor(user => user.Phone)
-            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9}$"))
             .MustAsync(async (phone, cancellation) =>
             {
                 return !await _validationServiceManager.AccountValidationService.IsExistPhone(phone);
             })
-            .WithMessage("Số điện thoại đã được sử dụng!");
+            .WithMessage("Số điện thoại đã được sử dụng");
 
         RuleFor(user => user.Birthday)
             .NotEmpty().WithMessage("Ngày sinh không được để trống.")

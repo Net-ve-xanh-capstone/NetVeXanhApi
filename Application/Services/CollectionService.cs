@@ -63,7 +63,7 @@ public class CollectionService : ICollectionService
     public async Task<bool> DeleteCollection(Guid collectionId)
     {
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(collectionId);
-        if (collection == null) throw new Exception("Khong tim thay Collection");
+        if (collection == null) throw new Exception("Không tìm thấy bộ sưu tập");
 
 
         collection.Status = CollectionStatus.Inactive.ToString();
@@ -82,7 +82,7 @@ public class CollectionService : ICollectionService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(updateCollection.Id);
-        if (collection == null) throw new Exception("Khong tim thay Collection");
+        if (collection == null) throw new Exception("Không tìm thấy bộ sưu tập.");
         ;
 
         /*collection.Name = updateCollection.Name;
@@ -112,7 +112,7 @@ public class CollectionService : ICollectionService
         Guid collectionId)
     {
         var collection = await _unitOfWork.CollectionRepo.GetPaintingByCollectionAsync(collectionId);
-        if (collection == null) throw new Exception("Khong co Painting nao trong Collection");
+        if (collection == null) throw new Exception("Không có tranh nào trong bộ sưu tập.");
 
         return _mapper.Map<GetPaintingInCollectionResponse>(collection);
     }

@@ -33,7 +33,7 @@ public class StaffCreatePaintingRequestValidator : AbstractValidator<StaffCreate
 
         // Validate Phone
         RuleFor(user => user.Phone)
-            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9}$"))
             .MustAsync(async (phone, cancellation) =>
             {
                 return !await _validationServiceManager.AccountValidationService.IsExistPhone(phone);

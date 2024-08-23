@@ -28,7 +28,7 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
                         {
                             return await _validationServiceManager.AccountValidationService.IsExistedId(userId);
                         })
-                        .WithMessage("CurrentUserId không tồn tại.");
+                        .WithMessage("Tài khoản này không tồn tại..");
                 });
         });
 
@@ -37,18 +37,14 @@ public class AccountUpdateRequestValidator : AbstractValidator<AccountUpdateRequ
             .Must(BeAValidAge).WithMessage("Ngày sinh không hợp lệ.");
 
         RuleFor(user => user.FullName)
-            .NotEmpty().WithMessage("Tên đầy đủ không được để trống.")
-            .Length(2, 100).WithMessage("Tên đầy đủ phải có độ dài từ 2 đến 100 ký tự.");
+            .Length(2, 100).WithMessage("Tên phải có độ dài từ 2 đến 100 ký tự.");
 
         /*RuleFor(user => user.Address)
             .NotEmpty().WithMessage("Địa chỉ không được để trống.")
             .Length(10, 200).WithMessage("Địa chỉ phải có độ dài từ 10 đến 200 ký tự.");*/
-        RuleFor(c => c.Avatar)
-            .NotEmpty().WithMessage("Tranh không được để trống.")
-            .Must(BeAValidUrl).WithMessage("Tranh là một URL hợp lệ.");
 
         RuleFor(user => user.Phone)
-            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9}$"))
             .WithMessage("Số điện thoại không hợp lệ.");
     }
 

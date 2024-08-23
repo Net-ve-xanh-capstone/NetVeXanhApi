@@ -19,14 +19,14 @@ public class AwardScheduleService : IAwardScheduleService
     {
         var list = await _unitOfWork.AwardScheduleRepo.GetListByscheduleId(id);
         return list.Count == 0
-            ? throw new Exception("Không tìm thấy AwardSchedule")
+            ? throw new Exception("Không tìm thấy chi tiết lịch chấm.")
             : _mapper.Map<List<AwardScheduleResponse>>(list);
     }
 
     public async Task<AwardScheduleResponse> GetById(Guid id)
     {
         var awardSchedule = await _unitOfWork.AwardScheduleRepo.GetByIdAsync(id);
-        if (awardSchedule == null) throw new Exception("Không tìm thấy ");
+        if (awardSchedule == null) throw new Exception("Không tìm thấy chi tiết lịch chấm.");
         return _mapper.Map<AwardScheduleResponse>(awardSchedule);
     }
 

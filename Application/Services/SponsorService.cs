@@ -47,7 +47,7 @@ public class SponsorService : ISponsorService
     public async Task<(List<SponsorResponse>, int)> GetListSponsor(ListModels listModels)
     {
         var list = await _unitOfWork.SponsorRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Sponsor nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy nhà tài trợ nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -64,7 +64,7 @@ public class SponsorService : ISponsorService
     public async Task<List<SponsorResponse>> GetAllSponsor()
     {
         var result = await _unitOfWork.SponsorRepo.GetAllAsync();
-        if (result.Count == 0) throw new Exception("Khong tim thay Sponsor nao");
+        if (result.Count == 0) throw new Exception("Không tìm thấy nhà tài trợ nào");
 
         return _mapper.Map<List<SponsorResponse>>(result);
     }
@@ -76,7 +76,7 @@ public class SponsorService : ISponsorService
     public async Task<SponsorResponse?> GetSponsorById(Guid id)
     {
         var sponsor = await _unitOfWork.SponsorRepo.GetByIdAsync(id);
-        if (sponsor == null) throw new Exception("Khong tim thay Sponsor");
+        if (sponsor == null) throw new Exception("Không tìm thấy nhà tài trợ.");
         return _mapper.Map<SponsorResponse>(sponsor);
     }
 

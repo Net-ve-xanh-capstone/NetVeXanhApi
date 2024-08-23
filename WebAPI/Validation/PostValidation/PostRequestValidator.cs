@@ -48,7 +48,7 @@ public class PostRequestValidator : AbstractValidator<PostRequest>
 
         // Validate Images
         RuleFor(x => x.Images)
-            .NotNull().WithMessage("Danh sách hình ảnh không được để null.")
+            .NotNull().WithMessage("Danh sách hình ảnh không được để trống.")
             .Must(images => images != null && images.Any()).WithMessage("Danh sách hình ảnh phải chứa ít nhất một mục.")
             .ForEach(image => image
                 .SetValidator(

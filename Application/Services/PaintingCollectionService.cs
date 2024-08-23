@@ -54,7 +54,7 @@ public class PaintingCollectionService : IPaintingCollectionService
     public async Task<bool> DeletePaintingInCollection(Guid paintingcollectionId)
     {
         var paintingcollection = await _unitOfWork.PaintingCollectionRepo.GetByIdAsync(paintingcollectionId);
-        if (paintingcollection == null) throw new Exception("Khong tim thay PaintingCollection");
+        if (paintingcollection == null) throw new Exception("Không tìm thấy tranh trong bộ sưu tập");
         await _unitOfWork.PaintingCollectionRepo.DeleteAsync(paintingcollection);
 
         return await _unitOfWork.SaveChangesAsync() > 0;

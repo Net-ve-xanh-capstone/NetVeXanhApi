@@ -58,12 +58,12 @@ public class AuthenticationService : IAuthenticationService
             }
 
             response.Success = false;
-            response.Message = "Sai mật khẩu";
+            response.Message = "Đăng nhập không thành công.";
             return response;
         }
 
         response.Success = false;
-        response.Message = "Tên đăng nhập không đúng";
+        response.Message = "Đăng nhập không thành công.";
         return response;
     }
 
@@ -83,7 +83,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (await _unitOfWork.AccountRepo.CheckDuplicateEmail(createAccount.Email))
         {
-            response.Message = "Email đã có tài khoản sử dụng!";
+            response.Message = "Email đã được sử dụng.!";
             response.Success = false;
             return response;
         }
@@ -120,7 +120,7 @@ public class AuthenticationService : IAuthenticationService
             return response;
         }
 
-        response.Message = "Tạo thành công";
+        response.Message = "Tạo mới thành công.";
         response.Success = true;
 
         var mail = new MailModel();

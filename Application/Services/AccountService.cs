@@ -142,21 +142,21 @@ public class AccountService : IAccountService
     public async Task<AccountResponse?> GetAccountById(Guid id)
     {
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(id);
-        if (account == null) throw new Exception("Không tìm thấy Account");
+        if (account == null) throw new Exception("Không tìm thấy tài khoản.");
         return _mapper.Map<AccountResponse>(account);
     }
 
     public async Task<AccountResponse?> GetCompetitorById(Guid id)
     {
         var account = await _unitOfWork.AccountRepo.GetCompetitorByIdAsync(id);
-        if (account == null) throw new Exception("Không tìm thấy Account");
+        if (account == null) throw new Exception("Không tìm thấy tài khoản.");
         return _mapper.Map<AccountResponse>(account);
     }
 
     public async Task<AccountResponse?> GetAccountByCode(string code)
     {
         var account = await _unitOfWork.AccountRepo.GetAccountByCodeAsync(code);
-        if (account == null) throw new Exception("Không tìm thấy Account");
+        if (account == null) throw new Exception("Không tìm thấy tài khoản.");
         return _mapper.Map<AccountResponse>(account);
     }
 
@@ -168,7 +168,7 @@ public class AccountService : IAccountService
             throw new ValidationException(validationResult.Errors);
 
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(updateAccount.Id);
-        if (account == null) throw new Exception("Không tìm thấy tài khoản");
+        if (account == null) throw new Exception("Không tìm thấy tài khoản.");
         _mapper.Map(updateAccount, account);
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

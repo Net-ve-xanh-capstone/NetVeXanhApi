@@ -14,7 +14,7 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
 
 
         RuleFor(contest => contest.Name)
-            .NotEmpty().WithMessage("Tên cuộc thi không được để trống");
+            .NotEmpty().WithMessage("Tên vòng thi không được để trống");
 
         RuleFor(contest => contest.StartTime)
             .NotEmpty().WithMessage("Thời gian bắt đầu không được để trống");
@@ -22,8 +22,6 @@ public class RoundRequestValidator : AbstractValidator<RoundRequest>
         RuleFor(contest => contest.EndTime)
             .NotEmpty().WithMessage("Thời gian kết thúc không được để trống");
 
-        RuleFor(contest => contest.Location)
-            .NotEmpty().WithMessage("Địa điểm không được để trống");
 
         RuleFor(contest => contest.Description)
             .NotEmpty().WithMessage("Mô tả không được để trống");

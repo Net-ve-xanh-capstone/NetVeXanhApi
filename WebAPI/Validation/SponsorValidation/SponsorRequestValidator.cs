@@ -27,7 +27,7 @@ public class SponsorRequestValidator : AbstractValidator<SponsorRequest>
             .NotEmpty().WithMessage("Logo không được để trống.");
 
         RuleFor(user => user.PhoneNumber)
-            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9,10}$"))
+            .Must(phone => !string.IsNullOrEmpty(phone) && Regex.IsMatch(phone, @"^0\d{9}$"))
             .WithMessage("Số điện thoại không hợp lệ.");
 
         RuleFor(x => x.CurrentUserId)

@@ -35,7 +35,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
         });
         
         RuleFor(x => x.Quantity)
-            .GreaterThanOrEqualTo(1).WithMessage("Quantity phải lớn hơn hoặc bằng 1.");
+            .GreaterThanOrEqualTo(1).WithMessage("Số lượng phải lớn hơn hoặc bằng 1.");
 
         RuleFor(x => x)
             .Must(model => model.Cash != 0 || model.Artifact != "Không có thông tin")

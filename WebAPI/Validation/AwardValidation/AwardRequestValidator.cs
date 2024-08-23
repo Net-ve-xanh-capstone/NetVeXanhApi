@@ -17,10 +17,10 @@ public class AwardRequestValidator : AbstractValidator<CreateAwardRequest>
 
         RuleFor(x => x)
             .Must(model => model.Cash != 0 || model.Artifact != "Không có thông tin")
-            .WithMessage("Chỉ 1 trong 2 cash hoặc artifact được trống");
+            .WithMessage("Chỉ 1 trong 2 hiện vật hoặc hiện kim được trống.");
 
         RuleFor(x => x.Cash)
-            .GreaterThanOrEqualTo(0).WithMessage("Cash phải lớn hơn hoặc bằng 0.");
+            .GreaterThanOrEqualTo(0).WithMessage("Hiện kim phải lớn hơn hoặc bằng 0.");
         
 
         RuleFor(x => x.RoundId)

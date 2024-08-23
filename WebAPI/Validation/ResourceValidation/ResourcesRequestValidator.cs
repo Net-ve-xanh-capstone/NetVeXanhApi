@@ -15,7 +15,7 @@ public class ResourcesRequestValidator : AbstractValidator<ResourcesRequest>
 
         // Validate Sponsorship
         RuleFor(x => x.Sponsorship)
-            .NotEmpty().WithMessage("Sponsorship không được trống.")
+            .NotEmpty().WithMessage("Chi tiết tài trợ không được trống.")
             .MaximumLength(200).WithMessage("Sponsorship phải ít hơn 200 chữ.");
 
         // Validate SponsorId

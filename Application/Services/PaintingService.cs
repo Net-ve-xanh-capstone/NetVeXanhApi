@@ -87,7 +87,7 @@ public class PaintingService : IPaintingService
         var account = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
         if (account.Address.IsNullOrEmpty())
         {
-            throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ !");
+            throw new Exception("Bạn Chưa Cập Nhật Địa Chỉ, Vui lòng Thêm Địa Chỉ.");
         }
         var roundTopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(request.RoundTopicId);
         var check = await _unitOfWork.RoundRepo.CheckSubmitValidDate(roundTopic!.RoundId);
@@ -105,14 +105,14 @@ public class PaintingService : IPaintingService
             painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
             if (await _unitOfWork.SaveChangesAsync() > 0)
             {
-                NotificationRequest notification = new NotificationRequest("Bạn đã nột bài thành công","Bạn đã nột bài thành công",request.AccountId);
+                NotificationRequest notification = new NotificationRequest("Bạn đã nộp bài thành công","Bạn đã nộp bài thành công",request.AccountId);
                 await _notificationService.CreateNotification(notification);
             }
 
             return true;
         }
 
-        throw new Exception("Khong trong thoi gian nop bai");
+        throw new Exception("Không trong thời gian nộp bài.");
     }
 
     #endregion
@@ -268,10 +268,10 @@ public class PaintingService : IPaintingService
         }
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
-        if (painting == null) throw new Exception("Không tìm thấy Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         painting.UpdatedBy = updatePainting.CurrentUserId;
         painting.UpdatedTime = DateTime.Now;
-        if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Khong duoc sua");
+        if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Không được sửa tranh đã nộp.");
 
         _mapper.Map(updatePainting, painting);
         return await _unitOfWork.SaveChangesAsync() > 0;

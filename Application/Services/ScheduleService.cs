@@ -94,7 +94,7 @@ public class ScheduleService : IScheduleService
     public async Task<bool> DeleteSchedule(Guid id)
     {
         var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(id);
-        if (schedule == null) throw new Exception("Khong tim thay Schedule");
+        if (schedule == null) throw new Exception("Không tìm thấy lịch chấm");
         schedule.Status = ScheduleStatus.Delete.ToString();
         schedule.AwardSchedule.ToList().ForEach(src => { src.Status = AwardScheduleStatus.Delete.ToString(); });
         schedule.Painting.ToList().ForEach(src => src.ScheduleId = null);

@@ -318,7 +318,7 @@ public class RoundController : Controller
     #region Export
 
     [HttpGet("export-round-results")]
-    public async Task<IActionResult> ExportRound1Results(Guid roundId)
+    public async Task<IActionResult> ExportCompetitor(Guid roundId)
     {
         var result = await _roundService.GetListCompetitorOfRound(roundId);
         var list = result.Item1;
@@ -326,5 +326,33 @@ public class RoundController : Controller
         return File(list, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", name);
     }
 
+    #endregion
+    
+    #region Announce
+    [HttpGet("announce-results-round")]
+    public async Task<IActionResult> Announce(Guid roundId)
+    {
+        try
+        {
+            var result = await _roundService.AnnounceResults(roundId);
+            if (!result) return NotFound();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Result = result,
+                Message = "Thông báo được cập nhật thành công"
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
     #endregion
 }

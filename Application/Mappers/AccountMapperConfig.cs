@@ -47,6 +47,12 @@ public partial class MapperConfigs : Profile
                 src.Gender! == true ? "Nữ" :
                 src.Gender! == false ? "Nam" : null));
         ;
+        
+        CreateMap<Account, CompetitorResponse>()
+            .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Birthday!.Value)))
+            .ForMember(dest => dest.Prize, opt => opt.Ignore())
+            .ForMember(dest => dest.RoundName, opt => opt.Ignore())
+            .ForMember(dest => dest.Status, opt => opt.Ignore());
     }
 
     private int CalculateAge(DateTime birthday)

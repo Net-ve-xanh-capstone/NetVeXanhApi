@@ -29,7 +29,8 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
     public async Task<Round?> GetRoundDetail(Guid id)
     {
         return await DbSet
-            .AsNoTracking()
+            .Include(r => r.EducationalLevel)
+            .ThenInclude(e => e.Round)
             .Include(r => r.RoundTopic)
             .ThenInclude(rt => rt.Painting)
             .ThenInclude(p => p.Account)

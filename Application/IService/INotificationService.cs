@@ -11,7 +11,5 @@ public interface INotificationService
     public Task<NotificationDetailResponse?> GetNotificationById(Guid id);
     public Task<(List<NotificationResponse>?, int)> GetNotificationByAccountId(ListModels listModels, Guid id);
     public Task<bool> ReadNotification(Guid id);
-    public Task<bool> SendResultFinalRound(Guid id);
-    public Task<bool> SendResultPreliminaryRound(Guid id);
     Task<bool> IsExistedId(Guid id);
 }

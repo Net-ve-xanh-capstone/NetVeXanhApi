@@ -17,14 +17,16 @@ namespace Application.Services;
 public class RoundService : IRoundService
 {
     private readonly IExcelService _excelService;
+    private readonly IMailService _mailService;
     private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
 
     public RoundService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IExcelService excelService ,IValidatorFactory validatorFactory)
+        IExcelService excelService, IValidatorFactory validatorFactory, IMailService mailService)
     {
+        _mailService = mailService;
         _excelService = excelService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -74,6 +76,7 @@ public class RoundService : IRoundService
             educationalLevel.Round.Add(newRound);
             _unitOfWork.EducationalLevelRepo.Update(educationalLevel);
         }
+
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
@@ -187,19 +190,90 @@ public class RoundService : IRoundService
     public async Task<(byte[], string)> GetListCompetitorOfRound(Guid roundId)
     {
         var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
-        var competitors = _mapper.Map<List<CompetitorResponse>>(round); 
-        var result = await _excelService.GenerateExcel(competitors, round.Name);
-        return (result,  round.Name);
+        var competitor = round.RoundTopic
+            .SelectMany(rt => rt.Painting)
+            .Select(p => _mapper.Map<CompetitorResponse>(p))
+            .Distinct()
+            .ToList();
+        var result = await _excelService.GenerateExcel(competitor, round.Name);
+        return (result, round.Name);
     }
 
-    #endregion 
+    #endregion
+
+    #region Announce
+
+    public async Task<bool> AnnounceResults(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
+        List<Painting> listPass;
+        List<Painting> listNotPass;
+        if (round!.Name!.Contains("Vòng Chung Kết"))
+        {
+            listPass = round!.RoundTopic.SelectMany(src => src.Painting)
+                .Where(src => src.RatingStatus == PaintingStatus.HasPrizes.ToString()).ToList();
+            listNotPass = round!.RoundTopic.SelectMany(src => src.Painting)
+                .Where(src => src.RatingStatus == PaintingStatus.FinalRound.ToString()).ToList();
+        }
+        else
+        {
+            listPass = round!.RoundTopic.SelectMany(src => src.Painting)
+                .Where(src => src.RatingStatus == PaintingStatus.Pass.ToString()).ToList();
+            listNotPass = round!.RoundTopic.SelectMany(src => src.Painting)
+                .Where(src => src.RatingStatus == PaintingStatus.NotPass.ToString()).ToList();
+        }
+
+        // Cập nhật trạng thái
+        foreach (var p in listPass)
+        {
+            p.Status = p.RatingStatus!;
+        }
+        foreach (var np in listNotPass)
+        {
+            np.Status = np.RatingStatus!;
+        }
+
+        // Lưu thay đổi
+        await _unitOfWork.SaveChangesAsync();
+
+        // Gửi email bất đồng bộ
+        _ = Task.Run(async () =>
+        {
+            var emailTasks = new List<Task>();
+
+            foreach (var p in listPass)
+            {
+                if (round!.Name!.Contains("Vòng Chung Kết"))
+                {
+                    emailTasks.Add(_mailService.PassFinalRound(p, round));
+                }
+                else
+                {
+                    emailTasks.Add(_mailService.PassPreliminaryRound(p, round));
+                }
+            }
+
+            foreach (var np in listNotPass)
+            {
+                emailTasks.Add(_mailService.NotPassPreliminaryRound(np, round));
+            }
+
+            await Task.WhenAll(emailTasks);
+        });
+
+        return true;
+    }
+
+    #endregion
 
 
     #region Validate
+
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.RoundRepo.IsExistIdAsync(id);
     }
+
     public async Task<ValidationResult> ValidateRoundRequest(RoundRequest round)
     {
         return await _validatorFactory.RoundRequestValidator.ValidateAsync(round);

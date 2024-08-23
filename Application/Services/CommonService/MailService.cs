@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using Application.BaseModels;
@@ -44,7 +45,7 @@ public class MailService : IMailService
 
         await smtpClient.SendMailAsync(message);
     }
-    
+
     public async Task SendAccountInformation(Account account, string password)
     {
         var template = GetEmailTemplate("SendAccount.html");
@@ -67,11 +68,29 @@ public class MailService : IMailService
         await SendEmail(mail);
     }
 
-    public async Task PassPreliminaryRound(Account account)
+    public async Task PassPreliminaryRound(Painting painting, Round round)
     {
-        var template = GetEmailTemplate("SendAccountForCompetitor.html");
+        var template = GetEmailTemplate("PassPreliminaryRound.html");
 
-        template = template.Replace("[Tên Thí Sinh]", account.FullName);
+        template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
+        template = template.Replace("[Vòng Thi]", round.Name);
+        template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn đáp ứng tiêu chí");
+        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == (round.RoundNumber + 1));
+        if (nextRound!.Name!.Contains("Vòng Chung Kết"))
+        {
+            template = template.Replace("[tại địa điểm]", $"Tại {nextRound.Location}");
+            template = template.Replace("năm]", nextRound.StartTime.Year.ToString());
+            template = template.Replace("/tháng/", nextRound.StartTime.Month.ToString());
+            template = template.Replace("[ngày", nextRound.StartTime.Day.ToString());
+        }
+        else
+        {
+            template = template.Replace("[tại địa điểm]", $"Online");
+            template = template.Replace("năm]", nextRound.StartTime.Year.ToString());
+            template = template.Replace("/tháng/", nextRound.StartTime.Month.ToString());
+            template = template.Replace("[ngày", nextRound.StartTime.Day.ToString());
+        }
+
 
         var supportmail = _configuration["NetVeXanh:SupportMail"];
         var supportphone = _configuration["NetVeXanh:SupportPhone"];
@@ -81,7 +100,53 @@ public class MailService : IMailService
         var body = template;
 
         var mail = new MailModel();
-        mail.To = account.Email;
+        mail.To = painting.Account.Email!;
+        mail.Subject = "THÔNG BÁO CUỘC THI NÉT VẼ XANH";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+
+    public async Task PassFinalRound(Painting painting, Round round)
+    {
+        var template = GetEmailTemplate("SuccessFinalRound.html");
+
+        template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
+        template = template.Replace("[Vòng Thi]", round.Name);
+        template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn đáp ứng tiêu chí");
+        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == (round.RoundNumber + 1));
+        
+
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+
+        var body = template;
+
+        var mail = new MailModel();
+        mail.To = painting.Account.Email!;
+        mail.Subject = "THÔNG BÁO CUỘC THI NÉT VẼ XANH";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+
+    public async Task NotPassPreliminaryRound(Painting painting, Round round)
+    {
+        var template = GetEmailTemplate("NotPassRound.html");
+
+        template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
+        template = template.Replace("[Vòng Thi]", round.Name);
+        template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn không đáp ứng tiêu chí");
+
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+
+        var body = template;
+
+        var mail = new MailModel();
+        mail.To = painting.Account.Email!;
         mail.Subject = "THÔNG BÁO CUỘC THI NÉT VẼ XANH";
         mail.Body = body;
         await SendEmail(mail);

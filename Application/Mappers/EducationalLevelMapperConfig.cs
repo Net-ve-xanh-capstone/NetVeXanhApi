@@ -40,7 +40,13 @@ public partial class MapperConfigs : Profile
             .ForMember(x => x.ContestId, x => x.MapFrom(x => x.ContestId));
 
         CreateMap<EducationalLevel, EducationalLevelInContest>()
-            .ForMember(x => x.Round, x => x.MapFrom(x => x.Round));
+            .ForMember(x => x.Round, x => x.MapFrom(x => x.Round))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == EducationalLevelStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
+                src.Status == EducationalLevelStatus.InProcess.ToString() ? "Đang tiến hành" :
+                src.Status == EducationalLevelStatus.Complete.ToString() ? "Đã Hoàn thành" :
+                src.Status == EducationalLevelStatus.Delete.ToString() ? "Đã xóa" : null
+            ));;
 
         CreateMap<EducationalLevel, ScheduleWebResponse>()
             .ForPath(x => x.ScheduleViewModels, x => x.MapFrom(x => x.Round.SelectMany(x => x.Schedule)));

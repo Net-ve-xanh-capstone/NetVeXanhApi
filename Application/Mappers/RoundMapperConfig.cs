@@ -41,7 +41,13 @@ public partial class MapperConfigs : Profile
 
         CreateMap<Round, RoundInLevelViewModel>()
             .ForMember(dest => dest.Award, opt => opt.MapFrom(src => src.Award))
-            .ForMember(dest => dest.RoundTopic, opt => opt.MapFrom(src => src.RoundTopic));
+            .ForMember(dest => dest.RoundTopic, opt => opt.MapFrom(src => src.RoundTopic))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+                src.Status == RoundStatus.NotStarted.ToString() ? "Chưa bắt đầu" :
+                src.Status == RoundStatus.InProcess.ToString() ? "Đang tiến hành" :
+                src.Status == RoundStatus.Complete.ToString() ? "Đã Hoàn thành" :
+                src.Status == RoundStatus.Delete.ToString() ? "Đã xóa" : null
+            ));;;
 
 
         CreateMap<Round, ListScheduleResponse>()

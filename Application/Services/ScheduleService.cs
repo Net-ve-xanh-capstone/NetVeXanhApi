@@ -320,7 +320,26 @@ public class ScheduleService : IScheduleService
         return true;
     }
     #endregion
-    
+
+
+    #region Confirm Rating
+
+    public async Task<bool> ConfirmRating(Guid id)
+    {
+        var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(id);
+        if (schedule == null)
+        {
+            throw new Exception("Không tìm thấy lịch chấm.");
+        }
+        if (schedule.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
+        {
+            throw new Exception("Còn bài chưa được chấm.");
+        }
+        schedule.Status = ScheduleStatus.Done.ToString();
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+    #endregion
+
     #region Rating 
 
     public async Task<bool> RatingPainting(RatingSendModel ratingPainting)
@@ -353,6 +372,16 @@ public class ScheduleService : IScheduleService
             if (painting == null)
                 throw new Exception($"Không tìm thấy bài dự thi {p.PaintingId} trong danh sách những bài được chấm");
 
+            if (painting.AwardId.HasValue)
+            {
+                if(painting.AwardId != p.AwardId)
+                {
+                    if(painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId).Status == AwardScheduleStatus.Done.ToString())
+                    {
+                        painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId).Status = AwardScheduleStatus.Rating.ToString();
+                    }
+                }
+            }
 
             if (schedule!.Round!.Name!.Contains("Vòng Chung Kết"))
             {
@@ -390,10 +419,6 @@ public class ScheduleService : IScheduleService
                 if (awardSchedule.Quantity == paintingAwardCount)
                     awardSchedule.Status = AwardScheduleStatus.Done.ToString();
             }
-
-            if (!schedule.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
-                schedule.Status = ScheduleStatus.Done.ToString();
-
             
             await _unitOfWork.SaveChangesAsync();
         }
@@ -403,6 +428,7 @@ public class ScheduleService : IScheduleService
     
     #endregion
     
+
 
     #region Validate
 

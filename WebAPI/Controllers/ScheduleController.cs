@@ -362,7 +362,45 @@ public class ScheduleController : Controller
     }
 
     #endregion
-    
+
+    #region  Rating 
+    /// <summary>
+    /// xác nhận hoàn thành việc chấm bài
+    /// </summary>
+    /// <param name="rating"></param>
+    /// <returns></returns>
+    [HttpPut("confirmrating/{id}")]
+    public async Task<IActionResult> ConfirmRating(Guid id)
+    {
+        try
+        {
+            var result = await _scheduleService.ConfirmRating(id);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "Hệ thống lỗi vui lòng thử lại"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Hoàn tất chấm điểm",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+    }
+    #endregion
+
     #region  Rating 
     /// <summary>
     /// Chấm điểm 

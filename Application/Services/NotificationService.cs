@@ -93,47 +93,7 @@ public class NotificationService : INotificationService
     }
 
     #endregion
-
-
-    #region Send result Round 2
-
-    public async Task<bool> SendResultFinalRound(Guid id)
-    {
-        try
-        {
-            var paintings = await _unitOfWork.PaintingRepo.GetAllPaintingOfRound(id);
-            var pass = paintings.Where(src => src.Status.Equals(PaintingStatus.HasPrizes.ToString())).ToList();
-            foreach (var p in pass) await _mailService.PassPreliminaryRound(p.Account);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-
-    #endregion
-
-    #region Send result Round 1
-
-    public async Task<bool> SendResultPreliminaryRound(Guid id)
-    {
-        try
-        {
-            var paintings = await _unitOfWork.PaintingRepo.GetAllPaintingOfRound(id);
-            var pass = paintings.Where(src => src.Status.Equals(PaintingStatus.Pass.ToString())).ToList();
-            foreach (var p in pass) await _mailService.PassPreliminaryRound(p.Account);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-    }
-
-    #endregion
+    
 
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)

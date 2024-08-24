@@ -16,14 +16,6 @@ public interface IScheduleService
     Task<List<ScheduleResponse?>> GetScheduleByExaminerId(Guid id);
     Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId/*, Guid contestId*/);
     Task<bool> RatingPainting(RatingSendModel ratingPainting);
-
-    Task<bool> RatingFinalRound(RatingSendModel ratingPainting);
-
-    Task<bool> RatingQualifyingRound(RatingSendModel ratingPainting);
-    Task<bool> RatingFirstPrize(RatingSendModel ratingPainting);
-    Task<bool> RatingSecondPrize(RatingSendModel ratingPainting);
-    Task<bool> RatingConsolationPrize(RatingSendModel ratingPainting);
-    Task<bool> RatingThirdPrize(RatingSendModel ratingPainting);
     Task<bool> UpdateSchedule(ScheduleUpdateRequest updateSchedule);
     Task<bool> DeleteSchedule(Guid id);
     Task<bool> IsExistedId(Guid id);

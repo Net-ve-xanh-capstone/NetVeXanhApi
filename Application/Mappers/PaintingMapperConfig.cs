@@ -168,6 +168,22 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Account.Gender! == true ? "Nữ" :
                 src.Account.Gender! == false ? "Nam" : null));*/
+        
+        
+        CreateMap<Painting, CompetitorResponse>()
+            .IncludeMembers(s => s.Account)
+            .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award!.Rank ?? "Không có giải thưởng"))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+        // Thêm mapping mới này
+        CreateMap<ICollection<Painting>, CompetitorResponse>()
+            .ConvertUsing((src, dest, context) =>
+            {
+                if (src != null && src.Any())
+                {
+                    return context.Mapper.Map<CompetitorResponse>(src.First());
+                }
+                return null;
+            });
     }
 
     public static string GetFinalDecisionMessage(DateTime? finalDecisionTimestamp, string status)

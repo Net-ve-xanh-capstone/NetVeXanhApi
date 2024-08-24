@@ -53,6 +53,8 @@ public class EducationalLevelInContest
     public string Level { get; set; }
     public int MinAge { get; set; }
     public int MaxAge { get; set; }
+    public string Status { get; set; }
+    
     public List<RoundInLevelViewModel> Round { get; set; }
 }
 
@@ -74,6 +76,7 @@ public class RoundInLevelViewModel
     public DateTime EndTime { get; set; }
     public string Location { get; set; }
     public string Description { get; set; }
+    public string Status { get; set; }
     public List<AwardInLevelViewModel> Award { get; set; }
     public List<RoundTopicInContestViewModel> RoundTopic { get; set; }
 }

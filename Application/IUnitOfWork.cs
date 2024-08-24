@@ -24,6 +24,5 @@ public interface IUnitOfWork
     public IReportRepository ReportRepo { get; }
     public IRoundTopicRepository RoundTopicRepo { get; }
     
-
     public Task<int> SaveChangesAsync();
 }

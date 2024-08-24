@@ -5,6 +5,7 @@ namespace Application.IValidators;
 
 public interface IAwardValidator
 {
-    public IValidator<CreateAwardRequest> AwardRequestValidator { get; }
+    public IValidator<CreateAwardRequest> CreateAwardRequestValidator { get; }
+    public IValidator<CreateDependentAwardRequest> CreateDependentAwardRequestValidator { get; }
     public IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
 }

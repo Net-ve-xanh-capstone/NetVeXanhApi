@@ -27,7 +27,7 @@ public class CreateAccountRequestValidator : AbstractValidator<CreateAccountRequ
 
         // Validate Email
         RuleFor(user => user.Email)
-            .NotEmpty().WithMessage("Email là bắt buộc.")
+            .NotEmpty().WithMessage("Email không được để trống.")
             .EmailAddress().WithMessage("Email phải là một địa chỉ email hợp lệ.")
             .MustAsync(async (email, cancellation) =>
             {

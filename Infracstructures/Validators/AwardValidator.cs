@@ -6,13 +6,19 @@ namespace Infracstructures.Validators;
 
 public class AwardValidator : IAwardValidator
 {
-    public AwardValidator(IValidator<CreateAwardRequest> awardvalidator, IValidator<UpdateAwardRequest> updateAwardvalidator)
+    public AwardValidator(IValidator<CreateAwardRequest> awardvalidator,
+        IValidator<UpdateAwardRequest> updateawardvalidator
+        , IValidator<CreateDependentAwardRequest> createdependentawardrequestvalidator
+    )
     {
-        AwardRequestValidator = awardvalidator;
-        UpdateAwardRequestValidator = updateAwardvalidator;
+        CreateAwardRequestValidator = awardvalidator;
+        UpdateAwardRequestValidator = updateawardvalidator;
+        CreateDependentAwardRequestValidator = createdependentawardrequestvalidator;
     }
 
-    public IValidator<CreateAwardRequest> AwardRequestValidator { get; }
+    public IValidator<CreateAwardRequest> CreateAwardRequestValidator { get; }
 
     public IValidator<UpdateAwardRequest> UpdateAwardRequestValidator { get; }
+
+    public IValidator<CreateDependentAwardRequest> CreateDependentAwardRequestValidator { get; }
 }

@@ -6,9 +6,9 @@ namespace Infracstructures.Validators;
 
 public class ImageValidator : IImageValidator
 {
-    public ImageValidator(IValidator<ImageRequest> levelvalidator)
+    public ImageValidator(IValidator<ImageRequest> imagevalidator)
     {
-        ImageRequestValidator = levelvalidator;
+        ImageRequestValidator = imagevalidator;
     }
 
     public IValidator<ImageRequest> ImageRequestValidator { get; }

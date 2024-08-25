@@ -10,15 +10,14 @@ using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.Extensions.Configuration;
 
 namespace Application.Services;
 
 public class RoundService : IRoundService
 {
+    private readonly ICurrentTime _currentTime;
     private readonly IExcelService _excelService;
     private readonly IMailService _mailService;
-    private readonly ICurrentTime _currentTime;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
@@ -48,30 +47,20 @@ public class RoundService : IRoundService
                     (model.StartTime >= r.StartTime && model.StartTime <= r.EndTime) ||
                     (model.EndTime >= r.StartTime && model.EndTime <= r.EndTime) ||
                     (model.StartTime <= r.StartTime && model.EndTime >= r.EndTime)))
-            {
                 throw new Exception("Thời gian bắt đầu và kết thúc bị trùng với vòng thi khác.");
-            }
 
             // Kiểm tra thời gian bắt đầu và kết thúc của vòng thi mới có nằm trong khoảng thời gian của cuộc thi không
             if (model.StartTime < educationalLevel!.Contest.StartTime ||
                 model.EndTime > educationalLevel.Contest.EndTime)
-            {
                 throw new Exception(
                     "Thời gian bắt đầu và kết thúc của vòng thi không nằm trong khoảng thời gian của cuộc thi.");
-            }
 
-            foreach (var award in newRound.Award)
-            {
-                award.CreatedBy = newRound.CreatedBy;
-            }
+            foreach (var award in newRound.Award) award.CreatedBy = newRound.CreatedBy;
 
             var listOldRound = educationalLevel!.Round.Where(src => src.RoundNumber >= model.RoundNumber).ToList();
 
 
-            foreach (var round in listOldRound)
-            {
-                round.RoundNumber += 1;
-            }
+            foreach (var round in listOldRound) round.RoundNumber += 1;
 
             educationalLevel.Round.Add(newRound);
             _unitOfWork.EducationalLevelRepo.Update(educationalLevel);
@@ -224,14 +213,8 @@ public class RoundService : IRoundService
         }
 
         // Cập nhật trạng thái
-        foreach (var p in listPass)
-        {
-            p.Status = p.RatingStatus!;
-        }
-        foreach (var np in listNotPass)
-        {
-            np.Status = np.RatingStatus!;
-        }
+        foreach (var p in listPass) p.Status = p.RatingStatus!;
+        foreach (var np in listNotPass) np.Status = np.RatingStatus!;
 
         // Lưu thay đổi
         await _unitOfWork.SaveChangesAsync();
@@ -242,21 +225,12 @@ public class RoundService : IRoundService
             var emailTasks = new List<Task>();
 
             foreach (var p in listPass)
-            {
                 if (round!.Name!.Contains("Vòng Chung Kết"))
-                {
                     emailTasks.Add(_mailService.PassFinalRound(p, round));
-                }
                 else
-                {
                     emailTasks.Add(_mailService.PassPreliminaryRound(p, round));
-                }
-            }
 
-            foreach (var np in listNotPass)
-            {
-                emailTasks.Add(_mailService.NotPassPreliminaryRound(np, round));
-            }
+            foreach (var np in listNotPass) emailTasks.Add(_mailService.NotPassPreliminaryRound(np, round));
 
             await Task.WhenAll(emailTasks);
         });

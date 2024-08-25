@@ -64,7 +64,7 @@ public class AuthenticationController : ControllerBase
     }
 
     #endregion
-    
+
     #region Create Account
 
     [AllowAnonymous]
@@ -126,5 +126,4 @@ public class AuthenticationController : ControllerBase
     }
 
     #endregion
-    
 }

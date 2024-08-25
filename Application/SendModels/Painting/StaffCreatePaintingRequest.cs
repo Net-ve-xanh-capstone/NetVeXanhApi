@@ -1,6 +1,6 @@
 ﻿namespace Application.SendModels.Painting;
 
-public class StaffCreatePaintingSendModel
+public class StaffCreatePaintingRequest
 {
     // Information Account
     public string FullName { get; set; }

@@ -5,6 +5,7 @@ public class RatingSendModel
     public Guid ScheduleId { get; set; }
     public List<PaintingRatingViewModel> Paintings { get; set; }
 }
+
 public class PaintingRatingViewModel
 {
     public Guid PaintingId { get; set; }

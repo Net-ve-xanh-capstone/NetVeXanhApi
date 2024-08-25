@@ -1,6 +1,5 @@
 ﻿using Application;
 using Application.SendModels.Award;
-using Domain.Enums;
 using FluentValidation;
 
 namespace WebAPI.Validation.AwardValidation;
@@ -21,7 +20,7 @@ public class AwardRequestValidator : AbstractValidator<CreateAwardRequest>
 
         RuleFor(x => x.Cash)
             .GreaterThanOrEqualTo(0).WithMessage("Hiện kim phải lớn hơn hoặc bằng 0.");
-        
+
 
         RuleFor(x => x.RoundId)
             .NotEmpty().WithMessage("EducationalLevelId không được để trống.");

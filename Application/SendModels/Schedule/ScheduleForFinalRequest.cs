@@ -1,6 +1,4 @@
-﻿using Domain.Models;
-
-namespace Application.SendModels.Schedule;
+﻿namespace Application.SendModels.Schedule;
 
 public class ScheduleForFinalRequest
 {
@@ -12,6 +10,7 @@ public class ScheduleForFinalRequest
     public int JudgeCount { get; set; }
     public List<PrizeWithCountViewModel> Awards { get; set; }
 }
+
 public class PrizeWithCountViewModel
 {
     public Guid AwardId { get; set; }

@@ -54,7 +54,7 @@ public class EducationalLevelInContest
     public int MinAge { get; set; }
     public int MaxAge { get; set; }
     public string Status { get; set; }
-    
+
     public List<RoundInLevelViewModel> Round { get; set; }
 }
 

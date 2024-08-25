@@ -4,7 +4,6 @@ using Application.IService.ICommonService;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -38,16 +37,11 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Vòng Chung Kết")
-        {
-            throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
-        }
-        if (round.Award.Any(src => src.Rank == model.Rank))
-        {
+        if (round!.Name != "Vòng Chung Kết") throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
+        if (round.Award.Any(src => src.Rank == model.Rank && src.Status == "Active"))
             throw new Exception(" Bạn không thể thêm được các giải đã có sẵn");
-        }
         var validationResult = await ValidateAwardRequest(model);
-        if (!validationResult.IsValid)throw new ValidationException(validationResult.Errors);
+        if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
         var award = _mapper.Map<Award>(model);
 /*        award.Rank = RankAward.OtherAward.ToString();
         award.Description = model.Rank;*/
@@ -79,11 +73,13 @@ public class AwardService : IAwardService
     #endregion
 
     #region Get List Award By ContestId
+
     public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
         var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
         return _mapper.Map<List<AwardViewResponse>>(list);
     }
+
     #endregion
 
     #region Delete Award
@@ -92,10 +88,6 @@ public class AwardService : IAwardService
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
         if (award == null) throw new Exception("Khong tim thay Award");
-        /*if (award.Rank != RankAward.OtherAward.ToString())
-        {
-            throw new Exception("Bạn Không Thể Xóa những giải chính !");
-        }*/
         award.Status = AwardStatus.Inactive.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -107,6 +99,7 @@ public class AwardService : IAwardService
     public async Task<bool> UpdateAward(UpdateAwardRequest updateAward)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(updateAward.Id);
+
         if (award == null) throw new Exception("Khong tim thay Award");
         if (award.Rank == RankAward.OtherAward.ToString())
         {
@@ -118,13 +111,14 @@ public class AwardService : IAwardService
         {
             _mapper.Map(updateAward, award);
         }
+
         award.UpdatedTime = _currentTime.GetCurrentTime();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
 
     #endregion
-    
+
     #region Get Award By Id
 
     public async Task<AwardViewResponse> GetAwardById(Guid awardId)
@@ -137,6 +131,7 @@ public class AwardService : IAwardService
     #endregion
 
     #region IsExisted
+
     public async Task<bool> IsExistedId(Guid id)
     {
         return await _unitOfWork.AwardRepo.IsExistIdAsync(id);

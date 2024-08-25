@@ -47,7 +47,7 @@ public class PaintingConfiguration : IEntityTypeConfiguration<Painting>
 
         //Reviewed Timestamp
         builder.Property(u => u.ReviewedTimestamp);
-        
+
         //RoundId
         builder.Property(u => u.RatingStatus);
 

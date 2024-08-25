@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Domain.Models;
-using Domain.Models.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 

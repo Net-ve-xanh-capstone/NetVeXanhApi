@@ -1,6 +1,6 @@
 ﻿namespace Application.SendModels.Award;
 
-public class  CreateAwardRequest
+public class CreateAwardRequest
 {
     public string Rank { get; set; }
     public int Quantity { get; set; }

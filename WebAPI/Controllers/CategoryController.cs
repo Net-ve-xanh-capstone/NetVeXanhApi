@@ -135,10 +135,10 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category
-    /// <summary>
-    /// Lấy category có phân trang
-    /// </summary>
 
+    /// <summary>
+    ///     Lấy category có phân trang
+    /// </summary>
     [HttpGet("getcategory")]
     public async Task<IActionResult> ListCategory([FromQuery] ListModels listCategoryModel)
     {
@@ -181,8 +181,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List All Category
+
     /// <summary>
-    /// Lấy category không phân trang
+    ///     Lấy category không phân trang
     /// </summary>
     [HttpGet("getallcategory")]
     public async Task<IActionResult> ListAllCategory()
@@ -216,10 +217,10 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category Unused With Pagination
-    /// <summary>
-    /// Lấy danh sách danh mục đã sử dụng
-    /// </summary>
 
+    /// <summary>
+    ///     Lấy danh sách danh mục đã sử dụng
+    /// </summary>
     [HttpGet("getcategoryunused")]
     public async Task<IActionResult> ListCategoryUnused([FromQuery] ListModels listCategoryModel)
     {
@@ -262,10 +263,10 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List Category Used With Pagination
-    /// <summary>
-    /// Lấy danh sách danh mục đã sử dụng có phân trang
-    /// </summary>
 
+    /// <summary>
+    ///     Lấy danh sách danh mục đã sử dụng có phân trang
+    /// </summary>
     [HttpGet("getcategoryused")]
     public async Task<IActionResult> ListCategoryUsed([FromQuery] ListModels listCategoryModel)
     {
@@ -341,8 +342,9 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region List All Category Used
+
     /// <summary>
-    /// Lấy danh mục đã được sử dụng
+    ///     Lấy danh mục đã được sử dụng
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallcategoryused")]

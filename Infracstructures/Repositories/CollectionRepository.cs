@@ -57,11 +57,12 @@ public class CollectionRepository : GenericRepository<Collection>, ICollectionRe
 
     public virtual async Task<List<Collection>> GetCollectionByAccountIdAsync(Guid accountId)
     {
-        var collections = await DbSet.Include(x=>x.PaintingCollection).ThenInclude(x=>x.Painting).Where(x => x.CreatedBy == accountId && x.Status == CollectionStatus.Active.ToString())
+        var collections = await DbSet.Include(x => x.PaintingCollection).ThenInclude(x => x.Painting).Where(x =>
+                x.CreatedBy == accountId && x.Status == CollectionStatus.Active.ToString())
             .Include(x => x.Account).ToListAsync();
 
 
-            foreach (var collection in collections)
+        foreach (var collection in collections)
             collection.PaintingCollection = collection.PaintingCollection
                 .Take(3)
                 .ToList();

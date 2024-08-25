@@ -119,7 +119,7 @@ public class PaintingController : Controller
 
     [HttpPost("submitepainting1stroundforCompetitor")]
     public async Task<IActionResult> SubmitPaintingForPreliminaryRoundForCompetitor(
-        StaffCreatePaintingSendModel staffCreatePainting)
+        StaffCreatePaintingRequest staffCreatePainting)
     {
         try
         {
@@ -325,8 +325,9 @@ public class PaintingController : Controller
     #endregion
 
     #region Review Decision of Painting
+
     /// <summary>
-    /// Review painting của staff ( có thay đổi thêm Id của user hiện tại)
+    ///     Review painting của staff ( có thay đổi thêm Id của user hiện tại)
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -475,9 +476,11 @@ public class PaintingController : Controller
     }
 
     #endregion
+
     #region Get Painting By ScheduleId
+
     /// <summary>
-    /// Lấy danh sách bài dự thi theo schedule
+    ///     Lấy danh sách bài dự thi theo schedule
     /// </summary>
     /// <param name="scheduleId"></param>
     /// <returns></returns>

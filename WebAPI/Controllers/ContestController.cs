@@ -20,8 +20,9 @@ public class ContestController : Controller
     }
 
     #region Create Contest
+
     /// <summary>
-    /// Api tạo contest (mới) 
+    ///     Api tạo contest (mới)
     /// </summary>
     /// <param name="contest">không cần để contestid, createby trong level và không cần để Levellist, createby trong round</param>
     /// <returns></returns>
@@ -197,7 +198,7 @@ public class ContestController : Controller
     }
 
     #endregion
-    
+
     #region Get All Contest v2
 
     [HttpGet("getallcontest_2")]
@@ -356,7 +357,7 @@ public class ContestController : Controller
     }
 
     #endregion
-    
+
     #region Get drop down Contest
 
     [HttpGet("getListDorpDown/{id}")]
@@ -390,8 +391,9 @@ public class ContestController : Controller
     #region DashBoard
 
     #region Get Quantity Painting For Contest
+
     /// <summary>
-    /// Lấy danh sách số lượng bức tranh dự thi 
+    ///     Lấy danh sách số lượng bức tranh dự thi
     /// </summary>
     /// <returns></returns>
     [HttpGet("getquantitypaintingforyear")]
@@ -421,8 +423,9 @@ public class ContestController : Controller
     #endregion
 
     #region Get Quantity Painting For Contest
+
     /// <summary>
-    /// Lấy danh sách số lượng bức tranh dự thi 
+    ///     Lấy danh sách số lượng bức tranh dự thi
     /// </summary>
     /// <returns></returns>
     [HttpGet("getawardquantityforyear")]
@@ -450,7 +453,6 @@ public class ContestController : Controller
     }
 
     #endregion
-    
+
     #endregion
-    
 }

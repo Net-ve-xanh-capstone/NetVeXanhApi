@@ -37,14 +37,12 @@ public class EducationalLevelService : IEducationalLevelService
     public async Task<bool> CreateEducationalLevel(CreateEducationalLevelRequest model)
     {
         var educationalLevel = _mapper.Map<EducationalLevel>(model);
-            foreach (var round in educationalLevel.Round)
-            {
-                round.CreatedBy = educationalLevel.CreatedBy;
-                foreach (var award in round.Award)
-                {
-                    award.CreatedBy = educationalLevel.CreatedBy;
-                }
-            }
+        foreach (var round in educationalLevel.Round)
+        {
+            round.CreatedBy = educationalLevel.CreatedBy;
+            foreach (var award in round.Award) award.CreatedBy = educationalLevel.CreatedBy;
+        }
+
         await _unitOfWork.EducationalLevelRepo.AddAsync(educationalLevel);
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -157,7 +155,8 @@ public class EducationalLevelService : IEducationalLevelService
     {
         return await _unitOfWork.EducationalLevelRepo.IsExistIdAsync(id);
     }
-#endregion
+
+    #endregion
 
 
     #region Validate

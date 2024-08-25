@@ -33,6 +33,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Code == code);
     }
+
     public virtual async Task<List<Painting>?> GetByScheduleIdAsync(Guid scheduleId)
     {
         return await DbSet.Where(x => x.ScheduleId == scheduleId)
@@ -194,16 +195,6 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
         return paintingcount > 0;
     }
 
-    public async Task<int> GetNumPaintingInContest(Guid contestId)
-    {
-        return await DbSet
-            .Include(p => p.RoundTopic)
-            .ThenInclude(r => r.Round)
-            .ThenInclude(r => r.EducationalLevel)
-            .Where(p => p.RoundTopic.Round.EducationalLevel.ContestId == contestId)
-            .CountAsync();
-    }
-
     public async Task<int> GetNumPaintingInRound(Guid roundId)
     {
         return await DbSet
@@ -221,6 +212,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .Where(p => p.RoundTopic.Round.Id == roundId && p.ScheduleId != null)
             .CountAsync();
     }
+
     public async Task<int> GetNumPaintingInRoundIsNotHaveSchedule(Guid roundId)
     {
         return await DbSet
@@ -241,6 +233,16 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
     {
         return await DbSet
             .Where(p => p.ScheduleId == scheduleId && p.AwardId == awardId)
+            .CountAsync();
+    }
+
+    public async Task<int> GetNumPaintingInContest(Guid contestId)
+    {
+        return await DbSet
+            .Include(p => p.RoundTopic)
+            .ThenInclude(r => r.Round)
+            .ThenInclude(r => r.EducationalLevel)
+            .Where(p => p.RoundTopic.Round.EducationalLevel.ContestId == contestId)
             .CountAsync();
     }
 }

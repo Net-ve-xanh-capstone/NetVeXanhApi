@@ -1,6 +1,4 @@
-﻿using Domain.Models;
-
-namespace Application.ViewModels.AwardViewModels;
+﻿namespace Application.ViewModels.AwardViewModels;
 
 public class ListAwardResponse
 {

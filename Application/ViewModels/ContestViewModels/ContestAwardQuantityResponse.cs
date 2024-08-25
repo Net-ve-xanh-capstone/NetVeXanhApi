@@ -8,6 +8,6 @@ public class ContestAwardQuantityResponse
 
 public class AwardQuanity
 {
-    public string Name { get; set; } = null!;
     public int Quantity;
+    public string Name { get; set; } = null!;
 }

@@ -19,5 +19,5 @@ public class RoundTopicValidator : IRoundTopicValidator
 
     public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
 
-    public IValidator<GetListRoundTopicRequest> GetListRoundTopicRequestValidator   { get; }
+    public IValidator<GetListRoundTopicRequest> GetListRoundTopicRequestValidator { get; }
 }

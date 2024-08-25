@@ -43,7 +43,7 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<NotificationRequest> notificationRequestValidator,
         IValidator<PaintingCollectionRequest> paintingCollectionRequestValidator,
         IValidator<CompetitorCreatePaintingRequest> competitorCreatePaintingRequestValidator,
-        IValidator<StaffCreatePaintingSendModel> staffCreatePaintingRequestValidator,
+        IValidator<StaffCreatePaintingRequest> staffCreatePaintingRequestValidator,
         IValidator<PaintingUpdateStatusRequest> paintingUpdateStatusRequestValidator,
         IValidator<RatingSendModel> ratingRequestValidator,
         IValidator<UpdatePaintingRequest> updatePaintingRequestValidator,
@@ -126,7 +126,7 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<NotificationRequest> NotificationRequestValidator { get; }
     public IValidator<PaintingCollectionRequest> PaintingCollectionRequestValidator { get; }
     public IValidator<CompetitorCreatePaintingRequest> CompetitorCreatePaintingRequestValidator { get; }
-    public IValidator<StaffCreatePaintingSendModel> StaffCreatePaintingRequestValidator { get; }
+    public IValidator<StaffCreatePaintingRequest> StaffCreatePaintingRequestValidator { get; }
     public IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
     public IValidator<RatingSendModel> RatingRequestValidator { get; }
     public IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }

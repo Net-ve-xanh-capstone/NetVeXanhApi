@@ -19,8 +19,9 @@ public class RoundController : Controller
     }
 
     #region Create Round
+
     /// <summary>
-    /// Tạo Round (mới)
+    ///     Tạo Round (mới)
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
@@ -313,8 +314,8 @@ public class RoundController : Controller
     }
 
     #endregion
-    
-    
+
+
     #region Export
 
     [HttpGet("export-round-results")]
@@ -327,8 +328,9 @@ public class RoundController : Controller
     }
 
     #endregion
-    
+
     #region Announce
+
     [HttpGet("announce-results-round")]
     public async Task<IActionResult> Announce(Guid roundId)
     {
@@ -354,5 +356,6 @@ public class RoundController : Controller
             });
         }
     }
+
     #endregion
 }

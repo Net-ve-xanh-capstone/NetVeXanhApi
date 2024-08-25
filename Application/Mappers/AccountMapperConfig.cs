@@ -16,7 +16,7 @@ public partial class MapperConfigs : Profile
     {
         CreateMap<CreateAccountRequest, Account>();
         CreateMap<CreateAccountV2Request, Account>();
-        CreateMap<StaffCreatePaintingSendModel, Account>()
+        CreateMap<StaffCreatePaintingRequest, Account>()
             //.ForMember(dest => dest.Id, src => src.MapFrom(opt => Guid.NewGuid()))
             .ForMember(dest => dest.Status, src => src.MapFrom(opt => AccountStatus.Active.ToString()))
             .ForMember(dest => dest.Role, src => src.MapFrom(opt => Role.Competitor.ToString()))
@@ -40,14 +40,14 @@ public partial class MapperConfigs : Profile
                     .Image
             ))
             .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Painting
-                                                        .Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
-                                                        .FirstOrDefault().Award.Rank
+                .Where(p => p.Status == PaintingStatus.HasPrizes.ToString())
+                .FirstOrDefault().Award.Rank
             ))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Gender! == true ? "Nữ" :
                 src.Gender! == false ? "Nam" : null));
         ;
-        
+
         CreateMap<Account, CompetitorResponse>()
             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Birthday!.Value)))
             .ForMember(dest => dest.Prize, opt => opt.Ignore())

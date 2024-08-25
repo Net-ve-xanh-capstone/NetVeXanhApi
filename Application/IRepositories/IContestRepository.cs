@@ -6,10 +6,9 @@ namespace Application.IRepositories;
 
 public interface IContestRepository : IGenericRepository<Contest>
 {
-    Task<List<String>> GetListEducationalLevelName(Guid contestId);
+    Task<List<string>> GetListEducationalLevelName(Guid contestId);
     Task<List<string>> GetListRoundName(Guid contestId);
     Task<Contest?> GetByIdForScheduleAsync(Guid? id);
-
 
 
     Task<Contest?> GetAllContestInformationAsync(Guid contestId);
@@ -21,7 +20,7 @@ public interface IContestRepository : IGenericRepository<Contest>
     Task<List<Guid>> Get3NearestContestId();
 
     Task<Contest?> GetContestByIdForRoundTopic(Guid id);
-    
+
 
     public Task<List<Contest>> EndContest();
     public Task<List<Contest>> StartContest();
@@ -32,11 +31,11 @@ public interface IContestRepository : IGenericRepository<Contest>
 
 
     #region Check
+
     Task<bool> CheckContestDuplicate(DateTime startTime, DateTime endTime);
 
     #endregion
 
     public Task<List<NumberPaintingResponse>> GetNumberOfPaintingsByContestAsync();
     public Task<List<ContestAwardQuantityResponse>> GetAwardQuantity();
-
 }

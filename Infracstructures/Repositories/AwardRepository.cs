@@ -24,6 +24,7 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
     public async Task<List<Award>?> GetAwardsByRoundId(Guid roundId)
     {
         return await DbSet
+            .Include(x => x.AwardSchedule)
             .Where(x => x.RoundId == roundId && x.Status == AwardStatus.Active.ToString())
             .ToListAsync();
     }

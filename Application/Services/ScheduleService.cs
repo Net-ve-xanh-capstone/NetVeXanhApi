@@ -331,10 +331,10 @@ public class ScheduleService : IScheduleService
         {
             throw new Exception("Không tìm thấy lịch chấm.");
         }
-/*        if (schedule.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
+        if (schedule.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
         {
             throw new Exception("Còn giải chưa được chấm hết.");
-        }*/
+        }
         schedule.Status = ScheduleStatus.Done.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

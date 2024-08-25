@@ -9,4 +9,3 @@ public enum RankAward
     Preliminary = 5,
     OtherAward = 6
 }
-

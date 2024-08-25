@@ -19,8 +19,9 @@ public class EducationalLevelController : Controller
     }
 
     #region Create EducationalLevel
+
     /// <summary>
-    /// Api Tạo Level (mới)
+    ///     Api Tạo Level (mới)
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>

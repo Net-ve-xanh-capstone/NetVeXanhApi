@@ -12,7 +12,7 @@ public class ScheduleValidator : IScheduleValidator
         IValidator<ScheduleForFinalRequest> scheduleforfinalvalidator,
         IValidator<RatingFinalRoundForWeb> ratingfinalroundforwebvalidator,
         IValidator<RatingSendModel> ratingsendmodelvalidator
-        )
+    )
     {
         ScheduleRequestValidator = schedulevalidator;
         RatingRequestValidator = ratingvalidator;

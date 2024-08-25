@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Net;
 using System.Net.Mail;
 using Application.BaseModels;
@@ -75,7 +74,7 @@ public class MailService : IMailService
         template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
         template = template.Replace("[Vòng Thi]", round.Name);
         template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn đáp ứng tiêu chí");
-        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == (round.RoundNumber + 1));
+        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == round.RoundNumber + 1);
         if (nextRound!.Name!.Contains("Vòng Chung Kết"))
         {
             template = template.Replace("[tại địa điểm]", $"Tại {nextRound.Location}");
@@ -85,7 +84,7 @@ public class MailService : IMailService
         }
         else
         {
-            template = template.Replace("[tại địa điểm]", $"Online");
+            template = template.Replace("[tại địa điểm]", "Online");
             template = template.Replace("năm]", nextRound.StartTime.Year.ToString());
             template = template.Replace("/tháng/", nextRound.StartTime.Month.ToString());
             template = template.Replace("[ngày", nextRound.StartTime.Day.ToString());
@@ -113,8 +112,8 @@ public class MailService : IMailService
         template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
         template = template.Replace("[Vòng Thi]", round.Name);
         template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn đáp ứng tiêu chí");
-        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == (round.RoundNumber + 1));
-        
+        var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == round.RoundNumber + 1);
+
 
         var supportmail = _configuration["NetVeXanh:SupportMail"];
         var supportphone = _configuration["NetVeXanh:SupportPhone"];

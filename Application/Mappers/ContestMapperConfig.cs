@@ -10,11 +10,10 @@ public partial class MapperConfigs : Profile
 {
     partial void AddContestMapperConfig()
     {
-
         CreateMap<CreateContestRequest, Contest>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => ContestStatus.NotStarted.ToString()))
             .ForPath(dest => dest.EducationalLevel, opt => opt.MapFrom(src => src.EducationalLevel));
-        
+
         CreateMap<Contest, ContestResponse>()
             .ForMember(dest => dest.AccountFullName, opt => opt.MapFrom(src => src.Account.FullName))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>

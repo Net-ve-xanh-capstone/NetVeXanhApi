@@ -2,6 +2,7 @@
 using Application.SendModels.RoundTopic;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
+using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
 using FluentValidation.Results;
@@ -38,28 +39,26 @@ public class RoundTopicService : IRoundTopicService
     {
         var competitor = await _unitOfWork.AccountRepo.GetByIdAsync(request.AccountId);
 
-        var yearOld = DateTime.Today.Year - competitor.Birthday.Value.Year;
+        var today = DateTime.Today;
+        var birthday = competitor!.Birthday!.Value;
+        var age = today.Year - birthday.Year;
+
+// Check if the birthday has occurred this year yet
+        if (birthday > today.AddYears(-age)) age--;
 
         var list = new List<RoundTopic>();
 
-        if (2 <= yearOld && yearOld <= 5)
-        {
-            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
-            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng A"));
-            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
-            list = round.RoundTopic.ToList();
-        }
-        else if (6 <= yearOld && yearOld <= 11)
-        {
-            var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
-            var education = contest!.EducationalLevel.FirstOrDefault(e => e.Level.Equals("Bảng B"));
-            var round = education.Round.FirstOrDefault(r => r.Name.Equals("Vòng Sơ Khảo"));
-            list = round.RoundTopic.ToList();
-        }
-        else
-        {
-            throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
-        }
+        var contest = await _unitOfWork.ContestRepo.GetContestByIdForRoundTopic(request.ContestId);
+        foreach (var e in contest!.EducationalLevel)
+            if (age >= e.MinAge && e.MaxAge >= age)
+            {
+                var round = e.Round.FirstOrDefault(r => r.Status == RoundStatus.InProcess.ToString());
+
+
+                list = round.RoundTopic.ToList();
+            }
+
+        if (list.Count == 0) throw new Exception("Độ Tuổi Của Bạn Không Hợp Lệ");
 
         return _mapper.Map<List<RoundTopicResponse>>(list);
     }

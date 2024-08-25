@@ -9,7 +9,7 @@ public class CollectionValidator : ICollectionValidator
     public CollectionValidator(IValidator<CollectionRequest> collectionvalidator,
         IValidator<UpdateCollectionRequest> updatecollectionvalidator,
         IValidator<CreatePaintingAwardCollectionRequest> createpaintingawardcollectionrequestvalidator
-        )
+    )
     {
         CollectionRequestValidator = collectionvalidator;
         UpdateCollectionRequestValidator = updatecollectionvalidator;

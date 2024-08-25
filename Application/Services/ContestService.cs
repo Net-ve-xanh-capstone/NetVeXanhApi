@@ -5,7 +5,6 @@ using Application.SendModels.Contest;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
-using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -45,12 +44,10 @@ public class ContestService : IContestService
             foreach (var round in educationalLevel.Round)
             {
                 round.CreatedBy = contest.CreatedBy;
-                foreach (var award in round.Award)
-                {
-                    award.CreatedBy = contest.CreatedBy;
-                }
+                foreach (var award in round.Award) award.CreatedBy = contest.CreatedBy;
             }
         }
+
         contest.StaffId = contest.CreatedBy;
         if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
             throw new Exception("Thời gian bị trùng lặp");
@@ -82,10 +79,7 @@ public class ContestService : IContestService
             {
                 round.Status = RoundStatus.Delete.ToString();
                 foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
-                foreach (var award in round.Award)
-                {
-                    award.Status = AwardStatus.Inactive.ToString();
-                }
+                foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
             }
 
             level.Status = EducationalLevelStatus.Delete.ToString();
@@ -126,7 +120,7 @@ public class ContestService : IContestService
         var result = _mapper.Map<ContestDetailResponse>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
         result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
-        
+
         return result;
     }
 
@@ -160,7 +154,7 @@ public class ContestService : IContestService
     }
 
     #endregion
-    
+
     #region Get All Contest
 
     public async Task<(List<ContestResponse?>, int)> GetAllContest_v2(ListModels listModel)
@@ -173,7 +167,7 @@ public class ContestService : IContestService
             item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
             item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
         }
-        
+
         var totalPages = (int)Math.Ceiling((double)result.Count / listModel.PageSize);
         int? itemsToSkip = (listModel.PageNumber - 1) * listModel.PageSize;
         result = result.Skip((int)itemsToSkip)
@@ -229,6 +223,20 @@ public class ContestService : IContestService
 
     #endregion
 
+    #region list dropDown Infor
+
+    public async Task<ListDropDownContestResponse> GetListForDorpDown(Guid contestId)
+    {
+        var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
+        var listRound = await _unitOfWork.ContestRepo.GetListRoundName(contestId);
+        var result = new ListDropDownContestResponse();
+        result.Rounds = listRound;
+        result.EducationalLevels = listLevel;
+        return result;
+    }
+
+    #endregion
+
     #region Validate
 
     public async Task<ValidationResult> ValidateContestRequest(ContestRequest contest)
@@ -243,28 +251,14 @@ public class ContestService : IContestService
 
     #endregion
 
-    #region list dropDown Infor
 
-    public async Task<ListDropDownContestResponse> GetListForDorpDown(Guid contestId)
-    {
-        var listLevel = await _unitOfWork.ContestRepo.GetListEducationalLevelName(contestId);
-        var listRound = await _unitOfWork.ContestRepo.GetListRoundName(contestId);
-        var result = new ListDropDownContestResponse();
-        result.Rounds = listRound;
-        result.EducationalLevels = listLevel;
-        return result;
-    }
-
-    #endregion
-    
-    
     #region DashBoard
 
     public async Task<List<NumberPaintingResponse>> QuantiyPaintingForYear()
     {
         return await _unitOfWork.ContestRepo.GetNumberOfPaintingsByContestAsync();
     }
-    
+
     public async Task<List<ContestAwardQuantityResponse>> AwardQuantiy()
     {
         return await _unitOfWork.ContestRepo.GetAwardQuantity();

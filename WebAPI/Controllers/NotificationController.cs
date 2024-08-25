@@ -47,19 +47,22 @@ public class NotificationController : Controller
     }
 
     #endregion
-    
-    
+
+
     #region Get All Notification
+
     /// <summary>
-    /// Lấy danh sách người thong bao có phân trang
+    ///     Lấy danh sách người thong bao có phân trang
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallnotificationbyacountwithpagination")]
-    public async Task<IActionResult> GetAllNotiWithPagination([FromQuery] ListModels listCompetitorModel, Guid accountId)
+    public async Task<IActionResult> GetAllNotiWithPagination([FromQuery] ListModels listCompetitorModel,
+        Guid accountId)
     {
         try
         {
-            var (list, totalPage) = await _notificationService.GetNotificationByAccountId(listCompetitorModel, accountId);
+            var (list, totalPage) =
+                await _notificationService.GetNotificationByAccountId(listCompetitorModel, accountId);
             if (totalPage < listCompetitorModel.PageNumber)
                 return NotFound(new BaseResponseModel
                 {
@@ -152,5 +155,4 @@ public class NotificationController : Controller
     }
 
     #endregion
-    
 }

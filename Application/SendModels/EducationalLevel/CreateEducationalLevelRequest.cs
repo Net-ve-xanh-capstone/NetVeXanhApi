@@ -1,5 +1,4 @@
-﻿using Application.SendModels.Contest;
-using Application.SendModels.Round;
+﻿using Application.SendModels.Round;
 
 namespace Application.SendModels.EducationalLevel;
 

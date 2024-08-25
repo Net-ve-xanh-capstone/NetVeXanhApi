@@ -61,8 +61,73 @@ public class AuthenticationService : IAuthenticationService
         response.Message = "Đăng nhập không thành công.";
         return response;
     }
-    
+
     #endregion
+
+    #region ReGenerate JwtToken Account
+
+    public async Task<string> ReGenerateJwtToken(RefreshTokenRequest refreshToken)
+    {
+        var account = await _unitOfWork.AccountRepo.GetByIdAsync(refreshToken.Id);
+        if (account != null)
+            return _authentication.GenerateToken(account);
+        return "";
+    }
+
+    #endregion
+
+
+    #region Verify Email
+
+    public async Task<bool?> VerifyEmail(Guid id)
+    {
+        var account = await _unitOfWork.AccountRepo.GetByIdAsync(id);
+        if (account == null) return false;
+        account.Status = AccountStatus.Active.ToString();
+        await _unitOfWork.SaveChangesAsync();
+        return true;
+    }
+
+    #endregion
+
+    #region Refresh Token
+
+    public string RefreshToken()
+    {
+        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+    }
+
+    #endregion
+
+    #region Generate Account Code
+
+    private async Task<string> GenerateAccountCode(Role role)
+    {
+        var prefix = role switch
+        {
+            Role.Guardian => "GH",
+            Role.Competitor => "TS",
+            Role.Staff => "NV",
+            Role.Admin => "AD",
+            Role.Examiner => "GK",
+            _ => throw new ArgumentException("Invalid role")
+        };
+
+        var number = await _unitOfWork.AccountRepo.CreateNumberOfAccountCode(prefix);
+        return $"{prefix}-{number:D6}";
+    }
+
+    #endregion
+
+    public string RandomPassword()
+    {
+        var random = new Random();
+        var length = 16; // Length of the random string
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        var randomString = new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        return randomString;
+    }
 
     #region Create Account
 
@@ -173,75 +238,10 @@ public class AuthenticationService : IAuthenticationService
 
         response.Message = "Tạo thành công";
         response.Success = true;
-        
-        await _mailService.SendAccountInformation(account , password);
+
+        await _mailService.SendAccountInformation(account, password);
         return response;
     }
 
     #endregion
-
-    #region ReGenerate JwtToken Account
-
-    public async Task<string> ReGenerateJwtToken(RefreshTokenRequest refreshToken)
-    {
-        var account = await _unitOfWork.AccountRepo.GetByIdAsync(refreshToken.Id);
-        if (account != null)
-            return _authentication.GenerateToken(account);
-        return "";
-    }
-
-    #endregion
-    
-
-    #region Verify Email
-
-    public async Task<bool?> VerifyEmail(Guid id)
-    {
-        var account = await _unitOfWork.AccountRepo.GetByIdAsync(id);
-        if (account == null) return false;
-        account.Status = AccountStatus.Active.ToString();
-        await _unitOfWork.SaveChangesAsync();
-        return true;
-    }
-
-    #endregion
-
-    #region Refresh Token
-
-    public string RefreshToken()
-    {
-        return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
-    }
-
-    #endregion
-
-    #region Generate Account Code
-
-    private async Task<string> GenerateAccountCode(Role role)
-    {
-        var prefix = role switch
-        {
-            Role.Guardian => "GH",
-            Role.Competitor => "TS",
-            Role.Staff => "NV",
-            Role.Admin => "AD",
-            Role.Examiner => "GK",
-            _ => throw new ArgumentException("Invalid role")
-        };
-
-        var number = await _unitOfWork.AccountRepo.CreateNumberOfAccountCode(prefix);
-        return $"{prefix}-{number:D6}";
-    }
-
-    #endregion
-
-    public string RandomPassword()
-    {
-        Random random = new Random();
-        int length = 16; // Length of the random string
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-        string randomString = new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[random.Next(s.Length)]).ToArray());
-        return randomString;
-    }
 }

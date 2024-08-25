@@ -15,13 +15,13 @@ public class AccountController : ControllerBase
 
     public AccountController(IAccountService accountService)
     {
-        
         _accountService = accountService;
     }
 
     #region Get All Competitor
+
     /// <summary>
-    /// Lấy danh sách người dự thi có phân trang
+    ///     Lấy danh sách người dự thi có phân trang
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallcompetitorwithpagination")]
@@ -66,8 +66,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Examiner
+
     /// <summary>
-    /// Lấy danh sách giám khảo có phân trang
+    ///     Lấy danh sách giám khảo có phân trang
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallexaminerwithpagination")]
@@ -112,8 +113,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region get all staff
+
     /// <summary>
-    /// Lấy danh sách staff có phân trang
+    ///     Lấy danh sách staff có phân trang
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallstaffwithpagination")]
@@ -390,7 +392,7 @@ public class AccountController : ControllerBase
     }
 
     #endregion
-    
+
     #region ListAccountHaveAwardIn3NearestContest
 
     [HttpGet("getlistwinnerin3nearestcontest")]
@@ -524,6 +526,4 @@ public class AccountController : ControllerBase
     }
 
     #endregion
-
-
 }

@@ -1,7 +1,6 @@
 ﻿using Application.IRepositories;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
-using DocumentFormat.OpenXml.Bibliography;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +12,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public ContestRepository(AppDbContext context) : base(context)
     {
     }
+
     public async Task<Contest?> GetByIdForScheduleAsync(Guid? id)
     {
         return await DbSet.Where(x => x.Id == id)
@@ -21,6 +21,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ThenInclude(x => x.Schedule)
             .FirstOrDefaultAsync();
     }
+
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
@@ -30,7 +31,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<Contest?> GetContestThisYear()
     {
-        return await DbSet.FirstOrDefaultAsync(x => x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
+        return await DbSet.FirstOrDefaultAsync(x =>
+            x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
     }
 
     public async Task<List<string>> GetListEducationalLevelName(Guid contestId)
@@ -48,7 +50,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         var contest = await DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Round)
             .FirstOrDefaultAsync(src => src.Id == contestId);
 
-        return contest?.EducationalLevel?.ToList().SelectMany(src => src.Round).OrderBy(src => src.RoundNumber).Select(src => src.Name)
+        return contest?.EducationalLevel?.ToList().SelectMany(src => src.Round).OrderBy(src => src.RoundNumber)
+            .Select(src => src.Name)
             .Distinct()
             .ToList() ?? new List<string>();
     }
@@ -141,6 +144,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
         return await DbSet.Include(src => src.EducationalLevel).Where(src =>
             src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
+
     public async Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync()
     {
         var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
@@ -166,7 +170,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ToListAsync();
 
         return accounts;
-
     }
 
     public async Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList)
@@ -251,7 +254,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<List<ContestAwardQuantityResponse>> GetAwardQuantity()
     {
-        var result = await DbSet// Filter by contest ID if needed
+        var result = await DbSet // Filter by contest ID if needed
             .Select(c => new ContestAwardQuantityResponse
             {
                 Year = c.StartTime.Year,
@@ -268,6 +271,4 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
         return result;
     }
-
-
 }

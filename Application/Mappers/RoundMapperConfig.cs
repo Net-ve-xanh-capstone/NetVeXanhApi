@@ -1,6 +1,4 @@
-﻿using Application.SendModels.Contest;
-using Application.SendModels.Round;
-using Application.ViewModels.AccountViewModels;
+﻿using Application.SendModels.Round;
 using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -18,7 +16,7 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RoundStatus.NotStarted.ToString()))
             .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award));
 
-        
+
         CreateMap<RoundRequest, Round>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy))
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy));
@@ -47,7 +45,9 @@ public partial class MapperConfigs : Profile
                 src.Status == RoundStatus.InProcess.ToString() ? "Đang tiến hành" :
                 src.Status == RoundStatus.Complete.ToString() ? "Đã Hoàn thành" :
                 src.Status == RoundStatus.Delete.ToString() ? "Đã xóa" : null
-            ));;;
+            ));
+        ;
+        ;
 
 
         CreateMap<Round, ListScheduleResponse>()
@@ -56,13 +56,11 @@ public partial class MapperConfigs : Profile
             .ForMember(des => des.EducationName, src => src.MapFrom(opt => opt.EducationalLevel.Level))
             .ForMember(des => des.Schedules,
                 src => src.MapFrom(opt => opt.Schedule.Where(s => s.Status != ScheduleStatus.Delete.ToString())));
-        
 
 
         // CreateMap<Round, CompetitorResponse>()
         //     .IncludeMembers(s => s.RoundTopic)
         //     .ForMember(dest => dest.RoundName, opt => opt.MapFrom(src => src.Name));
         //
-        
     }
 }

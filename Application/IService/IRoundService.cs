@@ -22,7 +22,9 @@ public interface IRoundService
 
 
     #region Export
+
     Task<(byte[], string)> GetListCompetitorOfRound(Guid roundId);
+
     #endregion
 
     Task<bool> AnnounceResults(Guid roundId);

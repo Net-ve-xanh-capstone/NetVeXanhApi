@@ -1,5 +1,4 @@
 ﻿using Application.SendModels.Award;
-using Application.SendModels.Contest;
 
 namespace Application.SendModels.Round;
 

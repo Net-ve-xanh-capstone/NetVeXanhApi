@@ -27,7 +27,7 @@ public interface IPaintingService
     Task<ValidationResult> ValidateCompetitorCreateRequest(CompetitorCreatePaintingRequest painting);
     Task<ValidationResult> ValidateFilterPaintingRequest(FilterPaintingRequest filterPainting);
     Task<ValidationResult> ValidatePaintingUpdateStatusRequest(PaintingUpdateStatusRequest painting);
-    Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingSendModel painting);
+    Task<ValidationResult> ValidateStaffCreateRequest(StaffCreatePaintingRequest painting);
     Task<ValidationResult> ValidateUpdatePaintingRequest(UpdatePaintingRequest painting);
 
     #region Competitor
@@ -42,7 +42,7 @@ public interface IPaintingService
 
     public Task<PaintingResponse?> ReviewDecisionOfPainting(PaintingUpdateStatusRequest request);
     public Task<PaintingResponse?> FinalDecisionOfPainting(PaintingUpdateStatusRequest request);
-    public Task<bool> StaffSubmitPaintingForPreliminaryRound(StaffCreatePaintingSendModel request);
+    public Task<bool> StaffSubmitPaintingForPreliminaryRound(StaffCreatePaintingRequest request);
     public Task<bool> StaffSubmitPaintingForFinalRound(StaffCreatePaintingFinalRoundRequest request);
 
     #endregion

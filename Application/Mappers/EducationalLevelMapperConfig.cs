@@ -1,6 +1,4 @@
-﻿using Application.SendModels.Contest;
-using Application.SendModels.EducationalLevel;
-using Application.ViewModels.AwardViewModels;
+﻿using Application.SendModels.EducationalLevel;
 using Application.ViewModels.ContestViewModels;
 using Application.ViewModels.EducationalLevelViewModels;
 using Application.ViewModels.ScheduleViewModels;
@@ -14,7 +12,7 @@ public partial class MapperConfigs : Profile
 {
     partial void AddEducationalLevelMapperConfig()
     {
-        /*//Map For List Award        
+        /*//Map For List Award
         CreateMap<EducationalLevel, ListAwardResponse>()
             .ForPath(des => des.AwardViewModels, opt => opt.MapFrom(src => src.Award));*/
 
@@ -22,7 +20,7 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => EducationalLevelStatus.NotStarted.ToString()))
             .ForPath(dest => dest.Round, opt => opt.MapFrom(src => src.Round));
 
-        
+
         CreateMap<EducationalLevel, EducationalLevelRequest>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
         CreateMap<EducationalLevel, EducationalLevelUpdateRequest>().ReverseMap()
@@ -46,7 +44,8 @@ public partial class MapperConfigs : Profile
                 src.Status == EducationalLevelStatus.InProcess.ToString() ? "Đang tiến hành" :
                 src.Status == EducationalLevelStatus.Complete.ToString() ? "Đã Hoàn thành" :
                 src.Status == EducationalLevelStatus.Delete.ToString() ? "Đã xóa" : null
-            ));;
+            ));
+        ;
 
         CreateMap<EducationalLevel, ScheduleWebResponse>()
             .ForPath(x => x.ScheduleViewModels, x => x.MapFrom(x => x.Round.SelectMany(x => x.Schedule)));

@@ -19,8 +19,9 @@ public class TopicController : Controller
     }
 
     #region Create Topic
+
     /// <summary>
-    /// Tạo Topic
+    ///     Tạo Topic
     /// </summary>
     /// <param name="topicRequest">Mô tả request gửi.</param>
     /// <response code="200">Tạo thành công.</response>

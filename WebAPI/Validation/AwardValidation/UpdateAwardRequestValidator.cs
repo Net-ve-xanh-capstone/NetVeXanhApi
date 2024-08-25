@@ -1,6 +1,5 @@
 ﻿using Application;
 using Application.SendModels.Award;
-using Domain.Enums;
 using FluentValidation;
 
 namespace WebAPI.Validation.AwardValidation;
@@ -33,7 +32,7 @@ public class UpdateAwardRequestValidator : AbstractValidator<UpdateAwardRequest>
                         .WithMessage("Id không tồn tại.");
                 });
         });
-        
+
         RuleFor(x => x.Quantity)
             .GreaterThanOrEqualTo(1).WithMessage("Số lượng phải lớn hơn hoặc bằng 1.");
 

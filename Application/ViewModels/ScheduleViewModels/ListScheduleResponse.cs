@@ -10,5 +10,4 @@ public class ListScheduleResponse
     public int PaintingNoSchedule { get; set; }
     public int PaintingWithSchedule { get; set; }
     public List<ScheduleResponse>? Schedules { get; set; }
-
 }

@@ -19,16 +19,16 @@ public class ScheduleController : Controller
 
 
     #region Create Schedule For Qualifying Round
+
     /// <summary>
-    /// Tạo lịch chấm
+    ///     Tạo lịch chấm
     /// </summary>
-    /// <param name="schedule">    
-    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
-    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
     [HttpPost("preliminary")]
-    
     public async Task<IActionResult> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
         try
@@ -46,6 +46,7 @@ public class ScheduleController : Controller
                 };
                 return BadRequest(response);
             }
+
             var result = await _scheduleService.CreateScheduleForQualifyingRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -72,15 +73,16 @@ public class ScheduleController : Controller
         }
     }
 
-    #endregion 
+    #endregion
 
     #region Create Schedule For Final Round
+
     /// <summary>
-    /// Tạo lịch chấm
+    ///     Tạo lịch chấm
     /// </summary>
-    /// <param name="schedule">    
-    ///  <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
-    /// <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
     [HttpPost("final")]
@@ -304,13 +306,14 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id for Web
+
     /*/contest/{contestId}*/
     [HttpGet("examiner/{examinerId}")]
-    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId/*, [FromRoute] Guid contestId*/)
+    public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId /*, [FromRoute] Guid contestId*/)
     {
         try
         {
-            var result = await _scheduleService.GetScheduleForWeb(examinerId/*, contestId*/);
+            var result = await _scheduleService.GetScheduleForWeb(examinerId /*, contestId*/);
             if (result == null) return NotFound(new { Success = false, Message = "Lịch chấm không tìm thấy" });
             return Ok(new BaseResponseModel
             {
@@ -363,9 +366,10 @@ public class ScheduleController : Controller
 
     #endregion
 
-    #region  Rating 
+    #region Rating
+
     /// <summary>
-    /// xác nhận hoàn thành việc chấm bài
+    ///     xác nhận hoàn thành việc chấm bài
     /// </summary>
     /// <param name="rating"></param>
     /// <returns></returns>
@@ -399,11 +403,13 @@ public class ScheduleController : Controller
             });
         }
     }
+
     #endregion
 
-    #region  Rating 
+    #region Rating
+
     /// <summary>
-    /// Chấm điểm 
+    ///     Chấm điểm
     /// </summary>
     /// <param name="rating">không có award thì cho awardId = null</param>
     /// <returns></returns>
@@ -451,6 +457,6 @@ public class ScheduleController : Controller
             });
         }
     }
+
     #endregion
-    
 }

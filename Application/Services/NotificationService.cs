@@ -47,6 +47,26 @@ public class NotificationService : INotificationService
 
     #endregion
 
+    #region Is Read
+
+    public async Task<bool> ReadNotification(Guid id)
+    {
+        var notification = await _unitOfWork.NotificationRepo.GetByIdAsync(id);
+        if (notification == null) throw new Exception("Khong tim thay Notification");
+        notification.IsReaded = true;
+
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
+
+    #endregion
+
+
+    //Check Id is Exist
+    public async Task<bool> IsExistedId(Guid id)
+    {
+        return await _unitOfWork.NotificationRepo.IsExistIdAsync(id);
+    }
+
     #region Get By Id
 
     public async Task<NotificationDetailResponse?> GetNotificationById(Guid id)
@@ -80,24 +100,4 @@ public class NotificationService : INotificationService
     }
 
     #endregion
-
-    #region Is Read
-
-    public async Task<bool> ReadNotification(Guid id)
-    {
-        var notification = await _unitOfWork.NotificationRepo.GetByIdAsync(id);
-        if (notification == null) throw new Exception("Khong tim thay Notification");
-        notification.IsReaded = true;
-
-        return await _unitOfWork.SaveChangesAsync() > 0;
-    }
-
-    #endregion
-    
-
-    //Check Id is Exist
-    public async Task<bool> IsExistedId(Guid id)
-    {
-        return await _unitOfWork.NotificationRepo.IsExistIdAsync(id);
-    }
 }

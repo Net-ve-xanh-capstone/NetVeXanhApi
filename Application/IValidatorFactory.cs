@@ -41,7 +41,7 @@ public interface IValidatorFactory
     IValidator<NotificationRequest> NotificationRequestValidator { get; }
     IValidator<PaintingCollectionRequest> PaintingCollectionRequestValidator { get; }
     IValidator<CompetitorCreatePaintingRequest> CompetitorCreatePaintingRequestValidator { get; }
-    IValidator<StaffCreatePaintingSendModel> StaffCreatePaintingRequestValidator { get; }
+    IValidator<StaffCreatePaintingRequest> StaffCreatePaintingRequestValidator { get; }
     IValidator<PaintingUpdateStatusRequest> PaintingUpdateStatusRequestValidator { get; }
     IValidator<RatingSendModel> RatingRequestValidator { get; }
     IValidator<UpdatePaintingRequest> UpdatePaintingRequestValidator { get; }

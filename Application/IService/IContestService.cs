@@ -32,5 +32,4 @@ public interface IContestService
 
     Task<List<NumberPaintingResponse>> QuantiyPaintingForYear();
     Task<List<ContestAwardQuantityResponse>> AwardQuantiy();
-
 }

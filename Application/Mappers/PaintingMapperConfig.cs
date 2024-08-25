@@ -15,7 +15,7 @@ public partial class MapperConfigs : Profile
     {
         CreateMap<Painting, CompetitorCreatePaintingRequest>().ReverseMap();
 
-        CreateMap<Painting, StaffCreatePaintingSendModel>().ReverseMap()
+        CreateMap<Painting, StaffCreatePaintingRequest>().ReverseMap()
             .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId));
 
         CreateMap<Painting, StaffCreatePaintingFinalRoundRequest>().ReverseMap()
@@ -149,12 +149,12 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.ContestName,
                 opt => opt.MapFrom(src => src.RoundTopic.Round.EducationalLevel.Contest.Name))
             .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Award.Rank
-            /*src.Award == null ? "Không có giải" :
-            src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
-            src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
-            src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
-            src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
-            src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
+                /*src.Award == null ? "Không có giải" :
+                src.Award.Rank == RankAward.FirstPrize.ToString() ? "Giải Nhất" :
+                src.Award.Rank == RankAward.SecondPrize.ToString() ? "Giải Nhì" :
+                src.Award.Rank == RankAward.ThirdPrize.ToString() ? "Giải Ba" :
+                src.Award.Rank == RankAward.ConsolationPrize.ToString() ? "Giải Tư" :
+                src.Award.Rank == RankAward.Preliminary.ToString() ? "Qua Vòng Loại" : "Không có giải"*/
             ));
         /*CreateMap<Painting, CompetitorResponse>()
             .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))
@@ -168,8 +168,8 @@ public partial class MapperConfigs : Profile
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
                 src.Account.Gender! == true ? "Nữ" :
                 src.Account.Gender! == false ? "Nam" : null));*/
-        
-        
+
+
         CreateMap<Painting, CompetitorResponse>()
             .IncludeMembers(s => s.Account)
             .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award!.Rank ?? "Không có giải thưởng"))
@@ -178,10 +178,7 @@ public partial class MapperConfigs : Profile
         CreateMap<ICollection<Painting>, CompetitorResponse>()
             .ConvertUsing((src, dest, context) =>
             {
-                if (src != null && src.Any())
-                {
-                    return context.Mapper.Map<CompetitorResponse>(src.First());
-                }
+                if (src != null && src.Any()) return context.Mapper.Map<CompetitorResponse>(src.First());
                 return null;
             });
     }

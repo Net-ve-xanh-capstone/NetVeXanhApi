@@ -2,6 +2,6 @@
 
 public class ListDropDownContestResponse
 {
-    public List<String> EducationalLevels { get; set; } = null!;
-    public List<String> Rounds { get; set; } = null!;
+    public List<string> EducationalLevels { get; set; } = null!;
+    public List<string> Rounds { get; set; } = null!;
 }

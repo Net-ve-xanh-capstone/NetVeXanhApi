@@ -1,5 +1,4 @@
 ﻿using Application.IRepositories;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -30,13 +29,16 @@ public class EducationalLevelRepository : GenericRepository<EducationalLevel>, I
 
     public async Task<List<EducationalLevel>> GetEducationalLevelByContestId(Guid contestId)
     {
-        return await DbSet.Include(src => src.Contest).Include(src => src.Round).Where(src => src.ContestId == contestId && src.Status != EducationalLevelStatus.Delete.ToString()).OrderBy(x=>x.Level).ToListAsync();
+        return await DbSet.Include(src => src.Contest).Include(src => src.Round)
+            .Where(src => src.ContestId == contestId && src.Status != EducationalLevelStatus.Delete.ToString())
+            .OrderBy(x => x.Level).ToListAsync();
     }
 
     public async Task<List<Guid>> GetLevelIdByListContestId(List<Guid> contestIdList)
     {
         return await DbSet
-            .Where(x => contestIdList.Contains((Guid)x.ContestId) && x.Status != EducationalLevelStatus.Delete.ToString())
+            .Where(x => contestIdList.Contains((Guid)x.ContestId) &&
+                        x.Status != EducationalLevelStatus.Delete.ToString())
             .Select(x => x.Id)
             .ToListAsync();
     }

@@ -9,7 +9,7 @@ public class ContestValidator : IContestValidator
     public ContestValidator(IValidator<ContestRequest> contestvalidator,
         IValidator<UpdateContestRequest> updatecontestvalidator,
         IValidator<CreateContestRequest> createcontestrequestvalidator
-        )
+    )
     {
         ContestRequestValidator = contestvalidator;
         UpdateContestValidator = updatecontestvalidator;

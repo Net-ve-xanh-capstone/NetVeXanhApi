@@ -4,11 +4,11 @@ using FluentValidation;
 
 namespace WebAPI.Validation.ScheduleValidation;
 
-public class ScheduleRequestValidator : AbstractValidator<ScheduleForPreliminaryRequest>
+public class ScheduleForPreliminaryRequestValidator : AbstractValidator<ScheduleForPreliminaryRequest>
 {
     private readonly IValidationServiceManager _validationServiceManager;
 
-    public ScheduleRequestValidator(IValidationServiceManager validationServiceManager)
+    public ScheduleForPreliminaryRequestValidator(IValidationServiceManager validationServiceManager)
     {
         _validationServiceManager = validationServiceManager;
 
@@ -31,8 +31,25 @@ public class ScheduleRequestValidator : AbstractValidator<ScheduleForPreliminary
                             return await _validationServiceManager.RoundValidationService.IsExistedId(roundId);
                         })
                         .WithMessage("RoundId không tồn tại.");
+                    RuleFor(x => x.RoundId)
+                        .MustAsync(async (roundId, cancellation) =>
+                        {
+                            // Kiểm tra trạng thái của RoundId
+                            return await _validationServiceManager.RoundValidationService.BeInCompleteStatus(roundId);
+                        })
+                        .WithMessage("Vòng thi phải hoàn thành mới có thể tạo lịch chấm.");
                 });
         });
+        RuleForEach(x => x.Awards)
+            .MustAsync(async (award, cancellation) =>
+                await _validationServiceManager.AwardScheduleValidationService.IsValidAwardJudge(award.AwardCount, award.AwardId))
+            .WithMessage("Số lượng giải đang vượt quá số lượng cho phép.");
+
+        RuleFor(x => x.JudgedCount)
+            .GreaterThan(0).WithMessage("Số lượng bài chấm phải lớn hơn 0.")
+            .MustAsync(async (dto, judgeCount, cancellation) =>
+                await _validationServiceManager.PaintingValidationService.NumberJudgeValid(judgeCount, dto.RoundId))
+            .WithMessage("Số lượng bài chấm không được vượt quá số lượng tranh chưa được lên lịch chấm.");
 
         RuleFor(review => review.EndDate)
             .GreaterThan(DateTime.Now).WithMessage("Ngày kết thúc phải lớn hơn ngày hiện tại");

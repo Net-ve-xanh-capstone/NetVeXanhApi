@@ -104,9 +104,11 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<Contest?> GetNearestContestInformationAsync()
     {
-        var guid = Guid.Parse("4E7AD1E2-FDCA-4E9C-B202-A2D0BAA439EF");
-
-        var result = await DbSet.Where(x => x.Id == guid)
+        var Id = await DbSet
+            .Where(x => x.Status == ContestStatus.InProcess.ToString())
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+        var result = await DbSet.Where(x => x.Id == Id)
             .Include(x => x.EducationalLevel)
             .ThenInclude(x => x.Round)
             .ThenInclude(x => x.Schedule)
@@ -208,7 +210,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
                     .Select(el => new EducationalLevel
                     {
                         Id = el.EducationalLevel.Id,
-                        Level = el.EducationalLevel.EducationalLevel.ToString()
+                        Level = el.EducationalLevel.EducationalLevel.ToString(),
+
                     })
                     .ToList()
             })

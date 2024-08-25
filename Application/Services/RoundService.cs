@@ -6,6 +6,7 @@ using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -239,8 +240,7 @@ public class RoundService : IRoundService
     }
 
     #endregion
-
-
+    
     #region Validate
 
     public async Task<bool> IsExistedId(Guid id)
@@ -259,4 +259,17 @@ public class RoundService : IRoundService
     }
 
     #endregion
+
+    public async Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
+        var previousRoundId = round!.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == round.RoundNumber - 1)!.Id;
+        var previousRound = await _unitOfWork.RoundRepo.GetRoundDetail(previousRoundId);
+        var competitors = previousRound!.RoundTopic
+            .SelectMany(rt => rt.Painting)
+            .Select(p => _mapper.Map<CompetitorResponse>(p))
+            .Distinct()
+            .ToList();
+        return competitors;
+    }
 }

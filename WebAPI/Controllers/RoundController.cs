@@ -128,6 +128,36 @@ public class RoundController : Controller
     }
 
     #endregion
+    
+    #region Get List Comepetitor
+
+    [HttpGet("/finalround/{id}")]
+    public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
+    {
+        try
+        {
+            var result = await _roundService.GetListCompetitorFinalRound(id);
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy vòng thi" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy chi tiết vòng thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
 
     #region Update Round
 
@@ -314,8 +344,7 @@ public class RoundController : Controller
     }
 
     #endregion
-
-
+    
     #region Export
 
     [HttpGet("export-round-results")]
@@ -358,4 +387,5 @@ public class RoundController : Controller
     }
 
     #endregion
+    
 }

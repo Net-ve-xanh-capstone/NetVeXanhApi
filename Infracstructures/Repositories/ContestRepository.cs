@@ -268,4 +268,8 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
         return result;
     }
+    
+    
+    
+    
 }

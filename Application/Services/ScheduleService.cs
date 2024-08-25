@@ -102,8 +102,7 @@ public class ScheduleService : IScheduleService
     {
         return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
     }
-
-
+    
     #region Confirm Rating
 
     public async Task<bool> ConfirmRating(Guid id)
@@ -206,55 +205,6 @@ public class ScheduleService : IScheduleService
 
     #endregion
 
-    #region New Rating
-
-    public async Task<bool> RatingFinalRound(RatingSendModel ratingPainting)
-    {
-        var validationResult = await ValidateRatingRequest(ratingPainting);
-        if (!validationResult.IsValid)
-            // Handle validation failure
-            throw new ValidationException(validationResult.Errors);
-        //Get schedule 
-        var schedules = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
-
-        if (schedules!.Status == ScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
-
-        //Get painting have status is FinalRound
-        // var listPainting = schedules.Painting.Where(p => p.Status == PaintingStatus.FinalRound.ToString()).ToList();
-        //Get Award from Award schedule
-        //var awardSchedule = schedules.AwardSchedule.FirstOrDefault(a => a.AwardId == ratingPainting.AwardId);
-
-        //if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
-
-        //Check Have any id from request don't exist in schedule
-        /* if (ratingPainting.Paintings.Select(p => p.PaintingId).Except(listPainting.Select(p => p.Id)).ToList().Any())
-             throw new Exception("Có tranh không tồn tại");*/
-
-
-        //Create var to call all rated painting
-        var listPass = schedules.Painting.Where(p => ratingPainting.Paintings.Select(r => r.PaintingId).Contains(p.Id))
-            .ToList();
-
-        /*if (listPass.Count != awardSchedule.Quantity)
-            throw new Exception($"Số lượng giải thưởng: {awardSchedule.Quantity}! Vui lòng kiểm tra lại đúng số lượng");
-*/
-        foreach (var p in listPass) p.Status = PaintingStatus.HasPrizes.ToString();
-        // p.AwardId = ratingPainting.AwardId;
-        schedules.Painting.ToList().ForEach(p => p.FinalDecisionTimestamp = DateTime.Now);
-
-
-        // awardSchedule.Status = AwardScheduleStatus.Done.ToString();
-
-        if (!schedules.AwardSchedule.Any(a => a.Status == AwardScheduleStatus.Rating.ToString()))
-            schedules.Status = ScheduleStatus.Done.ToString();
-
-        await _unitOfWork.SaveChangesAsync();
-
-        return true;
-    }
-
-    #endregion
-
     #region Create
 
     public async Task<bool> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
@@ -317,8 +267,7 @@ public class ScheduleService : IScheduleService
         foreach (var e in schedule.ListExaminer)
         {
             //Get Painting 
-            var listPainting =
-                await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgeCount);
+            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgedCount);
             var award = round?.Award.ToList();
             if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
@@ -417,8 +366,7 @@ public class ScheduleService : IScheduleService
     }
 
     #endregion
-
-
+    
     #region Validate
 
     public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule)

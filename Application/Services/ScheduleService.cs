@@ -102,7 +102,7 @@ public class ScheduleService : IScheduleService
     {
         return await _unitOfWork.ScheduleRepo.IsExistIdAsync(id);
     }
-    
+
     #region Confirm Rating
 
     public async Task<bool> ConfirmRating(Guid id)
@@ -267,7 +267,8 @@ public class ScheduleService : IScheduleService
         foreach (var e in schedule.ListExaminer)
         {
             //Get Painting 
-            var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgedCount);
+            var listPainting =
+                await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, schedule.JudgedCount);
             var award = round?.Award.ToList();
             if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
@@ -366,7 +367,7 @@ public class ScheduleService : IScheduleService
     }
 
     #endregion
-    
+
     #region Validate
 
     public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule)

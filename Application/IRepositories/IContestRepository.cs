@@ -38,4 +38,7 @@ public interface IContestRepository : IGenericRepository<Contest>
 
     public Task<List<NumberPaintingResponse>> GetNumberOfPaintingsByContestAsync();
     public Task<List<ContestAwardQuantityResponse>> GetAwardQuantity();
+
+
+    public Task<List<Painting>?> GetPaintingHasPriceOfContest(Guid contestId);
 }

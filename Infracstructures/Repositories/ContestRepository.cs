@@ -210,8 +210,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
                     .Select(el => new EducationalLevel
                     {
                         Id = el.EducationalLevel.Id,
-                        Level = el.EducationalLevel.EducationalLevel.ToString(),
-
+                        Level = el.EducationalLevel.EducationalLevel.ToString()
                     })
                     .ToList()
             })
@@ -271,8 +270,26 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
         return result;
     }
-    
-    
-    
-    
+
+    public Task<List<Painting>?> GetPaintingHasPriceOfContest(Guid contestId)
+    {
+        var contest = DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Round)
+            .ThenInclude(src => src.RoundTopic).ThenInclude(src => src.Painting)
+            .FirstOrDefault(src => src.Id == contestId);
+
+        if (contest == null) return Task.FromResult<List<Painting>?>(null);
+
+        var educationalLevels = contest.EducationalLevel;
+
+        if (educationalLevels == null || !educationalLevels.Any()) return Task.FromResult<List<Painting>?>(null);
+
+        var paintings = educationalLevels
+            .SelectMany(level => level.Round ?? Enumerable.Empty<Round>())
+            .SelectMany(round => round.RoundTopic ?? Enumerable.Empty<RoundTopic>())
+            .SelectMany(topic => topic.Painting ?? Enumerable.Empty<Painting>())
+            .Where(painting => painting.Status == PaintingStatus.HasPrizes.ToString())
+            .ToList();
+
+        return Task.FromResult(paintings);
+    }
 }

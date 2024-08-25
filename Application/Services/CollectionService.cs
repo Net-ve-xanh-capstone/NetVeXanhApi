@@ -118,7 +118,7 @@ public class CollectionService : ICollectionService
     }
 
     #endregion
-    
+
     #region Get All Collection
 
     public async Task<(List<CollectionResponse>, int)> GetAllCollection(ListModels listCollectionModel)
@@ -177,7 +177,8 @@ public class CollectionService : ICollectionService
 
     #region Add Collection with award Painting in Contest
 
-    public async Task<bool> AddCollectionWithPaintingAwardInContest(CreatePaintingAwardCollectionRequest addCollectionViewModel)
+    public async Task<bool> AddCollectionWithPaintingAwardInContest(
+        CreatePaintingAwardCollectionRequest addCollectionViewModel)
     {
         var collection = _mapper.Map<Collection>(addCollectionViewModel);
         collection.Status = CollectionStatus.Active.ToString();

@@ -28,6 +28,6 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
 
     public async Task<List<AwardSchedule?>> GetByAwardIdAsync(Guid awardId)
     {
-        return await DbSet.Where(x=>x.AwardId == awardId).ToListAsync();
+        return await DbSet.Where(x => x.AwardId == awardId).ToListAsync();
     }
 }

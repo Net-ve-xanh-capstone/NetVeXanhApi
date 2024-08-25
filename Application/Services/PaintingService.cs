@@ -124,9 +124,7 @@ public class PaintingService : IPaintingService
             var level = roundTopic.Round.EducationalLevel;
 
             if (level.MinAge > yearOld && yearOld > level.MaxAge)
-            {
                 throw new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
-            }
 
             //Add DB
             if (request.Status == PaintingStatus.Submitted.ToString() ||

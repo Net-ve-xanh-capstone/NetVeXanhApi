@@ -41,7 +41,7 @@ public class ScheduleForFinalRequestValidator : AbstractValidator<ScheduleForFin
                 });
         });
 
-        RuleFor(x => x.JudgeCount)
+        RuleFor(x => x.JudgedCount)
             .GreaterThan(0).WithMessage("Số lượng bài chấm phải lớn hơn 0.")
             .MustAsync(async (dto, judgeCount, cancellation) =>
                 await _validationServiceManager.PaintingValidationService.NumberJudgeValid(judgeCount, dto.RoundId))

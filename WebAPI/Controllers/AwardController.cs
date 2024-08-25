@@ -189,6 +189,41 @@ public class AwardController : Controller
     /// </summary>
     /// <param name="roundId"></param>
     /// <returns></returns>
+    [HttpGet("getawardforschedule/{roundId}")]
+    public async Task<IActionResult> GetAwardForSchedule(Guid roundId)
+    {
+        try
+        {
+            var result = await _awardService.GetListAwardsByRoundIdForSchedule(roundId);
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy giải" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Award Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get List Award By Round Id
+
+    /// <summary>
+    ///     Lấy giải theo vòng để nhập vào số lượng của giải đó để tạo lịch chấm
+    /// </summary>
+    /// <param name="roundId"></param>
+    /// <returns></returns>
     [HttpGet("Round/{roundId}")]
     public async Task<IActionResult> GetAllAward(Guid roundId)
     {

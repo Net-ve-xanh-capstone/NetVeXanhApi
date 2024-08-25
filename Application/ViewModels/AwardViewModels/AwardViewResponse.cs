@@ -8,4 +8,5 @@ public class AwardViewResponse
     public double? Cash { get; set; }
     public string? Artifact { get; set; }
     public string? Description { get; set; }
+    public int JudgeQuantity {  get; set; }
 }

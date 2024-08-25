@@ -43,8 +43,8 @@ public class AwardService : IAwardService
         var validationResult = await ValidateAwardRequest(model);
         if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
         var award = _mapper.Map<Award>(model);
-/*        award.Rank = RankAward.OtherAward.ToString();
-        award.Description = model.Rank;*/
+        /*        award.Rank = RankAward.OtherAward.ToString();
+                award.Description = model.Rank;*/
         award.Status = AwardStatus.Active.ToString();
         await _unitOfWork.AwardRepo.AddAsync(award);
         award.CreatedTime = _currentTime.GetCurrentTime();
@@ -68,6 +68,26 @@ public class AwardService : IAwardService
             .Take(listAwardModel.PageSize)
             .ToList();
         return (result, totalPages);
+    }
+
+    #endregion
+
+    #region Get List Award By ContestId
+
+    public async Task<List<AwardViewResponse>?> GetListAwardsByRoundIdForSchedule(Guid roundId)
+    {
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        foreach (var a in list)
+        {
+            var count = 0;
+            foreach (var awardSchedule in a.AwardSchedule)
+            {
+                count = count + awardSchedule.Quantity;
+            }
+            a.Quantity = a.Quantity - count;
+
+        }
+        return _mapper.Map<List<AwardViewResponse>>(list);
     }
 
     #endregion

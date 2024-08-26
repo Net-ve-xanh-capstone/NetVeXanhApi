@@ -142,6 +142,23 @@ public class ContestService : IContestService
 
     #endregion
 
+    #region GetContestByStatus
+
+    public async Task<List<ContestResponse?>> GetContestByStatus(string contestStatus)
+    {
+        var contest = await _unitOfWork.ContestRepo.GetContestByStatus(contestStatus);
+        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        var result = _mapper.Map<List<ContestResponse>>(contest);
+        foreach (var item in result)
+        {
+            item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
+            item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
+        }
+
+        return result;
+    }
+    #endregion
+
     #region Get All Contest
 
     public async Task<List<ContestResponse?>> GetAllContest()

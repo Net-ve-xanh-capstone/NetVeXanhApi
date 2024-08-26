@@ -21,7 +21,7 @@ public interface IContestRepository : IGenericRepository<Contest>
 
     Task<Contest?> GetContestByIdForRoundTopic(Guid id);
 
-
+    Task<List<Contest>> GetContestByStatus(string contestStatus);
     public Task<List<Contest>> EndContest();
     public Task<List<Contest>> StartContest();
     Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync();

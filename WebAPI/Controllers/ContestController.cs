@@ -199,6 +199,43 @@ public class ContestController : Controller
 
     #endregion
 
+    #region GetContestByStatus
+    /// <summary>
+    /// Lấy contest theo Status
+    /// </summary>
+    /// <param name="contestStatus">
+    /// <br>NotStarted | Chưa bắt đầu </br>
+    ///  <br>InProcess | Đang tiến hành</br>
+    /// <br>Complete | Hoàn thành</br>
+    /// </param>
+    /// <returns></returns>
+    [HttpGet("getcontestbystatus")]
+    public async Task<IActionResult> GetContestByStatus(string contestStatus)
+    {
+        try
+        {
+            var result = await _contestService.GetContestByStatus(contestStatus);
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách cuộc thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
     #region Get All Contest v2
 
     [HttpGet("getallcontest_2")]

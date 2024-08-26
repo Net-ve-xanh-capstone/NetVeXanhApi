@@ -35,6 +35,13 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
     }
 
+    public async Task<List<Contest>> GetContestByStatus(string contestStatus)
+    {
+        return await DbSet.Where(x => x.Status == contestStatus)
+            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
+            .ToListAsync();
+    }
+
     public async Task<List<string>> GetListEducationalLevelName(Guid contestId)
     {
         var contest = await DbSet.Include(src => src.EducationalLevel)

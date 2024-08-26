@@ -5,6 +5,7 @@ using Application.SendModels.Contest;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -434,6 +435,7 @@ public class ContestController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet("getquantitypaintingforyear")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> QuantiyPaintingForYear()
     {
         try
@@ -466,6 +468,7 @@ public class ContestController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet("getawardquantityforyear")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> AwardQuantiyForYear()
     {
         try

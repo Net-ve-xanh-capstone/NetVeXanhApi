@@ -6,10 +6,12 @@ using FluentValidation.AspNetCore;
 using Infracstructures;
 using Infracstructures.ScheduleTrigger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Annotations;
 using WebAPI.Validation.AccountValidation;
 using WebAPI.Validation.AwardValidation;
 using WebAPI.Validation.CategoryValidation;
@@ -121,6 +123,42 @@ public static class DependencyInjection
                     new string[] { }
                 }
             });
+            
+            sw.EnableAnnotations(); // Đảm bảo đã kích hoạt annotations
+    
+            // Cấu hình để sử dụng cả tag từ controller và từ SwaggerOperation
+            sw.TagActionsBy(api => 
+            {
+                var tags = new List<string>();
+        
+                if (api.GroupName != null)
+                {
+                    tags.Add(api.GroupName);
+                }
+
+                if (api.ActionDescriptor is ControllerActionDescriptor cad)
+                {
+                    var swaggerAttr = cad.MethodInfo.GetCustomAttributes(true)
+                        .OfType<SwaggerOperationAttribute>()
+                        .FirstOrDefault();
+                    if (swaggerAttr?.Tags != null)
+                    {
+                        tags.AddRange(swaggerAttr.Tags);
+                    }
+
+                    // Thêm controller name như một fallback
+                    if (!tags.Any())
+                    {
+                        tags.Add(cad.ControllerName);
+                    }
+                }
+
+                return tags;
+            });
+
+            // Đảm bảo tất cả các controller được include
+            sw.DocInclusionPredicate((docName, apiDesc) => true);
+            
         });
     }
 

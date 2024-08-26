@@ -4,6 +4,7 @@ using Application.SendModels.AccountSendModels;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -25,6 +26,7 @@ public class AccountController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallcompetitorwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitorWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -72,6 +74,7 @@ public class AccountController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallexaminerwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminerWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -119,6 +122,7 @@ public class AccountController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("getallstaffwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaffWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -162,6 +166,7 @@ public class AccountController : ControllerBase
     #region Get All Competitor
 
     [HttpGet("getallcompetitor")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitor()
     {
         try
@@ -191,6 +196,7 @@ public class AccountController : ControllerBase
     #region Get All Examiner
 
     [HttpGet("getallexaminer")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminer()
     {
         try
@@ -221,6 +227,7 @@ public class AccountController : ControllerBase
     #region get all staff
 
     [HttpGet("getallstaff")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaff()
     {
         try
@@ -251,6 +258,7 @@ public class AccountController : ControllerBase
     #region Get All Inactive Account
 
     [HttpGet("getallinactiveaccountwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllInactiveAccount([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -294,6 +302,7 @@ public class AccountController : ControllerBase
     #region Get Account By Id
 
     [HttpGet("getaccountbyid/{id}")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAccountById(Guid id)
     {
         try
@@ -470,6 +479,7 @@ public class AccountController : ControllerBase
     #region Inactive Account
 
     [HttpPatch("inactiveaccount")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> InactiveAccount(Guid id)
     {
         try
@@ -500,6 +510,7 @@ public class AccountController : ControllerBase
     #region Active Account
 
     [HttpPatch("activeaccount")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> ActiveAccount(Guid id)
     {
         try

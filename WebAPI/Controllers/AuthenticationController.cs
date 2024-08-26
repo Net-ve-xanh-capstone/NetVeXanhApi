@@ -4,6 +4,7 @@ using Application.SendModels.Authentication;
 using Application.ViewModels.AuthenticationViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -66,9 +67,8 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region Create Account
-
-    [AllowAnonymous]
     [HttpPost("registerforstaffandexaminer")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)
     {
         if (!ModelState.IsValid)

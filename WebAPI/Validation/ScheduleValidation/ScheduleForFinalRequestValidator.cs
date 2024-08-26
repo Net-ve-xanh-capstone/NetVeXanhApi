@@ -54,7 +54,7 @@ public class ScheduleForFinalRequestValidator : AbstractValidator<ScheduleForFin
             .WithMessage("Số lượng giải đang vượt quá số lượng cho phép.");
 
         RuleFor(review => review.EndDate)
-            .GreaterThan(DateTime.Now).WithMessage("Ngày kết thúc phải lớn hơn ngày hiện tại");
+            .GreaterThan(DateTime.Now).WithMessage("Ngày chấm bài phải sau ngày hiện tại");
 
 
         // Validate CurrentUserId

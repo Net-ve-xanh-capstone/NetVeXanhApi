@@ -35,9 +35,14 @@ public class ContestService : IContestService
 
     #region Create Contest
 
-    public async Task<bool> CreateContest(CreateContestRequest model)
+    public async Task<bool> CreateContest(CreateContestRequest contestrequest)
     {
-        var contest = _mapper.Map<Contest>(model);
+        var validationResult = await ValidateCreateContestRequest(contestrequest);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+
+        var contest = _mapper.Map<Contest>(contestrequest);
         foreach (var educationalLevel in contest.EducationalLevel)
         {
             educationalLevel.CreatedBy = contest.CreatedBy;
@@ -242,6 +247,10 @@ public class ContestService : IContestService
     public async Task<ValidationResult> ValidateContestRequest(ContestRequest contest)
     {
         return await _validatorFactory.ContestRequestValidator.ValidateAsync(contest);
+    }
+    public async Task<ValidationResult> ValidateCreateContestRequest(CreateContestRequest contest)
+    {
+        return await _validatorFactory.CreateContestRequestValidator.ValidateAsync(contest);
     }
 
     public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContestRequest contestRequestUpdate)

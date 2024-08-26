@@ -25,7 +25,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account).OrderBy(x => x.CreatedTime)
+            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
             .ToListAsync();
     }
 
@@ -70,6 +70,22 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ThenInclude(rt => rt.Topic)
             .Include(x => x.Account)
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
+        return contest;
+    }
+    public async Task<Contest?> GetAllCompleteContestInformationAsync(Guid contestId)
+    {
+        var contest = await DbSet
+            .Include(x => x.Resources.Where(r => r.Status != ResourcesStatus.Inactive.ToString()))
+            .ThenInclude(r => r.Sponsor)
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round.Where(r => r.Status != RoundStatus.Delete.ToString()))
+            .ThenInclude(r => r.Award.Where(a => a.Status != AwardStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round)
+            .ThenInclude(r => r.RoundTopic)
+            .ThenInclude(rt => rt.Topic)
+            .Include(x => x.Account)
+            .FirstOrDefaultAsync(x => x.Id == contestId && x.Status == ContestStatus.Complete.ToString());
         return contest;
     }
 

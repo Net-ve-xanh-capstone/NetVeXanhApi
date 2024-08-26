@@ -52,7 +52,7 @@ public class ScheduleForPreliminaryRequestValidator : AbstractValidator<Schedule
             .WithMessage("Số lượng bài chấm không được vượt quá số lượng tranh chưa được lên lịch chấm.");
 
         RuleFor(review => review.EndDate)
-            .GreaterThan(DateTime.Now).WithMessage("Ngày kết thúc phải lớn hơn ngày hiện tại");
+            .GreaterThan(DateTime.Now).WithMessage("Ngày chấm bài phải sau ngày hiện tại");
 
 
         // Validate CurrentUserId

@@ -55,6 +55,7 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<ResourcesRequest> resourcesRequestValidator,
         IValidator<RoundTopicRequest> roundTopicRequestValidator,
         IValidator<RoundRequest> roundRequestValidator,
+        IValidator<CreateContestRequest> createContestRequestValidator,
         IValidator<RoundUpdateRequest> roundUpdateRequestValidator,
         IValidator<ScheduleForPreliminaryRequest> scheduleRequestValidator,
         IValidator<ScheduleUpdateRequest> scheduleUpdateRequestValidator,
@@ -98,6 +99,7 @@ public class ValidatorFactory : IValidatorFactory
         RoundRequestValidator = roundRequestValidator;
         RoundUpdateRequestValidator = roundUpdateRequestValidator;
         ScheduleRequestValidator = scheduleRequestValidator;
+        CreateContestRequestValidator= createContestRequestValidator;
         ScheduleUpdateRequestValidator = scheduleUpdateRequestValidator;
         ScheduleForFinalRequestValidator = scheduleForFinalRequestValidator;
         SponsorRequestValidator = sponsorRequestValidator;
@@ -106,6 +108,7 @@ public class ValidatorFactory : IValidatorFactory
         FilterPaintingRequestValidator = filterPaintingRequestValidator;
         StaffCreatePaintingFinalRoundRequestValidator = staffCreatePaintingFinalRoundRequestValidator;
         StaffUpdatePaintingRequestValidator = staffUpdatePaintingRequestValidator;
+
     }
 
     public IValidator<TopicRequest> TopicRequestValidator { get; }
@@ -143,6 +146,7 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<ScheduleUpdateRequest> ScheduleUpdateRequestValidator { get; }
     public IValidator<ScheduleForFinalRequest> ScheduleForFinalRequestValidator { get; }
     public IValidator<SponsorRequest> SponsorRequestValidator { get; }
+    public IValidator<CreateContestRequest> CreateContestRequestValidator { get; }
     public IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
     public IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }

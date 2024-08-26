@@ -19,6 +19,6 @@ public interface IScheduleService
     Task<bool> DeleteSchedule(Guid id);
     Task<bool> IsExistedId(Guid id);
     Task<bool> ConfirmRating(Guid id);
-    Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule);
+    Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
 }

@@ -123,10 +123,10 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> RatingPainting(RatingSendModel ratingPainting)
     {
-        /*var validationResult = await ValidateRatingRequest(ratingPainting);
+        var validationResult = await ValidateRatingRequest(ratingPainting);
         if (!validationResult.IsValid)
             // Handle validation failure
-            throw new ValidationException(validationResult.Errors);*/
+            throw new ValidationException(validationResult.Errors);
 
         //Get schedule 
         var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
@@ -209,7 +209,7 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
-        var validationResult = await ValidateScheduleRequest(schedule);
+        var validationResult = await ValidateScheduleForPreliminaryRequest(schedule);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
         //Get Painting 
@@ -259,9 +259,9 @@ public class ScheduleService : IScheduleService
 
     public async Task<bool> CreateScheduleForFinal(ScheduleForFinalRequest schedule)
     {
-        /*var validationResult = await ValidateScheduleRequest(schedule);
+        var validationResult = await ValidateScheduleForFinalRequest(schedule);
         if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);*/
+            throw new ValidationException(validationResult.Errors);
 
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
         foreach (var e in schedule.ListExaminer)
@@ -370,7 +370,7 @@ public class ScheduleService : IScheduleService
 
     #region Validate
 
-    public async Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule)
+    public async Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule)
     {
         return await _validatorFactory.ScheduleRequestValidator.ValidateAsync(schedule);
     }
@@ -380,9 +380,14 @@ public class ScheduleService : IScheduleService
         return await _validatorFactory.ScheduleUpdateRequestValidator.ValidateAsync(scheduleUpdate);
     }
 
-    public async Task<ValidationResult> ValidateRatingRequest(RatingSendModel painting)
+    public async Task<ValidationResult> ValidateScheduleForFinalRequest(ScheduleForFinalRequest schedule)
     {
-        return await _validatorFactory.RatingRequestValidator.ValidateAsync(painting);
+        return await _validatorFactory.ScheduleForFinalRequestValidator.ValidateAsync(schedule);
+    }
+
+    public async Task<ValidationResult> ValidateRatingRequest(RatingSendModel rating)
+    {
+        return await _validatorFactory.RatingRequestValidator.ValidateAsync(rating);
     }
 
     #endregion

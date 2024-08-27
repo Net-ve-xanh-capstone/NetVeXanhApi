@@ -26,15 +26,17 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<LoginResponse> Login(LoginRequest request)
     {
-        try
-        {
-            var result = await _authenticationService.Login(request);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+        if (!ModelState.IsValid)
+            return new LoginResponse
+            {
+                Success = false,
+                Message = "Invalid input data. " + string.Join("; ",
+                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)),
+                RefreshToken = null,
+                JwtToken = ""
+            };
+        var result = await _authenticationService.Login(request);
+        return result;
     }
 
     #endregion

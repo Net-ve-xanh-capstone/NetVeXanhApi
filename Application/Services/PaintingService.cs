@@ -150,6 +150,7 @@ public class PaintingService : IPaintingService
                 competitor.Painting.Add(painting);
                 await _unitOfWork.AccountRepo.AddAsync(competitor);
                 await _unitOfWork.SaveChangesAsync();
+                if(request.Status == PaintingStatus.NotPass.ToString()) painting.ReviewReason = request.Reason;
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
                 competitor.Username = competitor.Code;

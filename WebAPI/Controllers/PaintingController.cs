@@ -682,7 +682,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By Account Contest
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Staff, Competitor")]
     [HttpGet("getpaintingbyaccountcontest")]
     public async Task<IActionResult> GetPaintingByAccountContest([FromQuery] Guid contestId, [FromQuery] Guid accountId)
     {

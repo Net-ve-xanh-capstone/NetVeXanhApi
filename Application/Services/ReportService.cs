@@ -53,7 +53,7 @@ public class ReportService : IReportService
     public async Task<(List<ReportResponse>, int)> GetAllReportPending(ListModels listAwardModel)
     {
         var reportList = await _unitOfWork.ReportRepo.GetAllReportPendingAsync();
-        if (reportList.Count == 0) throw new Exception("Khong tim thay Report nao Pending");
+        if (reportList.Count == 0) throw new Exception("Không tìm thấy báo cáo nào chưa xử lý");
         var result = _mapper.Map<List<ReportResponse>>(reportList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
@@ -71,7 +71,7 @@ public class ReportService : IReportService
     public async Task<(List<ReportResponse>, int)> GetAllReport(ListModels listAwardModel)
     {
         var reportList = await _unitOfWork.ReportRepo.GetAllAsync();
-        if (reportList.Count == 0) throw new Exception("Khong tim thay Report nao");
+        if (reportList.Count == 0) throw new Exception("Không tìm thấy báo cáo nào");
         var result = _mapper.Map<List<ReportResponse>>(reportList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
@@ -89,7 +89,7 @@ public class ReportService : IReportService
     public async Task<bool> DeleteReport(Guid reportId)
     {
         var report = await _unitOfWork.ReportRepo.GetByIdAsync(reportId);
-        if (report == null) throw new Exception("Khong tim thay Report");
+        if (report == null) throw new Exception("Không tìm thấy báo cáo");
 
         report.Status = ReportStatus.Inactive.ToString();
 
@@ -107,7 +107,7 @@ public class ReportService : IReportService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var report = await _unitOfWork.ReportRepo.GetByIdAsync(updateReport.Id);
-        if (report == null) throw new Exception("Khong tim thay Report");
+        if (report == null) throw new Exception("Không tìm thấy báo cáo");
 
         _mapper.Map(updateReport, report);
         report.UpdatedTime = _currentTime.GetCurrentTime();
@@ -124,7 +124,7 @@ public class ReportService : IReportService
     public async Task<ReportResponse> GetReportById(Guid reportId)
     {
         var result = await _unitOfWork.ReportRepo.GetByIdAsync(reportId);
-        if (result == null) throw new Exception("Khong tim thay Report");
+        if (result == null) throw new Exception("Không tìm thấy báo cáo");
         return _mapper.Map<ReportResponse>(result);
     }
 

@@ -62,7 +62,7 @@ public class PaintingService : IPaintingService
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        throw new Exception("Khong trong thoi gian nop bai");
+        throw new Exception("Không trong thời gian nộp bài");
     }
 
     #endregion

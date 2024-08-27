@@ -52,7 +52,7 @@ public class PostService : IPostService
     public async Task<(List<ListPostResponse>, int)> GetListPost(ListModels listModels)
     {
         var list = await _unitOfWork.PostRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy bài viết nào");
 
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
@@ -70,7 +70,7 @@ public class PostService : IPostService
     public async Task<List<PostResponse>> Get10Post()
     {
         var list = await _unitOfWork.PostRepo.Get10Post();
-        if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy bài viết nào");
         return _mapper.Map<List<PostResponse>>(list);
     }
 
@@ -81,7 +81,7 @@ public class PostService : IPostService
     public async Task<PostResponse?> GetPostById(Guid id)
     {
         var Post = await _unitOfWork.PostRepo.GetByIdAsync(id);
-        if (Post == null) throw new Exception("Khong tim thay Post");
+        if (Post == null) throw new Exception("Không tìm thấy bài viết");
         var reusult = _mapper.Map<PostResponse>(Post);
         return reusult;
     }
@@ -93,10 +93,10 @@ public class PostService : IPostService
     public async Task<(List<PostResponse>, int)> GetPosByStaffId(ListModels listModels, Guid staffId)
     {
         var staff = await _unitOfWork.AccountRepo.GetByIdAsync(staffId);
-        if (staff == null) throw new Exception("Khong tim thay Staff");
+        if (staff == null) throw new Exception("Không tìm thấy nhân viên");
 
         var list = await _unitOfWork.PostRepo.GetPostByStaffId(staffId);
-        if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy bài viết nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -113,10 +113,10 @@ public class PostService : IPostService
     public async Task<(List<PostResponse>, int)> ListPostByCategoryId(ListModels listPostModel, Guid categoryId)
     {
         var category = await _unitOfWork.CategoryRepo.GetByIdAsync(categoryId);
-        if (category == null) throw new Exception("Khong tim thay Category");
+        if (category == null) throw new Exception("Danh mục không tồn tại");
 
         var listPost = await _unitOfWork.PostRepo.GetPostByCategory(categoryId);
-        if (listPost.Count == 0) throw new Exception("Khong co Post nao trong Category");
+        if (listPost.Count == 0) throw new Exception("Không có bài viết nào trong danh mục");
 
         var result = _mapper.Map<List<PostResponse>>(listPost);
 
@@ -144,7 +144,7 @@ public class PostService : IPostService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var post = await _unitOfWork.PostRepo.GetByIdAsync(updatePost.Id);
-        if (post == null) throw new Exception("Khong tim thay Post");
+        if (post == null) throw new Exception("Không tìm thấy bài viết");
         _mapper.Map(updatePost, post);
 
         if (updatePost.NewImages != null)
@@ -170,7 +170,7 @@ public class PostService : IPostService
     public async Task<bool> DeletePost(Guid id)
     {
         var Post = await _unitOfWork.PostRepo.GetByIdAsync(id);
-        if (Post == null) throw new Exception("Khong tim thay Post");
+        if (Post == null) throw new Exception("Không tìm thấy bài viết");
 
         Post.Status = PostStatus.Inactive.ToString();
 
@@ -184,7 +184,7 @@ public class PostService : IPostService
     public async Task<(List<PostResponse>, int)> SearchByTitleDescription(ListModels listModels, string searchString)
     {
         var list = await _unitOfWork.PostRepo.SearchTitleDescription(searchString);
-        if (list.Count == 0) throw new Exception("Khong tim thay Post nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy bài viết nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;

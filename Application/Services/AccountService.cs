@@ -193,7 +193,7 @@ public class AccountService : IAccountService
         if (listContestId.Count == 0) throw new Exception("Không tìm thấy cuộc thi");
 
         var listContestAward = await _unitOfWork.ContestRepo.GetContestRewardByListContestId(listContestId);
-        if (listContestAward.Count == 0) throw new Exception("Không tìm thấy Account");
+        if (listContestAward.Count == 0) throw new Exception("Không tìm thấy tài khoản");
 
         return _mapper.Map<List<ContestRewardResponse>>(listContestAward);
     }

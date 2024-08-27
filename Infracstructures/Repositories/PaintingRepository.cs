@@ -124,6 +124,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
     public async Task<List<Painting>> FilterPaintingAsync(FilterPaintingRequest filterPainting)
     {
         var query = DbSet
+            .Where(x=>x.Status!= PaintingStatus.Delete.ToString() || x.Status != PaintingStatus.Draft.ToString())
             .Include(x => x.RoundTopic)
             .ThenInclude(x => x.Round)
             .ThenInclude(x => x.EducationalLevel)
@@ -132,7 +133,8 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
             .ThenInclude(x => x.Topic)
             .Include(x => x.Account).AsQueryable();
 
-        if (!string.IsNullOrEmpty(filterPainting.Code)) query = query.Where(p => p.Code == filterPainting.Code);
+        if (!string.IsNullOrEmpty(filterPainting.Code))
+            query = query.Where(p => p.Code.ToLower().Contains(filterPainting.Code.ToLower()));
 
         if (!string.IsNullOrEmpty(filterPainting.TopicName))
         {

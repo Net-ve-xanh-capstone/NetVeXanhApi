@@ -64,7 +64,7 @@ public class ScheduleService : IScheduleService
     public async Task<(List<ScheduleRatingResponse>, int)> GetListSchedule(ListModels listModels)
     {
         var list = await _unitOfWork.ScheduleRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Schedule nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy lịch chấm nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -85,7 +85,7 @@ public class ScheduleService : IScheduleService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(updateSchedule.Id);
-        if (schedule == null) throw new Exception("Khong tim thay Schedule");
+        if (schedule == null) throw new Exception("Không tìm thấy lịch chấm");
         _mapper.Map(updateSchedule, schedule);
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -148,9 +148,9 @@ public class ScheduleService : IScheduleService
             if (p.AwardId.HasValue)
             {
                 awardSchedule = schedule.AwardSchedule.FirstOrDefault(a => a.AwardId == p.AwardId);
-                if (awardSchedule == null) throw new Exception($"Không tìm thấy giải thường {p.AwardId}");
+                if (awardSchedule == null) throw new Exception($"Không tìm thấy giải thường. Vui lòng thử lại");
                 if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString())
-                    throw new Exception($"Đã hết giải {p.AwardId}");
+                    throw new Exception($"Có giải thưởng đã hết");
             }
 
 
@@ -158,7 +158,7 @@ public class ScheduleService : IScheduleService
             var painting = schedule.Painting.FirstOrDefault(x => x.Id == p.PaintingId);
 
             if (painting == null)
-                throw new Exception($"Không tìm thấy bài dự thi {p.PaintingId} trong danh sách những bài được chấm");
+                throw new Exception($"Có bài dự thi không nằm trong lịch chấm");
 
             if (painting.AwardId.HasValue)
                 if (painting.AwardId != p.AwardId)
@@ -347,21 +347,21 @@ public class ScheduleService : IScheduleService
     public async Task<ScheduleRatingResponse?> GetScheduleById(Guid id)
     {
         var Schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(id);
-        if (Schedule == null) throw new Exception("Khong tim thay Schedule");
+        if (Schedule == null) throw new Exception("Không tìm thấy lịch chấm");
         return _mapper.Map<ScheduleRatingResponse>(Schedule);
     }
 
     public async Task<List<ScheduleResponse?>> GetScheduleByExaminerId(Guid id)
     {
         var schedule = await _unitOfWork.ScheduleRepo.GetByExaminerId(id);
-        if (schedule == null) throw new Exception("Khong tim thay Schedule");
+        if (schedule == null) throw new Exception("Không tìm thấy lịch chấm");
         return _mapper.Map<List<ScheduleResponse>>(schedule);
     }
 
     public async Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId /*,Guid contestId*/)
     {
         var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
-        if (contest == null) throw new Exception("Không tìm thấy Contest");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi");
         var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contest!.Id);
         foreach (var level in educationalLevel)
         foreach (var round in level.Round)
@@ -369,7 +369,7 @@ public class ScheduleService : IScheduleService
             if (schedule.ExaminerId != examinerId)
                 round.Schedule.Remove(schedule);
 
-        if (educationalLevel == null) throw new Exception("Khong tim thay");
+        if (educationalLevel == null) throw new Exception("Hệ thống bị lỗi vui lòng thử lại");
 
         return _mapper.Map<List<ScheduleWebResponse>>(educationalLevel);
     }

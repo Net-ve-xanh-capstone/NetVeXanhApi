@@ -91,7 +91,7 @@ public class SponsorService : ISponsorService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var sponsor = await _unitOfWork.SponsorRepo.GetByIdAsync(updateSponsor.Id);
-        if (sponsor == null) throw new Exception("Khong tim thay Sponsor");
+        if (sponsor == null) throw new Exception("Không tìm thấy nhà tài trợ");
 
         _mapper.Map(updateSponsor, sponsor);
         return await _unitOfWork.SaveChangesAsync() > 0;
@@ -104,7 +104,7 @@ public class SponsorService : ISponsorService
     public async Task<bool> DeleteSponsor(Guid id)
     {
         var sponsor = await _unitOfWork.SponsorRepo.GetByIdAsync(id);
-        if (sponsor == null) throw new Exception("Khong tim thay Sponsor");
+        if (sponsor == null) throw new Exception("Không tìm thấy nhà tài trợ");
 
         sponsor.Status = SponsorStatus.Inactive.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;

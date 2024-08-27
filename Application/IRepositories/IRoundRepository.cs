@@ -4,7 +4,7 @@ namespace Application.IRepositories;
 
 public interface IRoundRepository : IGenericRepository<Round>
 {
-    public Task<Round?> GetRoundDetail(Guid id);
+    Task<Round?> GetRoundDetail(Guid id);
     Task<List<Topic>> GetTopic(Guid roundId);
     Task<List<Round>> GetRoundByLevelId(Guid levelId);
     Task<bool> CheckSubmitValidDate(Guid? roundId);
@@ -12,6 +12,7 @@ public interface IRoundRepository : IGenericRepository<Round>
 
     Task<List<Round>> GetRoundsOfThisYear();
 
-    public Task<List<Round>> EndRound();
-    public Task<List<Round>> StartRound();
+    Task<List<Round>> EndRound();
+    Task<List<Round>> StartRound();
+    Task<bool> IsExistNameAsync(string name);
 }

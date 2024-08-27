@@ -102,4 +102,8 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
             .Where(src => src.StartTime >= DateTime.Now && src.Status == RoundStatus.NotStarted.ToString())
             .ToListAsync();
     }
+    public async Task<bool> IsExistNameAsync(string name)
+    {
+        return await DbSet.AnyAsync(p => p.Name.ToLower() == name.ToLower());
+    }
 }

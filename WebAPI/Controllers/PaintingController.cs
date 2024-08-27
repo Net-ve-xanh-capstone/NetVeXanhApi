@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-[Authorize]
+
 [ApiController]
 [Route("api/paintings/")]
 public class PaintingController : Controller

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/awardschedules/")]
 public class AwardScheduleController : Controller

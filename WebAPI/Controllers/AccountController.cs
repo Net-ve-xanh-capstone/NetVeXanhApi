@@ -9,7 +9,6 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/accounts/")]
 public class AccountController : ControllerBase

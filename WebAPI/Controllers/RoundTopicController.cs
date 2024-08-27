@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-[Authorize]
+
 [ApiController]
 [Route("api/roundtopics/")]
 public class RoundTopicController : ControllerBase

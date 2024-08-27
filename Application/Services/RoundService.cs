@@ -56,8 +56,8 @@ public class RoundService : IRoundService
                 throw new Exception("Thời gian bắt đầu và kết thúc bị trùng với vòng thi khác.");
 
             // Kiểm tra thời gian bắt đầu và kết thúc của vòng thi mới có nằm trong khoảng thời gian của cuộc thi không
-            if (model.StartTime > educationalLevel!.Contest.StartTime &&
-                model.EndTime < educationalLevel.Contest.EndTime)
+            if (model.StartTime < educationalLevel!.Contest.StartTime &&
+                model.EndTime > educationalLevel.Contest.EndTime)
                 throw new Exception(
                     "Thời gian bắt đầu và kết thúc của vòng thi không nằm trong khoảng thời gian của cuộc thi.");
 

@@ -1,6 +1,7 @@
 ﻿using Application.IRepositories;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
+using DocumentFormat.OpenXml.InkML;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -314,5 +315,9 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .ToList();
 
         return Task.FromResult(paintings);
+    }
+    public async Task<bool> IsExistNameAsync(string name)
+    {
+        return await DbSet.AnyAsync(p => p.Name.ToLower() == name.ToLower());
     }
 }

@@ -82,7 +82,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region Create Account
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("registerforstaffandexaminer")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)

@@ -51,7 +51,7 @@ public class MailService : IMailService
 
         template = template.Replace("[Họ và tên]", account.FullName);
         template = template.Replace("[Mật khẩu]", password);
-        template = template.Replace("[Tên tài khoản]", account.Code);
+        template = template.Replace("[Tên tài khoản]", account.Username);
 
         var supportmail = _configuration["NetVeXanh:SupportMail"];
         var supportphone = _configuration["NetVeXanh:SupportPhone"];

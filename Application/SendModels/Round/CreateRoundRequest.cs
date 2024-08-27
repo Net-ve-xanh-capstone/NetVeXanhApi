@@ -10,5 +10,5 @@ public class CreateRoundRequest
     public int RoundNumber { get; set; }
     public Guid? CreatedBy { get; set; }
     public List<Guid>? LevelList { get; set; }
-    public List<CreateDependentAwardRequest> Award { get; set; } = null!;
+    public List<CreateDependentAwardRequest>? Award { get; set; } = null!;
 }

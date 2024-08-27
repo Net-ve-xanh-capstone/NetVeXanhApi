@@ -3,4 +3,5 @@
 public interface IAwardScheduleValidationService
 {
     Task<bool> IsExistedId(Guid id);
+    Task<bool> IsValidAwardJudge(int JudgeCount, Guid awardId);
 }

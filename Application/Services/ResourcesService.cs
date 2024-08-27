@@ -45,7 +45,7 @@ public class ResourcesService : IResourcesService
     public async Task<List<ResourcesResponse>> GetListResources()
     {
         var list = await _unitOfWork.ResourcesRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Resource nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy tài trợ nào");
 
         return _mapper.Map<List<ResourcesResponse>>(list);
     }
@@ -57,7 +57,7 @@ public class ResourcesService : IResourcesService
     public async Task<ResourcesResponse?> GetResourcesById(Guid id)
     {
         var resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(id);
-        if (resources == null) throw new Exception("Khong tim thay Resource");
+        if (resources == null) throw new Exception("Không tìm thấy tài trợ ");
         return _mapper.Map<ResourcesResponse>(resources);
     }
 
@@ -72,7 +72,7 @@ public class ResourcesService : IResourcesService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var Resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(updateResources.Id);
-        if (Resources == null) throw new Exception("Khong tim thay Resource");
+        if (Resources == null) throw new Exception("Không tìm thấy tài trợ");
         _mapper.Map(updateResources, Resources);
 
         return await _unitOfWork.SaveChangesAsync() > 0;
@@ -85,7 +85,7 @@ public class ResourcesService : IResourcesService
     public async Task<bool> DeleteResources(Guid id)
     {
         var Resources = await _unitOfWork.ResourcesRepo.GetByIdAsync(id);
-        if (Resources == null) throw new Exception("Khong tim thay Resource");
+        if (Resources == null) throw new Exception("Không tìm thấy tài trợ");
         Resources.Status = ResourcesStatus.Inactive.ToString();
 
         return await _unitOfWork.SaveChangesAsync() > 0;

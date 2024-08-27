@@ -41,6 +41,15 @@ public class AccountService : IAccountService
     {
         throw new NotImplementedException();
     }
+    
+    public async Task<List<AccountResponse>> GetAllAccount()
+    {
+        var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy tài khoản nào.");
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
+
+        return result;
+    }
 
     public async Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels)
     {
@@ -57,6 +66,7 @@ public class AccountService : IAccountService
             .ToList();
         return (result, totalPages);
     }
+    
 
     public async Task<List<AccountResponse>> GetAllExaminer()
     {
@@ -193,7 +203,7 @@ public class AccountService : IAccountService
         if (listContestId.Count == 0) throw new Exception("Không tìm thấy cuộc thi");
 
         var listContestAward = await _unitOfWork.ContestRepo.GetContestRewardByListContestId(listContestId);
-        if (listContestAward.Count == 0) throw new Exception("Không tìm thấy Account");
+        if (listContestAward.Count == 0) throw new Exception("Không tìm thấy tài khoản");
 
         return _mapper.Map<List<ContestRewardResponse>>(listContestAward);
     }

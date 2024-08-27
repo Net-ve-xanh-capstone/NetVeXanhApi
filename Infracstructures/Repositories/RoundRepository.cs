@@ -13,7 +13,7 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
 
     public override async Task<Round?> GetByIdAsync(Guid? id)
     {
-        return await DbSet.Include(src => src.Award).Include(src => src.Schedule)
+        return await DbSet.Include(src => src.Award ).Include(src => src.Schedule)
             .Include(r => r.EducationalLevel)
             .FirstOrDefaultAsync(src => src.Id == id && src.Status != RoundStatus.Delete.ToString());
     }
@@ -101,5 +101,9 @@ public class RoundRepository : GenericRepository<Round>, IRoundRepository
         return await DbSet
             .Where(src => src.StartTime >= DateTime.Now && src.Status == RoundStatus.NotStarted.ToString())
             .ToListAsync();
+    }
+    public async Task<bool> IsExistNameAsync(string name)
+    {
+        return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString()).AnyAsync(p => p.Name.ToLower() == name.ToLower());
     }
 }

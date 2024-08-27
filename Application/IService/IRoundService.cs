@@ -1,5 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.SendModels.Round;
+using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.RoundViewModels;
 using Application.ViewModels.TopicViewModels;
 using FluentValidation.Results;
@@ -20,6 +21,7 @@ public interface IRoundService
     Task<ValidationResult> ValidateRoundRequest(RoundRequest round);
     Task<ValidationResult> ValidateRoundUpdateRequest(RoundUpdateRequest roundUpdate);
 
+    Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId);
 
     #region Export
 

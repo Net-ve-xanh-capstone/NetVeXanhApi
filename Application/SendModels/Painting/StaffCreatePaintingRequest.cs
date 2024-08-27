@@ -14,6 +14,7 @@ public class StaffCreatePaintingRequest
     public string Name { get; set; }
     public string Status { get; set; }
     public string Description { get; set; } = "Không có mô tả";
+    public string? Reason { get; set; } = "Không có thông tin";
     public Guid RoundTopicId { get; set; }
     public Guid CurrentUserId { get; set; }
 }

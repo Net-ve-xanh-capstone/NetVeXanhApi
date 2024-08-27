@@ -18,12 +18,13 @@ public interface IContestRepository : IGenericRepository<Contest>
     Task<Contest?> GetNearestContestInformationAsync();
 
     Task<List<Guid>> Get3NearestContestId();
+    Task<bool> IsExistNameAsync(string name);
 
     Task<Contest?> GetContestByIdForRoundTopic(Guid id);
 
-
-    public Task<List<Contest>> EndContest();
-    public Task<List<Contest>> StartContest();
+    Task<List<Contest>> GetContestByStatus(string contestStatus);
+    Task<List<Contest>> EndContest();
+    Task<List<Contest>> StartContest();
     Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync();
     Task<List<Contest>> GetContestRewardByListContestId(List<Guid> contestIdList);
 
@@ -36,6 +37,9 @@ public interface IContestRepository : IGenericRepository<Contest>
 
     #endregion
 
-    public Task<List<NumberPaintingResponse>> GetNumberOfPaintingsByContestAsync();
-    public Task<List<ContestAwardQuantityResponse>> GetAwardQuantity();
+    Task<List<NumberPaintingResponse>> GetNumberOfPaintingsByContestAsync();
+    Task<List<ContestAwardQuantityResponse>> GetAwardQuantity();
+
+
+    Task<List<Painting>?> GetPaintingHasPriceOfContest(Guid contestId);
 }

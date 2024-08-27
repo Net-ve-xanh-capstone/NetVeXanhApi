@@ -1,9 +1,11 @@
-using Application.BaseModels;
+﻿using Application.BaseModels;
 using Application.IService;
 using Application.SendModels.Authentication;
 using Application.ViewModels.AuthenticationViewModels;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -43,56 +45,84 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<RegisterResponse>> Register(CreateAccountRequest account)
+    public async Task<IActionResult> Register(CreateAccountRequest account)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            var errorMessages = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
-
-            return new RegisterResponse
+            var result = await _authenticationService.CreateCompetitor(account);
+            return Ok(new BaseResponseModel
             {
-                Success = false,
-                Message = "Invalid input data. " + string.Join("; ", errorMessages),
-                Data = ""
-            };
+                Status = Ok().StatusCode,
+                Message = "Tạo tài khoản thành công",
+                Result = result
+            });
         }
-
-        return await _authenticationService.CreateCompetitor(account);
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
     }
 
     #endregion
 
     #region Create Account
-
-    [AllowAnonymous]
+    [Authorize(Roles = "Admin")]
     [HttpPost("registerforstaffandexaminer")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)
     {
-        if (!ModelState.IsValid)
+        try
         {
-            var errorMessages = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
-
-            return new RegisterResponse
+            var result = await _authenticationService.AdminCreateAccount(account);
+            return Ok(new BaseResponseModel
             {
-                Success = false,
-                Message = "Invalid input data. " + string.Join("; ", errorMessages),
-                Data = ""
-            };
+                Status = Ok().StatusCode,
+                Message = "Tạo tài khoản thành công",
+                Result = result
+            });
         }
-
-        return await _authenticationService.AdminCreateAccount(account);
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
     }
 
     #endregion
 
     #region Active Account
-
+    [Authorize(Roles = "Admin")]
     [AllowAnonymous]
     [HttpGet("verify/{id}")]
     public async Task<ActionResult> VerifyAccount(Guid id)
@@ -110,7 +140,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region ReGenerateJwtToken
-
+    [Authorize(Roles = "Admin")]
     [AllowAnonymous]
     [HttpPost("/regeneratejwttoken")]
     public async Task<ActionResult<string>> ReGenerateJwtToken(RefreshTokenRequest token)

@@ -119,7 +119,6 @@ public class CollectionService : ICollectionService
 
     #endregion
 
-
     #region Get All Collection
 
     public async Task<(List<CollectionResponse>, int)> GetAllCollection(ListModels listCollectionModel)

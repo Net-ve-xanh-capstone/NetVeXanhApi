@@ -3,7 +3,9 @@ using Application.IService;
 using Application.SendModels.AccountSendModels;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -18,13 +20,51 @@ public class AccountController : ControllerBase
         _accountService = accountService;
     }
 
+    #region Get All 
+
+    /// <summary>
+    ///     Lấy danh sách tất cả tài khoản
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = "Admin")]
+    [HttpGet("getallaccount")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
+    public async Task<IActionResult> GetAllAccount()
+    {
+        try
+        {
+            var result = await _accountService.GetAllAccount();
+
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách tài khoản thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new List<Account>(),
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
     #region Get All Competitor
 
     /// <summary>
     ///     Lấy danh sách người dự thi có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallcompetitorwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitorWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -71,7 +111,9 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách giám khảo có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallexaminerwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminerWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -118,7 +160,9 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách staff có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallstaffwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaffWithPagination([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -160,8 +204,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Competitor
-
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallcompetitor")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitor()
     {
         try
@@ -189,8 +234,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Examiner
-
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallexaminer")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminer()
     {
         try
@@ -219,8 +265,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region get all staff
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallstaff")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaff()
     {
         try
@@ -249,8 +296,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Inactive Account
-
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallinactiveaccountwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllInactiveAccount([FromQuery] ListModels listCompetitorModel)
     {
         try
@@ -292,8 +340,8 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get Account By Id
-
     [HttpGet("getaccountbyid/{id}")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAccountById(Guid id)
     {
         try
@@ -441,15 +489,11 @@ public class AccountController : ControllerBase
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -468,8 +512,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Inactive Account
-
+    [Authorize(Roles = "Admin, Staff")]
     [HttpPatch("inactiveaccount")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> InactiveAccount(Guid id)
     {
         try
@@ -498,8 +543,9 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Active Account
-
+    [Authorize(Roles = "Admin, Staff")]
     [HttpPatch("activeaccount")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> ActiveAccount(Guid id)
     {
         try

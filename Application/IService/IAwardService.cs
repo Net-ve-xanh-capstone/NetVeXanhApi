@@ -14,6 +14,7 @@ public interface IAwardService
     Task<AwardViewResponse> GetAwardById(Guid awardId);
 
     Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid contestId);
+    Task<List<AwardViewResponse>?> GetListAwardsByRoundIdForSchedule(Guid roundId);
 
     Task<bool> IsExistedId(Guid id);
 

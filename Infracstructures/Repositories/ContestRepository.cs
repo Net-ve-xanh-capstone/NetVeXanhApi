@@ -1,6 +1,7 @@
 ﻿using Application.IRepositories;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
+using DocumentFormat.OpenXml.InkML;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account).OrderBy(x => x.CreatedTime)
+            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
             .ToListAsync();
     }
 
@@ -33,6 +34,13 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     {
         return await DbSet.FirstOrDefaultAsync(x =>
             x.Status == ContestStatus.Complete.ToString() && x.EndTime.Year == DateTime.Now.Year);
+    }
+
+    public async Task<List<Contest>> GetContestByStatus(string contestStatus)
+    {
+        return await DbSet.Where(x => x.Status == contestStatus)
+            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
+            .ToListAsync();
     }
 
     public async Task<List<string>> GetListEducationalLevelName(Guid contestId)
@@ -72,6 +80,22 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             .FirstOrDefaultAsync(x => x.Id == contestId && x.Status != ContestStatus.Delete.ToString());
         return contest;
     }
+    public async Task<Contest?> GetAllCompleteContestInformationAsync(Guid contestId)
+    {
+        var contest = await DbSet
+            .Include(x => x.Resources.Where(r => r.Status != ResourcesStatus.Inactive.ToString()))
+            .ThenInclude(r => r.Sponsor)
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round.Where(r => r.Status != RoundStatus.Delete.ToString()))
+            .ThenInclude(r => r.Award.Where(a => a.Status != AwardStatus.Inactive.ToString()))
+            .Include(x => x.EducationalLevel.Where(e => e.Status != EducationalLevelStatus.Delete.ToString()))
+            .ThenInclude(e => e.Round)
+            .ThenInclude(r => r.RoundTopic)
+            .ThenInclude(rt => rt.Topic)
+            .Include(x => x.Account)
+            .FirstOrDefaultAsync(x => x.Id == contestId && x.Status == ContestStatus.Complete.ToString());
+        return contest;
+    }
 
 
     public async Task<List<ContestNameYearResponse>> Get5RecentYearAsync()
@@ -104,9 +128,11 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
 
     public async Task<Contest?> GetNearestContestInformationAsync()
     {
-        var guid = Guid.Parse("4E7AD1E2-FDCA-4E9C-B202-A2D0BAA439EF");
-
-        var result = await DbSet.Where(x => x.Id == guid)
+        var Id = await DbSet
+            .Where(x => x.Status == ContestStatus.InProcess.ToString())
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+        var result = await DbSet.Where(x => x.Id == Id)
             .Include(x => x.EducationalLevel)
             .ThenInclude(x => x.Round)
             .ThenInclude(x => x.Schedule)
@@ -267,5 +293,31 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
             }).ToListAsync();
 
         return result;
+    }
+
+    public Task<List<Painting>?> GetPaintingHasPriceOfContest(Guid contestId)
+    {
+        var contest = DbSet.Include(src => src.EducationalLevel).ThenInclude(src => src.Round)
+            .ThenInclude(src => src.RoundTopic).ThenInclude(src => src.Painting)
+            .FirstOrDefault(src => src.Id == contestId);
+
+        if (contest == null) return Task.FromResult<List<Painting>?>(null);
+
+        var educationalLevels = contest.EducationalLevel;
+
+        if (educationalLevels == null || !educationalLevels.Any()) return Task.FromResult<List<Painting>?>(null);
+
+        var paintings = educationalLevels
+            .SelectMany(level => level.Round ?? Enumerable.Empty<Round>())
+            .SelectMany(round => round.RoundTopic ?? Enumerable.Empty<RoundTopic>())
+            .SelectMany(topic => topic.Painting ?? Enumerable.Empty<Painting>())
+            .Where(painting => painting.Status == PaintingStatus.HasPrizes.ToString())
+            .ToList();
+
+        return Task.FromResult(paintings);
+    }
+    public async Task<bool> IsExistNameAsync(string name)
+    {
+        return await DbSet.Where(x=>x.Status != ContestStatus.Delete.ToString()).AnyAsync(p => p.Name.ToLower() == name.ToLower());
     }
 }

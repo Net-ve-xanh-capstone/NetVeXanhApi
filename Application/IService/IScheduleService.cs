@@ -13,12 +13,12 @@ public interface IScheduleService
     Task<(List<ScheduleRatingResponse>, int)> GetListSchedule(ListModels listModels);
     Task<ScheduleRatingResponse?> GetScheduleById(Guid id);
     Task<List<ScheduleResponse?>> GetScheduleByExaminerId(Guid id);
-    Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId /*, Guid contestId*/);
+    Task<List<ScheduleWebResponse?>> GetScheduleForWeb(Guid examinerId);
     Task<bool> RatingPainting(RatingSendModel ratingPainting);
     Task<bool> UpdateSchedule(ScheduleUpdateRequest updateSchedule);
     Task<bool> DeleteSchedule(Guid id);
     Task<bool> IsExistedId(Guid id);
     Task<bool> ConfirmRating(Guid id);
-    Task<ValidationResult> ValidateScheduleRequest(ScheduleForPreliminaryRequest schedule);
+    Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
 }

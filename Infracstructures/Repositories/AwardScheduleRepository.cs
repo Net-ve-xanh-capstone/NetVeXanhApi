@@ -25,4 +25,9 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
             .ThenInclude(x => x.RoundTopic).ThenInclude(x => x.Topic)
             .FirstOrDefaultAsync(a => a.Id == id);
     }
+
+    public async Task<List<AwardSchedule?>> GetByAwardIdAsync(Guid awardId)
+    {
+        return await DbSet.Where(x => x.AwardId == awardId).ToListAsync();
+    }
 }

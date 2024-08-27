@@ -1,4 +1,5 @@
 ﻿using Application.IService.IValidationService;
+using Domain.Models;
 
 namespace Application.Services.ValidationService;
 
@@ -23,5 +24,11 @@ public class PaintingValidationService : IPaintingValidationService
         var roundtopic = await _unitOfWork.RoundTopicRepo.GetByIdAsync(roundtopicId);
         if (roundtopic == null) throw new Exception("Không tìm thấy roundtopic");
         return await _unitOfWork.PaintingRepo.IsExistPaintingInContest(accountId, roundtopic.RoundId.Value);
+    }
+
+    public async Task<bool> NumberJudgeValid(int judgeCount,Guid roundId)
+    {
+        var paintingWithNoSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(roundId);
+        return judgeCount <= paintingWithNoSchedule;
     }
 }

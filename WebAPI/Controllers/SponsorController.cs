@@ -3,6 +3,7 @@ using Application.IService;
 using Domain.Models;
 using FluentValidation;
 using Infracstructures.SendModels.Sponsor;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -20,7 +21,6 @@ public class SponsorController : Controller
 
 
     #region Create sponsor
-
     [HttpPost]
     public async Task<IActionResult> CreateSponsor(SponsorRequest sponsor)
     {
@@ -36,15 +36,11 @@ public class SponsorController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -183,15 +179,11 @@ public class SponsorController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }

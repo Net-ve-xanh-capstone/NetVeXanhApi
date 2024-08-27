@@ -4,6 +4,7 @@ using Application.IService.ICommonService;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
+using Domain;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -30,6 +31,8 @@ public class AwardService : IAwardService
         _configuration = configuration;
         _claimsService = claimsService;
         _validatorFactory = validatorFactory;
+        
+
     }
 
     #region Add Award
@@ -37,14 +40,17 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Vòng Chung Kết") throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
+        if (round!.Name != "Vòng Chung Kết")
+        {
+            if (round.Award.Where(x=>x.Status != AwardStatus.Inactive.ToString()).Count() > 0) throw new Exception("Các vòng khác vòng chung kết chỉ được có 1 giải"); 
+        }
         if (round.Award.Any(src => src.Rank == model.Rank && src.Status == "Active"))
             throw new Exception(" Bạn không thể thêm được các giải đã có sẵn");
         var validationResult = await ValidateAwardRequest(model);
         if (!validationResult.IsValid) throw new ValidationException(validationResult.Errors);
         var award = _mapper.Map<Award>(model);
-/*        award.Rank = RankAward.OtherAward.ToString();
-        award.Description = model.Rank;*/
+        /*        award.Rank = RankAward.OtherAward.ToString();
+                award.Description = model.Rank;*/
         award.Status = AwardStatus.Active.ToString();
         await _unitOfWork.AwardRepo.AddAsync(award);
         award.CreatedTime = _currentTime.GetCurrentTime();
@@ -59,7 +65,7 @@ public class AwardService : IAwardService
     public async Task<(List<AwardViewResponse>, int)> GetListAward(ListModels listAwardModel)
     {
         var awardList = await _unitOfWork.AwardRepo.GetAllAsync();
-        if (awardList.Count == 0) throw new Exception("Không có Award");
+        if (awardList.Count == 0) throw new Exception("Không có giải thưởng nào");
         var result = _mapper.Map<List<AwardViewResponse>>(awardList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listAwardModel.PageSize);
@@ -74,9 +80,30 @@ public class AwardService : IAwardService
 
     #region Get List Award By ContestId
 
+    public async Task<List<AwardViewResponse>?> GetListAwardsByRoundIdForSchedule(Guid roundId)
+    {
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        foreach (var a in list)
+        {
+            var count = 0;
+            foreach (var awardSchedule in a.AwardSchedule)
+            {
+                count = count + awardSchedule.Quantity;
+            }
+            a.Quantity = a.Quantity - count;
+
+        }
+        return _mapper.Map<List<AwardViewResponse>>(list);
+    }
+
+    #endregion
+
+    #region Get List Award By ContestId
+
     public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
         var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+
         return _mapper.Map<List<AwardViewResponse>>(list);
     }
 
@@ -87,7 +114,7 @@ public class AwardService : IAwardService
     public async Task<bool> DeleteAward(Guid awardId)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
-        if (award == null) throw new Exception("Khong tim thay Award");
+        if (award == null) throw new Exception("Không tìm thấy giải thưởng");
         award.Status = AwardStatus.Inactive.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;
     }
@@ -100,7 +127,7 @@ public class AwardService : IAwardService
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(updateAward.Id);
 
-        if (award == null) throw new Exception("Khong tim thay Award");
+        if (award == null) throw new Exception("Không tìm thấy giải thưởng");
         if (award.Rank == RankAward.OtherAward.ToString())
         {
             _mapper.Map(updateAward, award);
@@ -124,7 +151,7 @@ public class AwardService : IAwardService
     public async Task<AwardViewResponse> GetAwardById(Guid awardId)
     {
         var award = await _unitOfWork.AwardRepo.GetByIdAsync(awardId);
-        if (award == null) throw new Exception("Khong tim thay Award");
+        if (award == null) throw new Exception("Không tìm thấy giải thưởng");
         return _mapper.Map<AwardViewResponse>(award);
     }
 
@@ -152,4 +179,5 @@ public class AwardService : IAwardService
     }
 
     #endregion
+
 }

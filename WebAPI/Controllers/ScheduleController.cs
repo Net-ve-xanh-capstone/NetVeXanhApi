@@ -2,6 +2,7 @@
 using Application.IService;
 using Application.SendModels.Schedule;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -28,25 +29,12 @@ public class ScheduleController : Controller
     ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPost("preliminary")]
     public async Task<IActionResult> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
         try
         {
-            var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
-            if (!validationResult.IsValid)
-            {
-                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
-                var response = new BaseFailedResponseModel
-                {
-                    Status = 400,
-                    Message = "Validation failed",
-                    Result = false,
-                    Errors = errors
-                };
-                return BadRequest(response);
-            }
-
             var result = await _scheduleService.CreateScheduleForQualifyingRound(schedule);
             if (result == false)
                 return BadRequest(new BaseFailedResponseModel
@@ -61,6 +49,16 @@ public class ScheduleController : Controller
                 Result = result
             });
         }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
         catch (Exception ex)
         {
             return BadRequest(new BaseFailedResponseModel
@@ -71,6 +69,7 @@ public class ScheduleController : Controller
                 Errors = ex
             });
         }
+        
     }
 
     #endregion
@@ -85,6 +84,7 @@ public class ScheduleController : Controller
     ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPost("final")]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
@@ -117,6 +117,16 @@ public class ScheduleController : Controller
                 Result = result
             });
         }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
         catch (Exception ex)
         {
             return BadRequest(new BaseFailedResponseModel
@@ -132,7 +142,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By Page
-
+    [Authorize(Roles = "Staff")]
     [HttpGet]
     public async Task<IActionResult> GetScheduleByPage([FromQuery] ListModels listScheduleModel)
     {
@@ -171,7 +181,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By Id
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetScheduleById([FromRoute] Guid id)
     {
@@ -201,7 +211,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By ContestId
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("contestId/{id}")]
     public async Task<IActionResult> GetScheduleByContestId([FromRoute] Guid id)
     {
@@ -231,7 +241,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Update Schedule
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateSchedule(ScheduleUpdateRequest updateSchedule)
     {
@@ -248,15 +258,11 @@ public class ScheduleController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -275,7 +281,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Delete Schedule
-
+    [Authorize(Roles = "Staff")]
     [HttpDelete]
     public async Task<IActionResult> DeleteSchedule(Guid id)
     {
@@ -306,7 +312,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id for Web
-
+    [Authorize(Roles = "Examiner")]
     /*/contest/{contestId}*/
     [HttpGet("examiner/{examinerId}")]
     public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId /*, [FromRoute] Guid contestId*/)
@@ -337,7 +343,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id
-
+    [Authorize(Roles = "Examiner")]
     [HttpGet("/examiner/{id}")]
     public async Task<IActionResult> GetScheduleByExaminerId([FromRoute] Guid id)
     {
@@ -373,6 +379,7 @@ public class ScheduleController : Controller
     /// </summary>
     /// <param name="rating"></param>
     /// <returns></returns>
+    [Authorize(Roles = "Examiner")]
     [HttpPut("confirmrating/{id}")]
     public async Task<IActionResult> ConfirmRating(Guid id)
     {
@@ -390,6 +397,16 @@ public class ScheduleController : Controller
                 Status = Ok().StatusCode,
                 Message = "Hoàn tất chấm điểm",
                 Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
             });
         }
         catch (Exception ex)
@@ -413,6 +430,7 @@ public class ScheduleController : Controller
     /// </summary>
     /// <param name="rating">không có award thì cho awardId = null</param>
     /// <returns></returns>
+    [Authorize(Roles = "Examiner")]
     [HttpPut("Rating")]
     public async Task<IActionResult> RatingPainting(RatingSendModel rating)
     {
@@ -434,15 +452,11 @@ public class ScheduleController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }

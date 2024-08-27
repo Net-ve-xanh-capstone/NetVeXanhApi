@@ -3,6 +3,7 @@ using Application.IService;
 using Application.SendModels.Award;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -25,6 +26,7 @@ public class AwardController : Controller
     /// <param name="createAward"> Rank = FirstPrize |  SecondPrize | ConsolationPrize | Preliminary | OtherAward |</param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(Roles = "Staff")]
     public async Task<IActionResult> CreateAward(CreateAwardRequest createAward)
     {
         try
@@ -39,15 +41,11 @@ public class AwardController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -66,7 +64,7 @@ public class AwardController : Controller
     #endregion
 
     #region Update Award
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateAward(UpdateAwardRequest updateAward)
     {
@@ -77,20 +75,16 @@ public class AwardController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Chỉnh sửa Giải thành công"
+                Message = "Chỉnh sửa giải thành công"
             });
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -109,7 +103,7 @@ public class AwardController : Controller
     #endregion
 
     #region Delete Award
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteAward(Guid id)
     {
@@ -175,6 +169,41 @@ public class AwardController : Controller
                     List = new List<Award>(),
                     TotalPage = 0
                 },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Get List Award By Round Id
+
+    /// <summary>
+    ///     Lấy giải theo vòng để nhập vào số lượng của giải đó để tạo lịch chấm
+    /// </summary>
+    /// <param name="roundId"></param>
+    /// <returns></returns>
+    [HttpGet("getawardforschedule/{roundId}")]
+    public async Task<IActionResult> GetAwardForSchedule(Guid roundId)
+    {
+        try
+        {
+            var result = await _awardService.GetListAwardsByRoundIdForSchedule(roundId);
+            if (result == null) return NotFound(new { Success = false, Message = "Không tìm thấy giải" });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Get Award Success",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
                 Errors = ex
             });
         }

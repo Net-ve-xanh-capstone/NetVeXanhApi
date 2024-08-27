@@ -62,7 +62,7 @@ public class PaintingService : IPaintingService
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        throw new Exception("Khong trong thoi gian nop bai");
+        throw new Exception("Không trong thời gian nộp bài");
     }
 
     #endregion
@@ -97,6 +97,8 @@ public class PaintingService : IPaintingService
                 var notification = new NotificationRequest("Bạn đã nộp bài thành công", "Bạn đã nộp bài thành công",
                     request.AccountId);
                 await _notificationService.CreateNotification(notification);
+                _mailService.SendConfirmSubmitPainting(account, painting);
+                await _unitOfWork.SaveChangesAsync();
             }
 
             return true;
@@ -124,9 +126,7 @@ public class PaintingService : IPaintingService
             var level = roundTopic.Round.EducationalLevel;
 
             if (level.MinAge > yearOld && yearOld > level.MaxAge)
-            {
                 throw new Exception("Độ tuổi của bạn không hợp lệ cho vòng thi này !");
-            }
 
             //Add DB
             if (request.Status == PaintingStatus.Submitted.ToString() ||
@@ -152,6 +152,7 @@ public class PaintingService : IPaintingService
                 competitor.Painting.Add(painting);
                 await _unitOfWork.AccountRepo.AddAsync(competitor);
                 await _unitOfWork.SaveChangesAsync();
+                if(request.Status == PaintingStatus.NotPass.ToString()) painting.ReviewReason = request.Reason;
                 painting.Code = await GeneratePaintingCode(painting.Id, roundTopic.RoundId);
                 competitor.Code = await GenerateAccountCode(Role.Competitor);
                 competitor.Username = competitor.Code;
@@ -159,7 +160,9 @@ public class PaintingService : IPaintingService
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
 
-                await _mailService.SendAccountInformation(competitor, password);
+                if (request.Status == PaintingStatus.Accepted.ToString()) await _mailService.SendAccountInformation(competitor, password);
+                if (request.Status == PaintingStatus.Rejected.ToString()) await _mailService.RejectPainting(painting);
+    
                 return result;
             }
 
@@ -356,8 +359,18 @@ public class PaintingService : IPaintingService
 
     public async Task<List<PaintingForScheduleResponse>> GetPaintingByScheduleId(Guid scheduleId)
     {
+        var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(scheduleId);
+        if(schedule == null)
+        {
+            throw new Exception("Không tìm thấy lịch chấm");
+        }
+        if (schedule.EndDate.Date == DateTime.Now.Date)
+        {
+            throw new Exception("Không trong ngày được phép chấm bài");
+        }
+
         var listPainting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
-        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        if (listPainting.Count == 0) throw new Exception("Không tìm thấy bài dự thi nào trong lịch chấm");
         return _mapper.Map<List<PaintingForScheduleResponse>>(listPainting);
     }
 

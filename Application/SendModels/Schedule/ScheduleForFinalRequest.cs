@@ -7,7 +7,7 @@ public class ScheduleForFinalRequest
     public DateTime EndDate { get; set; }
     public List<Guid> ListExaminer { get; set; }
     public Guid CurrentUserId { get; set; }
-    public int JudgeCount { get; set; }
+    public int JudgedCount { get; set; }
     public List<PrizeWithCountViewModel> Awards { get; set; }
 }
 

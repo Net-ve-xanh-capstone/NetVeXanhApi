@@ -1,4 +1,5 @@
 ﻿using Application.SendModels.AccountSendModels;
+using Application.SendModels.Authentication;
 using Application.SendModels.Award;
 using Application.SendModels.Category;
 using Application.SendModels.Collection;
@@ -64,4 +65,5 @@ public interface IValidatorFactory
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
     IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
     IValidator<CreateContestRequest> CreateContestRequestValidator { get; }
+    IValidator<CreateAccountRequest> CreateAccountRequestValidator { get; }
 }

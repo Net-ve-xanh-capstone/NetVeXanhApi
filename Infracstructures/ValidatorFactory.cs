@@ -1,4 +1,5 @@
 ﻿using Application.SendModels.AccountSendModels;
+using Application.SendModels.Authentication;
 using Application.SendModels.Award;
 using Application.SendModels.Category;
 using Application.SendModels.Collection;
@@ -65,7 +66,8 @@ public class ValidatorFactory : IValidatorFactory
         IValidator<RoundTopicDeleteRequest> roundTopicDeleteRequestValidator,
         IValidator<FilterPaintingRequest> filterPaintingRequestValidator,
         IValidator<StaffCreatePaintingFinalRoundRequest> staffCreatePaintingFinalRoundRequestValidator,
-        IValidator<StaffUpdatePaintingRequest> staffUpdatePaintingRequestValidator)
+        IValidator<StaffUpdatePaintingRequest> staffUpdatePaintingRequestValidator,
+        IValidator<CreateAccountRequest> createAccountRequestValidator)
     {
         TopicRequestValidator = topicRequestValidator;
         TopicUpdateRequestValidator = topicUpdateRequestValidator;
@@ -108,6 +110,7 @@ public class ValidatorFactory : IValidatorFactory
         FilterPaintingRequestValidator = filterPaintingRequestValidator;
         StaffCreatePaintingFinalRoundRequestValidator = staffCreatePaintingFinalRoundRequestValidator;
         StaffUpdatePaintingRequestValidator = staffUpdatePaintingRequestValidator;
+        CreateAccountRequestValidator = createAccountRequestValidator;
 
     }
 
@@ -150,6 +153,7 @@ public class ValidatorFactory : IValidatorFactory
     public IValidator<SponsorUpdateRequest> SponsorUpdateRequestValidator { get; }
     public IValidator<RoundTopicDeleteRequest> RoundTopicDeleteRequestValidator { get; }
     public IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
+    public IValidator<CreateAccountRequest> CreateAccountRequestValidator { get; }
 
     public IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
 

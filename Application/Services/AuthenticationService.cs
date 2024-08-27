@@ -3,10 +3,14 @@ using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Authentication;
+using Application.SendModels.Painting;
 using Application.ViewModels.AuthenticationViewModels;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2016.Excel;
 using Domain.Enums;
 using Domain.Models;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace Application.Services;
 
@@ -17,15 +21,17 @@ public class AuthenticationService : IAuthenticationService
     private readonly IMailService _mailService;
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IValidatorFactory _validatorFactory;
 
     public AuthenticationService(IUnitOfWork unitOfWork, IAuthentication authentication, IMapper mapper,
-        IMailService mailService, IClaimsService claimsService)
+        IMailService mailService, IClaimsService claimsService, IValidatorFactory validator)
     {
         _claimsService = claimsService;
         _mailService = mailService;
         _authentication = authentication;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _validatorFactory = validator;
     }
 
 
@@ -132,34 +138,11 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<RegisterResponse> CreateCompetitor(CreateAccountRequest createAccount)
     {
+        var validationResult = await ValidateCreateAccountRequest(createAccount);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
         var response = new RegisterResponse();
-        if (!Enum.IsDefined(typeof(Role), createAccount.Role))
-        {
-            response.Message = "!";
-            response.Success = false;
-            return response;
-        }
-
-        if (await _unitOfWork.AccountRepo.CheckDuplicateEmail(createAccount.Email))
-        {
-            response.Message = "Email đã được sử dụng.!";
-            response.Success = false;
-            return response;
-        }
-
-        if (await _unitOfWork.AccountRepo.CheckDuplicatePhone(createAccount.Phone))
-        {
-            response.Message = "Số điện thoại đã có tài khoản sử dụng!";
-            response.Success = false;
-            return response;
-        }
-
-        if (await _unitOfWork.AccountRepo.CheckDuplicateUsername(createAccount.Username))
-        {
-            response.Message = "Tên đăng nhập đã có tài khoản sử dụng!";
-            response.Success = false;
-            return response;
-        }
 
         var account = _mapper.Map<Account>(createAccount);
         //if not exist
@@ -239,4 +222,9 @@ public class AuthenticationService : IAuthenticationService
     }
 
     #endregion
+
+    public async Task<ValidationResult> ValidateCreateAccountRequest(CreateAccountRequest painting)
+    {
+        return await _validatorFactory.CreateAccountRequestValidator.ValidateAsync(painting);
+    }
 }

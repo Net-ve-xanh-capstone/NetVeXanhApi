@@ -514,7 +514,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Inactive Account
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Staff")]
     [HttpPatch("inactiveaccount")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> InactiveAccount(Guid id)
@@ -545,7 +545,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Active Account
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Staff")]
     [HttpPatch("activeaccount")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> ActiveAccount(Guid id)

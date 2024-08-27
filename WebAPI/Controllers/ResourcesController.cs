@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.Resources;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize(Roles = "Staff")]
 [ApiController]
 [Route("api/resources/")]
 public class ResourcesController : Controller

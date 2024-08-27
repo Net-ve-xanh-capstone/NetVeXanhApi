@@ -4,10 +4,11 @@ using Application.SendModels.Painting;
 using Domain.Models;
 using FluentValidation;
 using Infracstructures.SendModels.Painting;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/paintings/")]
 public class PaintingController : Controller
@@ -108,7 +109,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Staff Submit Painting For Preliminary Round
-
+    [Authorize(Roles = "Staff")]
     [HttpPost("submitepainting1stroundforCompetitor")]
     public async Task<IActionResult> SubmitPaintingForPreliminaryRoundForCompetitor(
         StaffCreatePaintingRequest staffCreatePainting)
@@ -149,7 +150,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Staff Submit Painting For Final Round
-
+    [Authorize(Roles = "Staff")]
     [HttpPost("createpaintingfinalround")]
     public async Task<IActionResult> CreatePaintingForFinalRound(StaffCreatePaintingFinalRoundRequest request)
     {
@@ -231,7 +232,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Update Painting
-
+    [Authorize(Roles = "Staff")]
     [HttpPut("satffupdate")]
     public async Task<IActionResult> UpdatePaintingForStaff(StaffUpdatePaintingRequest updatePaintingViewModel)
     {
@@ -302,12 +303,13 @@ public class PaintingController : Controller
     #endregion
 
     #region Review Decision of Painting
-
+    
     /// <summary>
     ///     Review painting của staff ( có thay đổi thêm Id của user hiện tại)
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPatch("review")]
     public async Task<IActionResult> ReviewDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
@@ -347,7 +349,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Final Decision of Painting
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch("finaldecision")]
     public async Task<IActionResult> FinalDecisionOfPainting(PaintingUpdateStatusRequest request)
     {
@@ -387,7 +389,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By Code
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("code")]
     public async Task<IActionResult> GetPaintingByCode([FromRoute] string code)
     {
@@ -447,7 +449,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By ScheduleId
-
+    [Authorize(Roles = "Staff")]
     /// <summary>
     ///     Lấy danh sách bài dự thi theo schedule
     /// </summary>
@@ -482,7 +484,6 @@ public class PaintingController : Controller
     #endregion
 
     #region Tracking Painting By Id
-
     [HttpGet("tracking/{id}")]
     public async Task<IActionResult> PaintingTracking([FromRoute] Guid id)
     {
@@ -512,7 +513,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get All Painting
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("list")]
     public async Task<IActionResult> GetAllAward([FromQuery] ListModels listPaintingModel)
     {
@@ -555,7 +556,7 @@ public class PaintingController : Controller
     #endregion
 
     #region List 16 Wining Painting
-
+    [AllowAnonymous]
     [HttpGet("list16winingpainting")]
     public async Task<IActionResult> List16WiningPainting()
     {
@@ -584,7 +585,6 @@ public class PaintingController : Controller
     #endregion
 
     #region List Painting By Account Id
-
     [HttpGet("listpaintingbyaccountid/{id}")]
     public async Task<IActionResult> ListPaintingByAccountId([FromQuery] ListModels listPaintingModel,
         [FromRoute] Guid id)
@@ -628,7 +628,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Filter Painting
-
+    [Authorize(Roles = "Staff")]
     [HttpPost("filterpainting")]
     public async Task<IActionResult> ListPaintingByAccountId(FilterPaintingRequest filterPainting,
         [FromQuery] ListModels listPaintingModel)
@@ -682,7 +682,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By Account Contest
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("getpaintingbyaccountcontest")]
     public async Task<IActionResult> GetPaintingByAccountContest([FromQuery] Guid contestId, [FromQuery] Guid accountId)
     {

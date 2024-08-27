@@ -2,10 +2,11 @@
 using Application.IService;
 using Application.SendModels.PaintingCollection;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/paintingcollections/")]
 public class PaintingCollectionController : Controller

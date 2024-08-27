@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.RoundTopic;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/roundtopics/")]
 public class RoundTopicController : ControllerBase
@@ -106,7 +107,7 @@ public class RoundTopicController : ControllerBase
     #endregion
 
     #region Add Topic To Round
-
+[Authorize(Roles = "Staff")]
     [HttpPost]
     public async Task<IActionResult> AddTopicToRound(RoundTopicRequest roundTopicRequest)
     {
@@ -145,7 +146,7 @@ public class RoundTopicController : ControllerBase
     #endregion
 
     #region Delete Topic In Round
-
+    [Authorize(Roles = "Staff")]
     [HttpDelete("deleteroundtopic")]
     public async Task<IActionResult> DeleteTopicInRound(RoundTopicDeleteRequest roundTopicDeleteRequest)
     {

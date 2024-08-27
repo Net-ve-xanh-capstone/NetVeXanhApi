@@ -42,19 +42,13 @@ public class AccountService : IAccountService
         throw new NotImplementedException();
     }
     
-    public async Task<(List<AccountResponse>, int)> GetAllAccount(ListModels listModels)
+    public async Task<List<AccountResponse>> GetAllAccount()
     {
         var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
-        accountList = accountList
-            .Where(x => x.Role == Role.Admin.ToString()).ToList();
+        if (accountList.Count == 0) throw new Exception("Không tìm thấy tài khoản nào.");
         var result = _mapper.Map<List<AccountResponse>>(accountList);
 
-        var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
-        int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
-        result = result.Skip((int)itemsToSkip)
-            .Take(listModels.PageSize)
-            .ToList();
-        return (result, totalPages);
+        return result;
     }
 
     public async Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels)

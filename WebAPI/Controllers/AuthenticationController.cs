@@ -24,37 +24,16 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<LoginResponse> Login(LoginRequest request)
     {
         try
         {
             var result = await _authenticationService.Login(request);
-            return Ok(new BaseResponseModel
-            {
-                Status = Ok().StatusCode,
-                Message = "Đăng nhập thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = firstErrorMessage,
-                Result = false
-            });
+            return result;
         }
         catch (Exception ex)
         {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
+            return null;
         }
     }
 

@@ -8,6 +8,7 @@ using Application.Mappers;
 using Application.Services;
 using Application.Services.CommonService;
 using Application.Services.ValidationService;
+using Domain;
 using Infracstructures;
 using Infracstructures.Repositories;
 using Infracstructures.ScheduleTrigger;
@@ -220,12 +221,13 @@ public static class DependencyInjection
 
         #endregion
 
+        services.AddSingleton<ISortAwardService, SortAwardService>();
         services.AddSingleton<IClaimsService, ClaimsService>();
         services.AddSingleton<ICurrentTime, CurrentTime>();
         services.AddSingleton<IMailService, MailService>();
         services.AddSingleton<ICacheServices, CacheServices>();
         services.AddTransient<ISessionServices, SessionServices>();
-
+        services.AddSingleton<AwardRankPriority>();
         // Use local DB
         services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(config.GetConnectionString("NetVeXanh")));
 

@@ -3,6 +3,7 @@ using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Notification;
 using Application.SendModels.Schedule;
+using Application.ViewModels.AwardViewModels;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
 using Domain.Enums;
@@ -20,9 +21,10 @@ public class ScheduleService : IScheduleService
     private readonly INotificationService _notificationService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly ISortAwardService _sortAwardService;
 
     public ScheduleService(IUnitOfWork unitOfWork, IMapper mapper, IValidatorFactory validatorFactory,
-        IExcelService excelService, IMailService mailService, INotificationService notificationService)
+        IExcelService excelService, IMailService mailService, INotificationService notificationService, ISortAwardService sortAwardService)
     {
         _mailService = mailService;
         _excelService = excelService;
@@ -30,20 +32,26 @@ public class ScheduleService : IScheduleService
         _mapper = mapper;
         _validatorFactory = validatorFactory;
         _notificationService = notificationService;
+        _sortAwardService = sortAwardService;
     }
 
     #region Get For Website
 
     public async Task<List<ListScheduleResponse>> GetListScheduleByContestId(Guid id)
     {
-        var listSchedule = await _unitOfWork.RoundRepo.GetScheduleByContestId(id);
-        var result = _mapper.Map<List<ListScheduleResponse>>(listSchedule);
+        var round = await _unitOfWork.RoundRepo.GetScheduleByContestId(id);
+        var result = _mapper.Map<List<ListScheduleResponse>>(round);
         foreach (var s in result)
         {
             s.TotalPainting = await _unitOfWork.PaintingRepo.GetNumPaintingInRound(s.RoundId);
             s.PaintingNoSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(s.RoundId);
             s.PaintingWithSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsHaveSchedule(s.RoundId);
-            foreach (var l in s.Schedules) l.JudgeCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
+            foreach (var l in s.Schedules)
+            {
+                l.JudgeCount = await _unitOfWork.PaintingRepo.GetNumPaintingInSchedule(l.Id);
+                var awards = _sortAwardService.SortAwards(_mapper.Map<List<Award>>(l.Awards));
+                l.Awards = _mapper.Map<List<ListAwardInScheduleResponse>>(awards);
+            }
         }
 
         return result;

@@ -4,6 +4,7 @@ using Application.IService.ICommonService;
 using Application.SendModels.Award;
 using Application.ViewModels.AwardViewModels;
 using AutoMapper;
+using Domain;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -30,6 +31,8 @@ public class AwardService : IAwardService
         _configuration = configuration;
         _claimsService = claimsService;
         _validatorFactory = validatorFactory;
+        
+
     }
 
     #region Add Award
@@ -97,6 +100,7 @@ public class AwardService : IAwardService
     public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
         var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+
         return _mapper.Map<List<AwardViewResponse>>(list);
     }
 
@@ -172,4 +176,5 @@ public class AwardService : IAwardService
     }
 
     #endregion
+
 }

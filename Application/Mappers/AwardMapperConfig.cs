@@ -30,5 +30,6 @@ public partial class MapperConfigs : Profile
         CreateMap<Award, AwardInLevelViewModel>();
         CreateMap<Award, ListAwardInScheduleResponse>()
             .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.AwardSchedule.FirstOrDefault().Quantity));
+        CreateMap<ListAwardInScheduleResponse, Award>();
     }
 }

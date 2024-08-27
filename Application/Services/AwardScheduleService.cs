@@ -1,6 +1,7 @@
 ﻿using Application.IService;
 using Application.ViewModels.ScheduleViewModels;
 using AutoMapper;
+using Domain.Models;
 
 namespace Application.Services;
 

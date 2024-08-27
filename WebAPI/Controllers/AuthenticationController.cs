@@ -24,38 +24,19 @@ public class AuthenticationController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<LoginResponse> Login(LoginRequest request)
     {
-        try
-        {
-            var result = await _authenticationService.Login(request);
-            return Ok(new BaseResponseModel
+        if (!ModelState.IsValid)
+            return new LoginResponse
             {
-                Status = Ok().StatusCode,
-                Message = "Đăng nhập thành công",
-                Result = result
-            });
-        }
-        catch (ValidationException ex)
-        {
-            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = firstErrorMessage,
-                Result = false
-            });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new BaseFailedResponseModel
-            {
-                Status = BadRequest().StatusCode,
-                Message = ex.Message,
-                Result = false,
-                Errors = ex
-            });
-        }
+                Success = false,
+                Message = "Invalid input data. " + string.Join("; ",
+                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)),
+                RefreshToken = null,
+                JwtToken = ""
+            };
+        var result = await _authenticationService.Login(request);
+        return result;
     }
 
     #endregion

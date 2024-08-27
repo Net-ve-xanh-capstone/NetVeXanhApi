@@ -29,7 +29,11 @@ public partial class MapperConfigs : Profile
         CreateMap<Award, AwardViewResponse>();
         CreateMap<Award, AwardInLevelViewModel>();
         CreateMap<Award, ListAwardInScheduleResponse>()
-            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.AwardSchedule.FirstOrDefault().Quantity));
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src =>
+                (src.AwardSchedule != null && src.AwardSchedule.Any())
+                    ? src.AwardSchedule.FirstOrDefault().Quantity
+                    : src.Quantity // Sử dụng giá trị từ Award nếu AwardSchedule là null hoặc rỗng
+            ));
         CreateMap<ListAwardInScheduleResponse, Award>();
     }
 }

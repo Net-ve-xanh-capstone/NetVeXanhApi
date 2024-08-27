@@ -341,7 +341,6 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get Account By Id
-    [Authorize(Roles = "Admin")]
     [HttpGet("getaccountbyid/{id}")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAccountById(Guid id)

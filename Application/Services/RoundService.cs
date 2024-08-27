@@ -45,6 +45,7 @@ public class RoundService : IRoundService
             {
                 throw new Exception("Có đối tượng không tìm thấy");
             }
+            if(educationalLevel.Round.Any(r => r.Name == model.Name)) throw new Exception("Có đối tượng có tên vòng thi trùng với tên vòng thi tạo mới");
             var newRound = _mapper.Map<Round>(model);
 
             // Kiểm tra trùng lặp thời gian với các vòng thi hiện có

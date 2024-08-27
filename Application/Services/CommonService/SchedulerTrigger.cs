@@ -54,6 +54,7 @@ public class SchedulerTrigger : ISchedulerTrigger
                     .ToList();
                 var request = new CollectionRequest();
                 request.Name = c.Name!;
+                request.CurrentUserId = Guid.Parse("6D644602-0687-3B2C-9B8B-03A705C2075D");
                 request.Description = c.Content!;
                 request.listPaintingId = paintings;
                 await _collectionService.AddCollection(request);

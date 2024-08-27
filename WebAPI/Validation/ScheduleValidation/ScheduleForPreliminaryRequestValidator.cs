@@ -51,9 +51,6 @@ public class ScheduleForPreliminaryRequestValidator : AbstractValidator<Schedule
                 await _validationServiceManager.PaintingValidationService.NumberJudgeValid(judgeCount, dto.RoundId))
             .WithMessage("Số lượng bài chấm không được vượt quá số lượng tranh chưa được lên lịch chấm.");
 
-        RuleFor(review => review.EndDate)
-            .GreaterThan(DateTime.Now).WithMessage("Ngày chấm bài phải sau ngày hiện tại");
-
 
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)

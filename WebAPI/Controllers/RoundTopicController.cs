@@ -122,15 +122,11 @@ public class RoundTopicController : ControllerBase
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -165,15 +161,11 @@ public class RoundTopicController : ControllerBase
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }

@@ -53,10 +53,6 @@ public class ScheduleForFinalRequestValidator : AbstractValidator<ScheduleForFin
                 await _validationServiceManager.AwardScheduleValidationService.IsValidAwardJudge(award.AwardCount, award.AwardId))
             .WithMessage("Số lượng giải đang vượt quá số lượng cho phép.");
 
-        RuleFor(review => review.EndDate)
-            .GreaterThan(DateTime.Now).WithMessage("Ngày chấm bài phải sau ngày hiện tại");
-
-
         // Validate CurrentUserId
         RuleFor(x => x.CurrentUserId)
             .NotEmpty().WithMessage("CurrentUserId không được để trống.");

@@ -5,6 +5,7 @@ using Application.SendModels.Contest;
 using Domain.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
@@ -41,15 +42,11 @@ public class ContestController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -85,15 +82,11 @@ public class ContestController : Controller
         }
         catch (ValidationException ex)
         {
-            // Tạo danh sách các thông điệp lỗi từ ex.Errors
-            var errorMessages = ex.Errors.Select(e => e.ErrorMessage).ToList();
-
-            // Kết hợp tất cả các thông điệp lỗi thành một chuỗi duy nhất với các dòng mới
-            var combinedErrorMessage = string.Join("  |  ", errorMessages);
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = combinedErrorMessage,
+                Message = firstErrorMessage,
                 Result = false
             });
         }
@@ -178,6 +171,43 @@ public class ContestController : Controller
         try
         {
             var result = await _contestService.GetAllContest();
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách cuộc thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region GetContestByStatus
+    /// <summary>
+    /// Lấy contest theo Status
+    /// </summary>
+    /// <param name="contestStatus">
+    /// <br>NotStarted | Chưa bắt đầu </br>
+    ///  <br>InProcess | Đang tiến hành</br>
+    /// <br>Complete | Hoàn thành</br>
+    /// </param>
+    /// <returns></returns>
+    [HttpGet("getcontestbystatus")]
+    public async Task<IActionResult> GetContestByStatus(string contestStatus)
+    {
+        try
+        {
+            var result = await _contestService.GetContestByStatus(contestStatus);
             return Ok(new BaseResponseModel
             {
                 Status = Ok().StatusCode,
@@ -397,6 +427,7 @@ public class ContestController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet("getquantitypaintingforyear")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> QuantiyPaintingForYear()
     {
         try
@@ -429,6 +460,7 @@ public class ContestController : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet("getawardquantityforyear")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> AwardQuantiyForYear()
     {
         try

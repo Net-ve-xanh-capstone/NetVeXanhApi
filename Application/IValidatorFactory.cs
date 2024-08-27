@@ -63,4 +63,5 @@ public interface IValidatorFactory
     IValidator<FilterPaintingRequest> FilterPaintingRequestValidator { get; }
     IValidator<StaffCreatePaintingFinalRoundRequest> StaffCreatePaintingFinalRoundRequestValidator { get; }
     IValidator<StaffUpdatePaintingRequest> StaffUpdatePaintingRequestValidator { get; }
+    IValidator<CreateContestRequest> CreateContestRequestValidator { get; }
 }

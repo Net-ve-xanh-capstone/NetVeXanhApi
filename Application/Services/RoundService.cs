@@ -51,8 +51,8 @@ public class RoundService : IRoundService
                 throw new Exception("Thời gian bắt đầu và kết thúc bị trùng với vòng thi khác.");
 
             // Kiểm tra thời gian bắt đầu và kết thúc của vòng thi mới có nằm trong khoảng thời gian của cuộc thi không
-            if (model.StartTime < educationalLevel!.Contest.StartTime ||
-                model.EndTime > educationalLevel.Contest.EndTime)
+            if (model.StartTime > educationalLevel!.Contest.StartTime &&
+                model.EndTime < educationalLevel.Contest.EndTime)
                 throw new Exception(
                     "Thời gian bắt đầu và kết thúc của vòng thi không nằm trong khoảng thời gian của cuộc thi.");
 
@@ -77,7 +77,7 @@ public class RoundService : IRoundService
     public async Task<List<RoundResponse>> GetListRound(ListModels listModels)
     {
         var list = await _unitOfWork.RoundRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Round nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy vòng thi");
 
         return _mapper.Map<List<RoundResponse>>(list);
     }
@@ -89,7 +89,7 @@ public class RoundService : IRoundService
     public async Task<RoundResponse?> GetRoundById(Guid id)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(id);
-        if (round == null) throw new Exception("Khong tim thay Round");
+        if (round == null) throw new Exception("Không tìm thấy vòng thi");
 
         return _mapper.Map<RoundResponse>(round);
     }
@@ -105,7 +105,7 @@ public class RoundService : IRoundService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(updateRound.Id);
-        if (round == null) throw new Exception("Khong tim thay Round");
+        if (round == null) throw new Exception("Không tìm thấy vòng thi");
         _mapper.Map(updateRound, round);
         round.UpdatedBy = updateRound.CurrentUserId;
         round.UpdatedTime = DateTime.Now;
@@ -120,7 +120,7 @@ public class RoundService : IRoundService
     public async Task<bool> DeleteRound(Guid id)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(id);
-        if (round == null) throw new Exception("Khong tim thay Round");
+        if (round == null) throw new Exception("Không tìm thấy vòng thi");
         round.Status = RoundStatus.Delete.ToString();
         foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
         foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
@@ -135,7 +135,7 @@ public class RoundService : IRoundService
     public async Task<(List<TopicResponse>, int)> GetTopicInRound(Guid id, ListModels listModels)
     {
         var list = await _unitOfWork.RoundRepo.GetTopic(id);
-        if (list.Count == 0) throw new Exception("Khong tim thay Topic nao trong Round");
+        if (list.Count == 0) throw new Exception("Không tìm thấy chủ đề nào trong vòng thi");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -152,7 +152,7 @@ public class RoundService : IRoundService
     public async Task<(List<RoundResponse>, int)> GetRoundByEducationalLevelId(ListModels listRoundModel, Guid levelId)
     {
         var list = await _unitOfWork.RoundRepo.GetRoundByLevelId(levelId);
-        if (list.Count == 0) throw new Exception("Khong tim thay Round nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy vòng thi");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listRoundModel.PageSize);
         int? itemsToSkip = (listRoundModel.PageNumber - 1) * listRoundModel.PageSize;

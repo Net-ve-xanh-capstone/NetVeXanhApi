@@ -18,6 +18,7 @@ public interface IContestService
     Task<ContestDetailResponse?> GetContestById(Guid contestId);
 
     Task<List<ContestNameYearResponse>> Get5RecentYear();
+    Task<List<ContestResponse?>> GetContestByStatus(string contestStatus);
 
     Task<List<ContestResponse?>> GetAllContest();
     Task<(List<ContestResponse?>, int)> GetAllContest_v2(ListModels listModel);

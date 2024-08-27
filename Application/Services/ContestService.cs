@@ -35,9 +35,14 @@ public class ContestService : IContestService
 
     #region Create Contest
 
-    public async Task<bool> CreateContest(CreateContestRequest model)
+    public async Task<bool> CreateContest(CreateContestRequest contestrequest)
     {
-        var contest = _mapper.Map<Contest>(model);
+        var validationResult = await ValidateCreateContestRequest(contestrequest);
+        if (!validationResult.IsValid)
+            // Handle validation failure
+            throw new ValidationException(validationResult.Errors);
+
+        var contest = _mapper.Map<Contest>(contestrequest);
         foreach (var educationalLevel in contest.EducationalLevel)
         {
             educationalLevel.CreatedBy = contest.CreatedBy;
@@ -63,7 +68,7 @@ public class ContestService : IContestService
     public async Task<bool> DeleteContest(Guid contestId)
     {
         var contest = await _unitOfWork.ContestRepo.GetByIdAsync(contestId);
-        if (contest == null) throw new Exception("Khong tim thay Contest");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi");
 
         //Contest
         contest.Status = ContestStatus.Delete.ToString();
@@ -100,7 +105,7 @@ public class ContestService : IContestService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var contest = await _unitOfWork.ContestRepo.GetByIdAsync(updateContestRequest.Id);
-        if (contest == null) throw new Exception("Khong tim thay Contest");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi");
 
         _mapper.Map(updateContestRequest, contest);
         contest.UpdatedTime = _currentTime.GetCurrentTime();
@@ -116,7 +121,7 @@ public class ContestService : IContestService
     public async Task<ContestDetailResponse?> GetContestById(Guid contestId)
     {
         var contest = await _unitOfWork.ContestRepo.GetAllContestInformationAsync(contestId);
-        if (contest == null) throw new Exception("Không tìm thấy cuộc thi nào!");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi");
         var result = _mapper.Map<ContestDetailResponse>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
         result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
@@ -137,12 +142,29 @@ public class ContestService : IContestService
 
     #endregion
 
+    #region GetContestByStatus
+
+    public async Task<List<ContestResponse?>> GetContestByStatus(string contestStatus)
+    {
+        var contest = await _unitOfWork.ContestRepo.GetContestByStatus(contestStatus);
+        if (contest.Count == 0) throw new Exception("Không tìm thấy cuộc thi nào");
+        var result = _mapper.Map<List<ContestResponse>>(contest);
+        foreach (var item in result)
+        {
+            item.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(item.Id);
+            item.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(item.Id);
+        }
+
+        return result;
+    }
+    #endregion
+
     #region Get All Contest
 
     public async Task<List<ContestResponse?>> GetAllContest()
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
-        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        if (contest.Count == 0) throw new Exception("Không tìm thấy cuộc thi nào");
         var result = _mapper.Map<List<ContestResponse>>(contest);
         foreach (var item in result)
         {
@@ -160,7 +182,7 @@ public class ContestService : IContestService
     public async Task<(List<ContestResponse?>, int)> GetAllContest_v2(ListModels listModel)
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
-        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        if (contest.Count == 0) throw new Exception("Không tìm thấy cuộc thi nào");
         var result = _mapper.Map<List<ContestResponse>>(contest);
         foreach (var item in result)
         {
@@ -183,7 +205,7 @@ public class ContestService : IContestService
     public async Task<List<FilterPaintingContestResponse>> GetContestForFilterPainting()
     {
         var contest = await _unitOfWork.ContestRepo.GetAllAsync();
-        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        if (contest.Count == 0) throw new Exception("Không tìm thấy cuộc thi nào");
         var result = _mapper.Map<List<FilterPaintingContestResponse>>(contest);
 
         return result;
@@ -196,7 +218,7 @@ public class ContestService : IContestService
     public async Task<List<AccountAwardResponse>> GetAccountWithAwardPainting()
     {
         var contest = await _unitOfWork.ContestRepo.GetAccountsByMostRecentContestAsync();
-        if (contest.Count == 0) throw new Exception("Khong co Contest nao");
+        if (contest.Count == 0) throw new Exception("Không tìm thấy cuộc thi nào");
         return contest;
     }
 
@@ -207,7 +229,7 @@ public class ContestService : IContestService
     public async Task<ContestDetailResponse> GetNearestContest()
     {
         var contest = await _unitOfWork.ContestRepo.GetNearestContestInformationAsync();
-        if (contest == null) throw new Exception("Không có Contest nào");
+        if (contest == null) throw new Exception("Không tìm thấy cuộc thi nào");
 
         return _mapper.Map<ContestDetailResponse>(contest);
     }
@@ -242,6 +264,10 @@ public class ContestService : IContestService
     public async Task<ValidationResult> ValidateContestRequest(ContestRequest contest)
     {
         return await _validatorFactory.ContestRequestValidator.ValidateAsync(contest);
+    }
+    public async Task<ValidationResult> ValidateCreateContestRequest(CreateContestRequest contest)
+    {
+        return await _validatorFactory.CreateContestRequestValidator.ValidateAsync(contest);
     }
 
     public async Task<ValidationResult> ValidateContestUpdateRequest(UpdateContestRequest contestRequestUpdate)

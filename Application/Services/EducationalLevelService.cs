@@ -54,7 +54,7 @@ public class EducationalLevelService : IEducationalLevelService
     public async Task<(List<EducationalLevelResponse>, int)> GetListEducationalLevel(ListModels listModels)
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay EducationalLevel");
+        if (list.Count == 0) throw new Exception("Không tìm thấy đối tượng dự thi nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
@@ -71,7 +71,7 @@ public class EducationalLevelService : IEducationalLevelService
     public async Task<List<EducationalLevelResponse>> GetAllEducationalLevel()
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay EducationalLevel");
+        if (list.Count == 0) throw new Exception("Không tìm thấy đối tượng dự thi nào");
 
         return _mapper.Map<List<EducationalLevelResponse>>(list);
     }
@@ -83,7 +83,7 @@ public class EducationalLevelService : IEducationalLevelService
     public async Task<EducationalLevelResponse?> GetEducationalLevelById(Guid levelId)
     {
         var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(levelId);
-        if (educationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
+        if (educationalLevel == null) throw new Exception("Không tìm thấy đối tượng dự thi nào");
 
         return _mapper.Map<EducationalLevelResponse>(educationalLevel);
     }
@@ -96,7 +96,7 @@ public class EducationalLevelService : IEducationalLevelService
         Guid contestId)
     {
         var list = await _unitOfWork.EducationalLevelRepo.GetEducationalLevelByContestId(contestId);
-        if (list.Count == 0) throw new Exception("Khong tim thay EducationalLevel nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy đối tượng dự thi nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listLevelModel.PageSize);
         int? itemsToSkip = (listLevelModel.PageNumber - 1) * listLevelModel.PageSize;
@@ -117,7 +117,7 @@ public class EducationalLevelService : IEducationalLevelService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
-        if (EducationalLevel == null) throw new Exception("Khong tim thay EducationalLevel");
+        if (EducationalLevel == null) throw new Exception("Không tìm thấy đối tượng dự thi nào");
         _mapper.Map(updateEducationalLevel, EducationalLevel);
         EducationalLevel.UpdatedBy = updateEducationalLevel.CurrentUserId;
         EducationalLevel.UpdatedTime = _currentTime.GetCurrentTime();
@@ -132,7 +132,7 @@ public class EducationalLevelService : IEducationalLevelService
     public async Task<bool> DeleteEducationalLevel(Guid id)
     {
         var level = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(id);
-        if (level == null) throw new Exception("Khong tim thay EducationalLevel");
+        if (level == null) throw new Exception("Không tìm thấy đối tượng dự thi");
         foreach (var round in level.Round)
         {
             round.Status = RoundStatus.Delete.ToString();

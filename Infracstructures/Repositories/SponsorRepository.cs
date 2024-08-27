@@ -18,6 +18,6 @@ public class SponsorRepository : GenericRepository<Sponsor>, ISponsorRepository
 
     public override async Task<List<Sponsor>> GetAllAsync()
     {
-        return await DbSet.Where(x => x.Status == SponsorStatus.Active.ToString()).ToListAsync();
+        return await DbSet.Where(x => x.Status == SponsorStatus.Active.ToString()).OrderByDescending(c => c.CreatedTime).ToListAsync();
     }
 }

@@ -235,7 +235,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Examiner
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Staff")]
     [HttpGet("getallexaminer")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminer()

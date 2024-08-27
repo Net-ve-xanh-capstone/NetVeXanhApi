@@ -28,7 +28,7 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
     public async Task<List<Schedule>> GetByExaminerId(Guid id)
     {
         return await DbSet.Include(s => s.Round).Include(s => s.Round).ThenInclude(r => r.EducationalLevel)
-            .Where(s => s.ExaminerId == id).OrderByDescending(s => s.CreatedTime).ToListAsync();
+            .Where(s => s.ExaminerId == id && s.Status != ScheduleStatus.Delete.ToString()).OrderByDescending(s => s.CreatedTime).ToListAsync();
     }
 
     public async Task<List<Schedule>> SchedulerTrigger()

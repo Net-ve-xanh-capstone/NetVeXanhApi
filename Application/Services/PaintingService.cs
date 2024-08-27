@@ -97,6 +97,8 @@ public class PaintingService : IPaintingService
                 var notification = new NotificationRequest("Bạn đã nộp bài thành công", "Bạn đã nộp bài thành công",
                     request.AccountId);
                 await _notificationService.CreateNotification(notification);
+                _mailService.SendConfirmSubmitPainting(account, painting);
+                await _unitOfWork.SaveChangesAsync();
             }
 
             return true;
@@ -157,7 +159,9 @@ public class PaintingService : IPaintingService
                 _unitOfWork.AccountRepo.Update(competitor);
                 var result = await _unitOfWork.SaveChangesAsync() > 0;
 
-                await _mailService.SendAccountInformation(competitor, password);
+                if (request.Status == PaintingStatus.Accepted.ToString()) await _mailService.SendAccountInformation(competitor, password);
+                if (request.Status == PaintingStatus.Rejected.ToString()) await _mailService.RejectPainting(painting);
+    
                 return result;
             }
 

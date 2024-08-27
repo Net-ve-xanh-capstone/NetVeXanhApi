@@ -75,8 +75,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
     #endregion
-
-
+    
     #region Verify Email
 
     public async Task<bool?> VerifyEmail(Guid id)
@@ -182,12 +181,8 @@ public class AuthenticationService : IAuthenticationService
 
         response.Message = "Tạo mới thành công.";
         response.Success = true;
-
-        var mail = new MailModel();
-        mail.To = account.Email;
-        mail.Subject = "Active Account";
-        mail.Body = $"Link ID {account.Id}";
-        await _mailService.SendEmail(mail);
+        
+        await _mailService.SendConfirmRegistration(account);
 
         return response;
     }

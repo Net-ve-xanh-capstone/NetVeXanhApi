@@ -49,7 +49,7 @@ public class MailService : IMailService
     {
         var template = GetEmailTemplate("SendAccount.html");
 
-        template = template.Replace("[Tên Nhân Viên/Giám Khảo]", account.FullName);
+        template = template.Replace("[Họ và tên]", account.FullName);
         template = template.Replace("[Mật khẩu]", password);
         template = template.Replace("[Tên tài khoản]", account.Code);
 
@@ -63,6 +63,51 @@ public class MailService : IMailService
         var mail = new MailModel();
         mail.To = account.Email;
         mail.Subject = "THÔNG TIN ĐĂNG NHẬP";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+
+    public async Task SendConfirmRegistration(Account account)
+    {
+        var template = GetEmailTemplate("NotificationAccount.html");
+
+        template = template.Replace("[Tên Người Dùng]", account.FullName);
+        template = template.Replace("[Tên tài khoản]", account.Code);
+
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+
+        var body = template;
+
+        var mail = new MailModel();
+        mail.To = account.Email;
+        mail.Subject = "Xác Nhận Đăng Ký Tài Khoản";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+
+    public async Task SendConfirmSubmitPainting(Account account, Painting painting)
+    {
+        var template = GetEmailTemplate("NotificationSubmit.html");
+
+        template = template.Replace("[Tên Người Dùng]", account.FullName);
+        template = template.Replace("[Họ và tên]", account.FullName);
+        template = template.Replace("[Mã thí sinh]", account.Code);
+        template = template.Replace("[Tên tranh]", painting.Name);
+        template = template.Replace("[Số điện thoại]", account.Phone);
+        
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+
+        var body = template;
+
+        var mail = new MailModel();
+        mail.To = account.Email;
+        mail.Subject = "Xác Nhận Đăng Ký Tài Khoản";
         mail.Body = body;
         await SendEmail(mail);
     }
@@ -135,6 +180,27 @@ public class MailService : IMailService
 
         template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
         template = template.Replace("[Vòng Thi]", round.Name);
+        template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn không đáp ứng tiêu chí");
+
+        var supportmail = _configuration["NetVeXanh:SupportMail"];
+        var supportphone = _configuration["NetVeXanh:SupportPhone"];
+        template = template.Replace("[email hỗ trợ]", supportmail);
+        template = template.Replace("[số điện thoại hỗ trợ]", supportphone);
+
+        var body = template;
+
+        var mail = new MailModel();
+        mail.To = painting.Account.Email!;
+        mail.Subject = "THÔNG BÁO CUỘC THI NÉT VẼ XANH";
+        mail.Body = body;
+        await SendEmail(mail);
+    }
+    
+    public async Task RejectPainting(Painting painting)
+    {
+        var template = GetEmailTemplate("NotPassRound.html");
+
+        template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
         template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn không đáp ứng tiêu chí");
 
         var supportmail = _configuration["NetVeXanh:SupportMail"];

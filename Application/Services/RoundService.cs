@@ -201,6 +201,12 @@ public class RoundService : IRoundService
     public async Task<bool> AnnounceResults(Guid roundId)
     {
         var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
+
+        if (round.EndTime.AddDays(5) < DateTime.Now)
+        {
+            throw new Exception("Công bố kết quả đc thực hiện sau 10 ngày kể từ ngày kêt thúc");
+        }
+        
         List<Painting> listPass;
         List<Painting> listNotPass;
         if (round!.Name!.Contains("Vòng Chung Kết"))

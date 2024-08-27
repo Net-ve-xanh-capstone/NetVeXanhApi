@@ -40,7 +40,10 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Vòng Chung Kết") throw new Exception("Giải thưởng chỉ được thêm ở vòng chung kết!");
+        if (round!.Name != "Vòng Chung Kết")
+        {
+            if (round.Award.Where(x=>x.Status != AwardStatus.Inactive.ToString()).Count() > 0) throw new Exception("Các vòng khác vòng chung kết chỉ được có 1 giải"); 
+        }
         if (round.Award.Any(src => src.Rank == model.Rank && src.Status == "Active"))
             throw new Exception(" Bạn không thể thêm được các giải đã có sẵn");
         var validationResult = await ValidateAwardRequest(model);

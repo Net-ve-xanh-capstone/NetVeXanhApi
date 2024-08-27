@@ -318,6 +318,6 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     }
     public async Task<bool> IsExistNameAsync(string name)
     {
-        return await DbSet.AnyAsync(p => p.Name.ToLower() == name.ToLower());
+        return await DbSet.Where(x=>x.Status != ContestStatus.Delete.ToString()).AnyAsync(p => p.Name.ToLower() == name.ToLower());
     }
 }

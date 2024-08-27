@@ -41,6 +41,21 @@ public class AccountService : IAccountService
     {
         throw new NotImplementedException();
     }
+    
+    public async Task<(List<AccountResponse>, int)> GetAllAccount(ListModels listModels)
+    {
+        var accountList = await _unitOfWork.AccountRepo.GetAllAsync();
+        accountList = accountList
+            .Where(x => x.Role == Role.Admin.ToString()).ToList();
+        var result = _mapper.Map<List<AccountResponse>>(accountList);
+
+        var totalPages = (int)Math.Ceiling((double)result.Count / listModels.PageSize);
+        int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;
+        result = result.Skip((int)itemsToSkip)
+            .Take(listModels.PageSize)
+            .ToList();
+        return (result, totalPages);
+    }
 
     public async Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels)
     {
@@ -57,6 +72,7 @@ public class AccountService : IAccountService
             .ToList();
         return (result, totalPages);
     }
+    
 
     public async Task<List<AccountResponse>> GetAllExaminer()
     {

@@ -8,7 +8,7 @@ namespace Application.IService;
 
 public interface IAccountService
 {
-    Task<bool?> CreateSubAccount(SubAccountRequest request);
+    Task<(List<AccountResponse>, int)> GetAllAccount(ListModels listModels);
     Task<(List<AccountResponse>, int)> GetListExaminer(ListModels listModels);
     Task<(List<AccountResponse>, int)> GetListCompetitor(ListModels listModels);
     Task<(List<AccountResponse>, int)> GetListStaff(ListModels listModels);

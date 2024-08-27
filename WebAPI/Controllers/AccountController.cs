@@ -19,6 +19,54 @@ public class AccountController : ControllerBase
         _accountService = accountService;
     }
 
+    #region Get All 
+
+    /// <summary>
+    ///     Lấy danh sách người dự thi có phân trang
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getallaccountwithpagination")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
+    public async Task<IActionResult> GetAllAccountWithPagination([FromQuery] ListModels listCompetitorModel)
+    {
+        try
+        {
+            var (list, totalPage) = await _accountService.GetAllAccount(listCompetitorModel);
+            if (totalPage < listCompetitorModel.PageNumber)
+                return NotFound(new BaseResponseModel
+                {
+                    Status = NotFound().StatusCode,
+                    Message = "Trang vượt quá số lượng trang cho phép."
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thành công",
+                Result = new
+                {
+                    List = list,
+                    TotalPage = totalPage
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new
+                {
+                    List = new List<Account>(),
+                    TotalPage = 0
+                },
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+    
     #region Get All Competitor
 
     /// <summary>

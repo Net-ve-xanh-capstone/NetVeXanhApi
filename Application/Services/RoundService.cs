@@ -41,6 +41,10 @@ public class RoundService : IRoundService
         foreach (var level in model.LevelList)
         {
             var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(level);
+            if (educationalLevel == null)
+            {
+                throw new Exception("Có đối tượng không tìm thấy");
+            }
             var newRound = _mapper.Map<Round>(model);
 
             // Kiểm tra trùng lặp thời gian với các vòng thi hiện có

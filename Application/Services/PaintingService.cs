@@ -354,8 +354,18 @@ public class PaintingService : IPaintingService
 
     public async Task<List<PaintingForScheduleResponse>> GetPaintingByScheduleId(Guid scheduleId)
     {
+        var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(scheduleId);
+        if(schedule == null)
+        {
+            throw new Exception("Không tìm thấy lịch chấm");
+        }
+        if (schedule.EndDate.Date == DateTime.Now.Date)
+        {
+            throw new Exception("Không trong ngày được phép chấm bài");
+        }
+
         var listPainting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
-        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        if (listPainting.Count == 0) throw new Exception("Không tìm thấy bài dự thi nào trong lịch chấm");
         return _mapper.Map<List<PaintingForScheduleResponse>>(listPainting);
     }
 

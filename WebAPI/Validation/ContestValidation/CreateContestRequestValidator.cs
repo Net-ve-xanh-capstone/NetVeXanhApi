@@ -14,7 +14,9 @@ public class CreateContestRequestValidator : AbstractValidator<CreateContestRequ
         // Validate Name
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Tên không được để trống.")
-            .MaximumLength(100).WithMessage("Tên không được dài hơn 100 ký tự.");
+            .MaximumLength(100).WithMessage("Tên không được dài hơn 100 ký tự.")
+            .MustAsync(async (name, cancellation) => !await _validationServiceManager.ContestValidationService.IsExistedName(name))
+            .WithMessage("Tên này đã tồn tại.");
 
         // Validate StartTime 
         RuleFor(x => x.StartTime)

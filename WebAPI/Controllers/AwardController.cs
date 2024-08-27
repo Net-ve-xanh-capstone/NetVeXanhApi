@@ -73,7 +73,7 @@ public class AwardController : Controller
             {
                 Status = Ok().StatusCode,
                 Result = result,
-                Message = "Chỉnh sửa Giải thành công"
+                Message = "Chỉnh sửa giải thành công"
             });
         }
         catch (ValidationException ex)

@@ -16,4 +16,9 @@ public class ContestValidationService : IContestValidationService
     {
         return await _unitOfWork.ContestRepo.IsExistIdAsync(id);
     }
+    //Check Name is Exist
+    public async Task<bool> IsExistedName(string name)
+    {
+        return await _unitOfWork.ContestRepo.IsExistNameAsync(name);
+    }
 }

@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.Category;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize(Roles = "Staff")]
 [ApiController]
 [Route("api/categories/")]
 public class CategoryController : ControllerBase
@@ -18,8 +19,9 @@ public class CategoryController : ControllerBase
         _categoryService = categoryService;
     }
 
+    
     #region Create Category
-
+    [Authorize(Roles = "Staff")]
     [HttpPost]
     public async Task<IActionResult> CreateCategory(CategoryRequest category)
     {
@@ -58,7 +60,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Update Category
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateCategory(UpdateCategoryRequest updateCategory)
     {
@@ -97,7 +99,7 @@ public class CategoryController : ControllerBase
     #endregion
 
     #region Delete Category
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteCategory(Guid id)
     {

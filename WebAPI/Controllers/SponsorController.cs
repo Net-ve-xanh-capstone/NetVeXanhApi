@@ -3,10 +3,11 @@ using Application.IService;
 using Domain.Models;
 using FluentValidation;
 using Infracstructures.SendModels.Sponsor;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize(Roles = "Staff")]
 [ApiController]
 [Route("api/sponsors/")]
 public class SponsorController : Controller
@@ -20,7 +21,6 @@ public class SponsorController : Controller
 
 
     #region Create sponsor
-
     [HttpPost]
     public async Task<IActionResult> CreateSponsor(SponsorRequest sponsor)
     {

@@ -3,11 +3,13 @@ using Application.IService;
 using Application.SendModels.AccountSendModels;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/accounts/")]
 public class AccountController : ControllerBase
@@ -25,9 +27,10 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách tất cả tài khoản
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallaccount")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
-    public async Task<IActionResult> GetAllAccountWithPagination()
+    public async Task<IActionResult> GetAllAccount()
     {
         try
         {
@@ -60,6 +63,7 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách người dự thi có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallcompetitorwithpagination")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitorWithPagination([FromQuery] ListModels listCompetitorModel)
@@ -108,6 +112,7 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách giám khảo có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallexaminerwithpagination")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminerWithPagination([FromQuery] ListModels listCompetitorModel)
@@ -156,6 +161,7 @@ public class AccountController : ControllerBase
     ///     Lấy danh sách staff có phân trang
     /// </summary>
     /// <returns></returns>
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallstaffwithpagination")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaffWithPagination([FromQuery] ListModels listCompetitorModel)
@@ -199,7 +205,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Competitor
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallcompetitor")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllCompetitor()
@@ -229,7 +235,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Examiner
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallexaminer")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllExaminer()
@@ -260,7 +266,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region get all staff
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallstaff")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllStaff()
@@ -291,7 +297,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get All Inactive Account
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallinactiveaccountwithpagination")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAllInactiveAccount([FromQuery] ListModels listCompetitorModel)
@@ -335,7 +341,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Get Account By Id
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getaccountbyid/{id}")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAccountById(Guid id)
@@ -508,7 +514,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Inactive Account
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("inactiveaccount")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> InactiveAccount(Guid id)
@@ -539,7 +545,7 @@ public class AccountController : ControllerBase
     #endregion
 
     #region Active Account
-
+    [Authorize(Roles = "Admin")]
     [HttpPatch("activeaccount")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> ActiveAccount(Guid id)

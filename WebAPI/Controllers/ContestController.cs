@@ -4,6 +4,7 @@ using Application.IService;
 using Application.SendModels.Contest;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -21,7 +22,7 @@ public class ContestController : Controller
     }
 
     #region Create Contest
-
+    [Authorize(Roles = "Staff")]
     /// <summary>
     ///     Api tạo contest (mới)
     /// </summary>
@@ -65,7 +66,7 @@ public class ContestController : Controller
     #endregion
 
     #region Update Contest
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateContest(UpdateContestRequest updateContestRequest)
     {
@@ -105,7 +106,7 @@ public class ContestController : Controller
     #endregion
 
     #region Delete Contest
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteContest(Guid id)
     {
@@ -416,12 +417,11 @@ public class ContestController : Controller
     }
 
     #endregion
-
-
+    
     #region DashBoard
 
     #region Get Quantity Painting For Contest
-
+    [Authorize(Roles = "Admin")]
     /// <summary>
     ///     Lấy danh sách số lượng bức tranh dự thi
     /// </summary>
@@ -454,7 +454,7 @@ public class ContestController : Controller
     #endregion
 
     #region Get Quantity Painting For Contest
-
+    [Authorize(Roles = "Admin")]
     /// <summary>
     ///     Lấy danh sách số lượng bức tranh dự thi
     /// </summary>

@@ -3,6 +3,7 @@ using Application.IService;
 using Application.SendModels.Post;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -19,7 +20,7 @@ public class PostController : Controller
     }
 
     #region Create Post
-
+    [Authorize(Roles = "Staff")]
     [HttpPost]
     public async Task<IActionResult> CreatePost(PostRequest post)
     {
@@ -160,7 +161,7 @@ public class PostController : Controller
     #endregion
 
     #region Update Post
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdatePost(PostUpdateRequest updatePost)
     {
@@ -200,7 +201,7 @@ public class PostController : Controller
     #endregion
 
     #region Delete Post
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeletePost(Guid id)
     {
@@ -230,7 +231,7 @@ public class PostController : Controller
     #endregion
 
     #region Get Post By StaffId
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("getpostbyStaffId/{id}")]
     public async Task<IActionResult> GetPostByPage([FromQuery] ListModels listPostModel, [FromRoute] Guid id)
     {

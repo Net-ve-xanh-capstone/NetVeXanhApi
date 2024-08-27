@@ -3,6 +3,7 @@ using Application.IService;
 using Application.SendModels.EducationalLevel;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
@@ -25,6 +26,7 @@ public class EducationalLevelController : Controller
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPost]
     public async Task<IActionResult> CreateEducationalLevel(CreateEducationalLevelRequest model)
     {
@@ -63,7 +65,7 @@ public class EducationalLevelController : Controller
     #endregion
 
     #region Get EducationalLevel By Page
-
+    [Authorize(Roles = "Staff")]
     [HttpGet]
     public async Task<IActionResult> GetEducationalLevelByPage([FromQuery] ListModels listLevelModel)
     {
@@ -106,7 +108,7 @@ public class EducationalLevelController : Controller
     #endregion
 
     #region Get All  EducationalLevel
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("getalllevel")]
     public async Task<IActionResult> GetAllEducationalLevel()
     {
@@ -136,7 +138,7 @@ public class EducationalLevelController : Controller
     #endregion
 
     #region Get EducationalLevel By Id
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEducationalLevelById(Guid id)
     {
@@ -205,7 +207,7 @@ public class EducationalLevelController : Controller
     #endregion
 
     #region Update EducationalLevel
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateEducationalLevel(EducationalLevelUpdateRequest updateEducationalLevel)
     {
@@ -244,7 +246,7 @@ public class EducationalLevelController : Controller
     #endregion
 
     #region Delete EducationalLevel
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteEducationalLevel(Guid id)
     {

@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.Report;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/reports/")]
 public class ReportController : ControllerBase
@@ -130,7 +131,7 @@ public class ReportController : ControllerBase
     #endregion
 
     #region Get All Report Pending
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallreportpending")]
     public async Task<IActionResult> GetAllReportPending([FromQuery] ListModels listReportModel)
     {
@@ -173,7 +174,7 @@ public class ReportController : ControllerBase
     #endregion
 
     #region Get All Report
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("getallreport")]
     public async Task<IActionResult> GetAllReport([FromQuery] ListModels listReportModel)
     {
@@ -216,7 +217,7 @@ public class ReportController : ControllerBase
     #endregion
 
     #region Get Report By Id
-
+    [Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetReportById([FromRoute] Guid id)
     {

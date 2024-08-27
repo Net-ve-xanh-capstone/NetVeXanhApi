@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.Award;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/awards/")]
 public class AwardController : Controller
@@ -25,6 +26,7 @@ public class AwardController : Controller
     /// <param name="createAward"> Rank = FirstPrize |  SecondPrize | ConsolationPrize | Preliminary | OtherAward |</param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(Roles = "Staff")]
     public async Task<IActionResult> CreateAward(CreateAwardRequest createAward)
     {
         try
@@ -62,7 +64,7 @@ public class AwardController : Controller
     #endregion
 
     #region Update Award
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateAward(UpdateAwardRequest updateAward)
     {
@@ -101,7 +103,7 @@ public class AwardController : Controller
     #endregion
 
     #region Delete Award
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteAward(Guid id)
     {

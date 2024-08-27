@@ -3,10 +3,11 @@ using Application.IService;
 using Application.SendModels.Round;
 using Domain.Models;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize(Roles = "Staff")]
 [ApiController]
 [Route("api/rounds/")]
 public class RoundController : Controller
@@ -25,6 +26,8 @@ public class RoundController : Controller
     /// </summary>
     /// <param name="model"></param>
     /// <returns></returns>
+    ///
+    [Authorize(Roles = "Staff")]
     [HttpPost]
     public async Task<IActionResult> CreateRound(CreateRoundRequest model)
     {
@@ -63,7 +66,7 @@ public class RoundController : Controller
     #endregion
 
     #region Get All Round
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("getallround")]
     public async Task<IActionResult> GetAllRound([FromQuery] ListModels listRoundModel)
     {
@@ -96,7 +99,7 @@ public class RoundController : Controller
     #endregion
 
     #region Get Round By Id
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoundById([FromRoute] Guid id)
     {
@@ -126,7 +129,7 @@ public class RoundController : Controller
     #endregion
     
     #region Get List Comepetitor
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("/finalround/{id}")]
     public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
     {
@@ -156,7 +159,7 @@ public class RoundController : Controller
     #endregion
 
     #region Update Round
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateRound(RoundUpdateRequest updateRound)
     {
@@ -197,7 +200,7 @@ public class RoundController : Controller
     #endregion
 
     #region Delete Round
-
+    [Authorize(Roles = "Staff")]
     [HttpPatch]
     public async Task<IActionResult> DeleteRound(Guid id)
     {
@@ -227,7 +230,7 @@ public class RoundController : Controller
     #endregion
 
     #region Get Topic
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("gettopic/{id}")]
     public async Task<IActionResult> GetTopicInRound([FromRoute] Guid id, [FromQuery] ListModels listTopicmodel)
     {
@@ -338,7 +341,7 @@ public class RoundController : Controller
     #endregion
     
     #region Export
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("export-round-results")]
     public async Task<IActionResult> ExportCompetitor(Guid roundId)
     {
@@ -351,7 +354,7 @@ public class RoundController : Controller
     #endregion
 
     #region Announce
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("announce-results-round")]
     public async Task<IActionResult> Announce(Guid roundId)
     {

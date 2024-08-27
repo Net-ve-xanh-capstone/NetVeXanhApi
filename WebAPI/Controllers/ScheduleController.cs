@@ -2,10 +2,11 @@
 using Application.IService;
 using Application.SendModels.Schedule;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api/schedules/")]
 public class ScheduleController : Controller
@@ -28,6 +29,7 @@ public class ScheduleController : Controller
     ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPost("preliminary")]
     public async Task<IActionResult> CreateScheduleForQualifyingRound(ScheduleForPreliminaryRequest schedule)
     {
@@ -82,6 +84,7 @@ public class ScheduleController : Controller
     ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
     /// </param>
     /// <returns></returns>
+    [Authorize(Roles = "Staff")]
     [HttpPost("final")]
     public async Task<IActionResult> CreateScheduleForFinalRound(ScheduleForFinalRequest schedule)
     {
@@ -139,7 +142,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By Page
-
+    [Authorize(Roles = "Staff")]
     [HttpGet]
     public async Task<IActionResult> GetScheduleByPage([FromQuery] ListModels listScheduleModel)
     {
@@ -178,7 +181,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By Id
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetScheduleById([FromRoute] Guid id)
     {
@@ -208,7 +211,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule By ContestId
-
+    [Authorize(Roles = "Staff")]
     [HttpGet("contestId/{id}")]
     public async Task<IActionResult> GetScheduleByContestId([FromRoute] Guid id)
     {
@@ -238,7 +241,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Update Schedule
-
+    [Authorize(Roles = "Staff")]
     [HttpPut]
     public async Task<IActionResult> UpdateSchedule(ScheduleUpdateRequest updateSchedule)
     {
@@ -278,7 +281,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Delete Schedule
-
+    [Authorize(Roles = "Staff")]
     [HttpDelete]
     public async Task<IActionResult> DeleteSchedule(Guid id)
     {
@@ -309,7 +312,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id for Web
-
+    [Authorize(Roles = "Examiner")]
     /*/contest/{contestId}*/
     [HttpGet("examiner/{examinerId}")]
     public async Task<IActionResult> GetScheduleForWeb([FromRoute] Guid examinerId /*, [FromRoute] Guid contestId*/)
@@ -340,7 +343,7 @@ public class ScheduleController : Controller
     #endregion
 
     #region Get Schedule for examiner by examiner Id
-
+    [Authorize(Roles = "Examiner")]
     [HttpGet("/examiner/{id}")]
     public async Task<IActionResult> GetScheduleByExaminerId([FromRoute] Guid id)
     {
@@ -376,6 +379,7 @@ public class ScheduleController : Controller
     /// </summary>
     /// <param name="rating"></param>
     /// <returns></returns>
+    [Authorize(Roles = "Examiner")]
     [HttpPut("confirmrating/{id}")]
     public async Task<IActionResult> ConfirmRating(Guid id)
     {
@@ -426,6 +430,7 @@ public class ScheduleController : Controller
     /// </summary>
     /// <param name="rating">không có award thì cho awardId = null</param>
     /// <returns></returns>
+    [Authorize(Roles = "Examiner")]
     [HttpPut("Rating")]
     public async Task<IActionResult> RatingPainting(RatingSendModel rating)
     {

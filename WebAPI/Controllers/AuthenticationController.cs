@@ -82,6 +82,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region Create Account
+    [Authorize(Roles = "Admin")]
     [HttpPost("registerforstaffandexaminer")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)
@@ -121,7 +122,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region Active Account
-
+    [Authorize(Roles = "Admin")]
     [AllowAnonymous]
     [HttpGet("verify/{id}")]
     public async Task<ActionResult> VerifyAccount(Guid id)
@@ -139,7 +140,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region ReGenerateJwtToken
-
+    [Authorize(Roles = "Admin")]
     [AllowAnonymous]
     [HttpPost("/regeneratejwttoken")]
     public async Task<ActionResult<string>> ReGenerateJwtToken(RefreshTokenRequest token)

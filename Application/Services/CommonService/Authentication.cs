@@ -52,7 +52,8 @@ public class Authentication : IAuthentication
         {
             new(ClaimTypes.NameIdentifier, account.Username!),
             new("Id", account.Id.ToString()),
-            new(ClaimTypes.Role, account.Role!)
+            new(ClaimTypes.Role, account.Role!),
+            new("FullName", account.FullName!)
         };
 
         if (!string.IsNullOrEmpty(account.Avatar))

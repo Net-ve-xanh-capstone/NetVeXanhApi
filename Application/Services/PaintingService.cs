@@ -244,6 +244,7 @@ public class PaintingService : IPaintingService
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
 
         if (painting == null) throw new Exception("Không tìm thấy tranh");
+        painting.SubmittedTimestamp = DateTime.Now;
         painting.UpdatedBy = updatePainting.CurrentUserId;
         painting.UpdatedTime = DateTime.Now;
         if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Không được sửa tranh đã nộp.");

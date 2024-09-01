@@ -55,7 +55,7 @@ public class ContestService : IContestService
 
         contest.StaffId = contest.CreatedBy;
         if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
-            throw new Exception("Thời gian bị trùng lặp");
+            throw new Exception("Thời gian bị trùng cuộc thi khác");
 
         await _unitOfWork.ContestRepo.AddAsync(contest);
         return await _unitOfWork.SaveChangesAsync() > 0;

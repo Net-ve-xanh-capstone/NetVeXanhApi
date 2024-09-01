@@ -56,7 +56,7 @@ public class ImageService : IImageService
     public async Task<ImageResponse?> GetImageById(Guid id)
     {
         var Image = await _unitOfWork.ImageRepo.GetByIdAsync(id);
-        if (Image == null) throw new Exception("Khong tim thay Image");
+        if (Image == null) throw new Exception("Không tìm thấy ảnh");
         return _mapper.Map<ImageResponse>(Image);
     }
 

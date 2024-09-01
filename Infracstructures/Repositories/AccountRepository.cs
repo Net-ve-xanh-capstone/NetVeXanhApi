@@ -96,6 +96,7 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
             .CountAsync();
     }
 
+
     #region Validate
 
     public async Task<bool> IsExistCompetitor(Guid id)

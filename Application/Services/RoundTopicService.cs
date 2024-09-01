@@ -100,7 +100,7 @@ public class RoundTopicService : IRoundTopicService
         var roundtopic =
             await _unitOfWork.RoundTopicRepo.GetByRoundIdTopicId(roundTopicDeleteRequest.RoundId,
                 roundTopicDeleteRequest.TopicId);
-        if (roundtopic == null) throw new Exception("Khong tim thay RoundTopic");
+        if (roundtopic == null) throw new Exception("Khong tim thay chủ đề trong vòng thi");
         await _unitOfWork.RoundTopicRepo.DeleteAsync(roundtopic);
 
         return await _unitOfWork.SaveChangesAsync() > 0;

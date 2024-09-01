@@ -204,7 +204,7 @@ public class PaintingService : IPaintingService
     public async Task<(List<PaintingResponse>, int)> GetListPainting(ListModels listPaintingModel)
     {
         var paintingList = await _unitOfWork.PaintingRepo.GetAllAsync();
-        if (paintingList.Count == 0) throw new Exception("Khong tim thay Painting nao");
+        if (paintingList.Count == 0) throw new Exception("Không tìm thấy tranh nào");
         var result = _mapper.Map<List<PaintingResponse>>(paintingList);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listPaintingModel.PageSize);
@@ -222,7 +222,7 @@ public class PaintingService : IPaintingService
     public async Task<bool> DeletePainting(Guid paintingId)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(paintingId);
-        if (painting == null) throw new Exception("Không tìm thấy Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
 
         if (painting.Status != PaintingStatus.Draft.ToString()) throw new Exception("Bài thi đã nộp không đươc xóa");
 
@@ -264,7 +264,7 @@ public class PaintingService : IPaintingService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(updatePainting.Id);
-        if (painting == null) throw new Exception("Không tìm thấy Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         painting.UpdatedBy = updatePainting.CurrentUserId;
         painting.UpdatedTime = DateTime.Now;
         _mapper.Map(updatePainting, painting);
@@ -339,7 +339,7 @@ public class PaintingService : IPaintingService
     public async Task<PaintingResponse> GetPaintingByCode(string code)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByCodeAsync(code);
-        if (painting == null) throw new Exception("Khong tim thay Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         return _mapper.Map<PaintingResponse>(painting);
     }
 
@@ -350,7 +350,7 @@ public class PaintingService : IPaintingService
     public async Task<PaintingResponse> GetPaintingById(Guid id)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
-        if (painting == null) throw new Exception("Khong tim thay Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         return _mapper.Map<PaintingResponse>(painting);
     }
 
@@ -393,7 +393,7 @@ public class PaintingService : IPaintingService
     public async Task<List<PaintingResponse>> List16WiningPainting()
     {
         var painting = await _unitOfWork.PaintingRepo.List16WiningPaintingAsync();
-        if (painting.Count == 0) throw new Exception("Khong tim thay Painting nao");
+        if (painting.Count == 0) throw new Exception("Không tìm thấy tranh nào");
         return _mapper.Map<List<PaintingResponse>>(painting);
     }
 
@@ -405,7 +405,7 @@ public class PaintingService : IPaintingService
         ListModels listPaintingModel)
     {
         var listPainting = await _unitOfWork.PaintingRepo.ListByAccountIdAsync(accountId);
-        if (listPainting.Count == 0) throw new Exception("Khong tim thay Painting");
+        if (listPainting.Count == 0) throw new Exception("Không tìm thấy tranh nào");
         var result = _mapper.Map<List<PaintingResponse>>(listPainting);
 
         #region pagination
@@ -433,7 +433,7 @@ public class PaintingService : IPaintingService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var listPainting = await _unitOfWork.PaintingRepo.FilterPaintingAsync(filterPainting);
-        if (listPainting.Count == 0) throw new Exception("Không có Painting nào!");
+        if (listPainting.Count == 0) throw new Exception("Không có tranh nào!");
         var result = _mapper.Map<List<PaintingResponse>>(listPainting);
 
         #region pagination
@@ -456,7 +456,7 @@ public class PaintingService : IPaintingService
     public async Task<PaintingResponse> GetPaintingByAccountContest(Guid contestId, Guid accountId)
     {
         var painting = await _unitOfWork.PaintingRepo.GetPaintingsByContestAndAccountAsync(contestId, accountId);
-        if (painting == null) throw new Exception("Khong tim thay Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         return _mapper.Map<PaintingResponse>(painting);
     }
 
@@ -493,7 +493,7 @@ public class PaintingService : IPaintingService
             Role.Staff => "NV",
             Role.Admin => "AD",
             Role.Examiner => "GK",
-            _ => throw new ArgumentException("Invalid role")
+            _ => throw new ArgumentException("Vai trò không hợp lệ")
         };
 
         var number = await _unitOfWork.AccountRepo.CreateNumberOfAccountCode(prefix);

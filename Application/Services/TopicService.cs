@@ -54,7 +54,7 @@ public class TopicService : ITopicService
     public async Task<(List<TopicResponse>, int)> GetListTopic(ListModels listModels)
     {
         var list = await _unitOfWork.TopicRepo.GetAllAsync();
-        if (list.Count == 0) throw new Exception("Khong tim thay Topic nao");
+        if (list.Count == 0) throw new Exception("Không tìm thấy chủ đề nào");
         //page division
         var totalPages = (int)Math.Ceiling((double)list.Count / listModels.PageSize);
         int? itemsToSkip = (listModels.PageNumber - 1) * listModels.PageSize;

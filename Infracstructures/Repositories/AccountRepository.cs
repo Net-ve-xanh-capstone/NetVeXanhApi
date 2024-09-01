@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Application.IRepositories;
+using Application.SendModels.Account;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -94,6 +95,48 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
             .Where(p => p.Painting.Any(x => x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId))
             .Distinct()
             .CountAsync();
+    }
+
+    public async Task<List<Account>> ListCompetitorByContest(FilterAccountRequest filter)
+    {
+        var query = DbSet
+            .Include(x=>x.Painting)
+            .ThenInclude(x=>x.RoundTopic)
+            .ThenInclude(x=>x.Round)
+            .ThenInclude(x=>x.EducationalLevel)
+            .ThenInclude(x=>x.Contest).AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.ContestId))
+        {
+            var contestId = Guid.Parse(filter.ContestId);
+            query = query.Where(a => a.Painting.Any(p =>
+                p.RoundTopic.Round.EducationalLevel.Contest.Id == contestId));
+        }
+        if (!string.IsNullOrEmpty(filter.LevelId))
+        {
+            var levelId = Guid.Parse(filter.LevelId);
+            query = query.Where(a => a.Painting.Any(p =>
+                p.RoundTopic.Round.EducationalLevel.Id == levelId));
+        }
+
+        if (!string.IsNullOrEmpty(filter.RoundName))
+        {
+            query = query.Where(a => a.Painting.Any(p =>
+                p.RoundTopic.Round.Name == filter.RoundName));
+        }
+
+        if (filter.IsHavePrize)
+        {
+            // Lọc ra những painting có AwardId không phải null
+            query = query.Where(a => a.Painting.Any(p => p.AwardId != null));
+        }
+        else
+        {
+            // Lọc ra những painting có AwardId là null
+            query = query.Where(a => a.Painting.Any(p => p.AwardId == null));
+        }
+
+        return query.ToList();
     }
 
 

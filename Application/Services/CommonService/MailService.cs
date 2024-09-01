@@ -61,7 +61,7 @@ public class MailService : IMailService
         var body = template;
 
         var mail = new MailModel();
-        mail.To = account.Email;
+        mail.To = account!.Email!;
         mail.Subject = "THÔNG TIN ĐĂNG NHẬP";
         mail.Body = body;
         await SendEmail(mail);

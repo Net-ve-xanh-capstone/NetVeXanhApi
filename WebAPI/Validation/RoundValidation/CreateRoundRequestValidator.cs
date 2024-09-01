@@ -21,12 +21,12 @@ public class CreateRoundRequestValidator : AbstractValidator<CreateRoundRequest>
         RuleFor(x => x.StartTime)
             .LessThan(x => x.EndTime).WithMessage("Thời gian bắt đầu vòng phải trước thời gian kết thúc.");
 
-        // Validate Award
+        /*// Validate Award
         RuleFor(x => x.Award)
             .NotNull().WithMessage("Danh sách giải thưởng không được để trống.")
             .NotEmpty().WithMessage("Danh sách giải thưởng không được rỗng.");
 
         RuleForEach(x => x.Award)
-            .SetValidator(new CreateDependentAwardRequestValidator(_validationServiceManager));
+            .SetValidator(new CreateDependentAwardRequestValidator(_validationServiceManager));*/
     }
 }

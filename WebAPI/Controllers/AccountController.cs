@@ -576,7 +576,7 @@ public class AccountController : ControllerBase
 
     #region Filter
     [Authorize(Roles = "Admin, Staff")]
-    [HttpPost("filter-account")]
+    [HttpPost("filter")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> FilterAccount(FilterAccountRequest filter)
     {

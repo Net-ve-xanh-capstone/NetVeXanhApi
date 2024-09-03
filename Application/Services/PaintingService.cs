@@ -166,10 +166,10 @@ public class PaintingService : IPaintingService
                 return result;
             }
 
-            throw new Exception("Trang Thai Khong Hop Le");
+            throw new Exception("Trạng thái không hợp lệ");
         }
 
-        throw new Exception("Khong trong thoi gian nop bai");
+        throw new Exception("Không trong thời gian nộp bài");
     }
 
     #endregion
@@ -382,7 +382,7 @@ public class PaintingService : IPaintingService
     public async Task<PaintingTrackingResponse> PaintingTracking(Guid id)
     {
         var painting = await _unitOfWork.PaintingRepo.GetByIdAsync(id);
-        if (painting == null) throw new Exception("Khong tim thay Painting");
+        if (painting == null) throw new Exception("Không tìm thấy tranh");
         return _mapper.Map<PaintingTrackingResponse>(painting);
     }
 

@@ -112,6 +112,7 @@ public class SponsorService : ISponsorService
 
     #endregion
 
+    #region Validate
     //Check Id is Exist
     public async Task<bool> IsExistedId(Guid id)
     {
@@ -127,4 +128,5 @@ public class SponsorService : ISponsorService
     {
         return await _validatorFactory.SponsorUpdateRequestValidator.ValidateAsync(updateSponsor);
     }
+    #endregion
 }

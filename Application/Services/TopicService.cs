@@ -83,7 +83,7 @@ public class TopicService : ITopicService
     public async Task<TopicResponse?> GetTopicById(Guid id)
     {
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(id);
-        if (Topic == null) throw new Exception("Khong tim thay Topic");
+        if (Topic == null) throw new Exception("Không tìm thấy chủ đề");
         return _mapper.Map<TopicResponse>(Topic);
     }
 
@@ -98,7 +98,7 @@ public class TopicService : ITopicService
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(updateTopic.Id);
-        if (Topic == null) throw new Exception("Khong tim thay Topic");
+        if (Topic == null) throw new Exception("Không tìm thấy chủ đề");
 
         _mapper.Map(updateTopic, Topic);
         Topic.UpdatedTime = _currentTime.GetCurrentTime();
@@ -112,7 +112,7 @@ public class TopicService : ITopicService
     public async Task<bool> DeleteTopic(Guid id)
     {
         var Topic = await _unitOfWork.TopicRepo.GetByIdAsync(id);
-        if (Topic == null) throw new Exception("Khong tim thay Topic");
+        if (Topic == null) throw new Exception("Không tìm thấy chủ đề");
 
         Topic.Status = TopicStatus.Inactive.ToString();
         return await _unitOfWork.SaveChangesAsync() > 0;

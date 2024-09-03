@@ -100,7 +100,7 @@ public class CollectionService : ICollectionService
     public async Task<CollectionResponse> GetCollectionById(Guid collectionId)
     {
         var collection = await _unitOfWork.CollectionRepo.GetByIdAsync(collectionId);
-        if (collection == null) throw new Exception("Khong tim thay Collection");
+        if (collection == null) throw new Exception("Không tìm thấy bộ sưu tập");
         return _mapper.Map<CollectionResponse>(collection);
     }
 
@@ -124,7 +124,7 @@ public class CollectionService : ICollectionService
     public async Task<(List<CollectionResponse>, int)> GetAllCollection(ListModels listCollectionModel)
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetAllAsync();
-        if (listCollection.Count == 0) throw new Exception("Khong co Collection nao");
+        if (listCollection.Count == 0) throw new Exception("Không tìm thấy bộ sưu tập nào");
         var result = _mapper.Map<List<CollectionResponse>>(listCollection);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCollectionModel.PageSize);
@@ -143,7 +143,7 @@ public class CollectionService : ICollectionService
         Guid accountId)
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetCollectionByAccountIdAsync(accountId);
-        if (listCollection.Count == 0) throw new Exception("Khong co Collection nao");
+        if (listCollection.Count == 0) throw new Exception("Không tìm thấy bộ sưu tập nào");
         var result = _mapper.Map<List<CollectionResponse>>(listCollection);
 
         var totalPages = (int)Math.Ceiling((double)result.Count / listCollectionModel.PageSize);
@@ -161,7 +161,7 @@ public class CollectionService : ICollectionService
     public async Task<List<CollectionPaintingResponse>> Get6StaffCollection()
     {
         var listCollection = await _unitOfWork.CollectionRepo.GetCollectionsWithStaffAccountsAsync();
-        if (listCollection.Count == 0) throw new Exception("Không có Collection nào tạo bởi Staff");
+        if (listCollection.Count == 0) throw new Exception("Không có bộ sưu tập nào tạo bởi Staff");
         var result = _mapper.Map<List<CollectionPaintingResponse>>(listCollection);
 
         return result;

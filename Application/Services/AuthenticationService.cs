@@ -115,7 +115,7 @@ public class AuthenticationService : IAuthenticationService
             Role.Staff => "NV",
             Role.Admin => "AD",
             Role.Examiner => "GK",
-            _ => throw new ArgumentException("Invalid role")
+            _ => throw new ArgumentException("Vai trờ không hợp lệ")
         };
 
         var number = await _unitOfWork.AccountRepo.CreateNumberOfAccountCode(prefix);

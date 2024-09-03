@@ -136,7 +136,7 @@ public class ContestService : IContestService
     public async Task<List<ContestNameYearResponse>> Get5RecentYear()
     {
         var result = await _unitOfWork.ContestRepo.Get5RecentYearAsync();
-        if (result == null) throw new Exception("Không có Cuộc thi nào!");
+        if (result == null) throw new Exception("Không có cuộc thi nào");
         return result;
     }
 

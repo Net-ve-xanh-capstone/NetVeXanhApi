@@ -10,4 +10,5 @@ public interface IAuthenticationService
     public Task<RegisterResponse> AdminCreateAccount(CreateAccountV2Request account);
     public Task<string> ReGenerateJwtToken(RefreshTokenRequest refreshToken);
     public Task<bool?> VerifyEmail(Guid id);
+    public Task<bool> ForgotPassword(string userName);
 }

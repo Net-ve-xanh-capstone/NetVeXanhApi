@@ -156,4 +156,43 @@ public class AuthenticationController : ControllerBase
     }
 
     #endregion
+    
+    #region ResetPass
+    [AllowAnonymous]
+    [HttpPost("/forgot-password")]
+    [SwaggerOperation(Tags = new[] { "Authentication" })]
+    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Email is required.",
+                Result = false
+            });
+        }
+
+        var result = await _authenticationService.ForgotPassword(email);
+    
+        if (!result)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Email is not exist",
+                Result = false
+            });
+        }
+
+        return Ok(new BaseResponseModel
+        {
+            Status = Ok().StatusCode,
+            Message = "Reset password email sent successfully. Please check your email!",
+            Result = true
+        });
+    }
+
+    #endregion
+
 }

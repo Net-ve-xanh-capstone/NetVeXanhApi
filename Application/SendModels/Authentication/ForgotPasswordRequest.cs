@@ -2,5 +2,5 @@
 
 public class ForgotPasswordRequest
 {
-    public string UsernName { get; set; } = null!;
+    public string UserName { get; set; } = null!;
 }

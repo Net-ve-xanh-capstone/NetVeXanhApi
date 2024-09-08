@@ -163,7 +163,7 @@ public class AuthenticationController : ControllerBase
     [SwaggerOperation(Tags = new[] { "Authentication" })]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest userName)
     {
-        if (string.IsNullOrWhiteSpace(userName.UsernName))
+        if (string.IsNullOrWhiteSpace(userName.UserName))
         {
             return BadRequest(new BaseFailedResponseModel
             {
@@ -173,7 +173,7 @@ public class AuthenticationController : ControllerBase
             });
         }
 
-        var result = await _authenticationService.ForgotPassword(userName.UsernName);
+        var result = await _authenticationService.ForgotPassword(userName.UserName);
     
         if (!result)
         {

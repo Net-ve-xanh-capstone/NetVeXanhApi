@@ -161,26 +161,26 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     [HttpPost("forgot-password")]
     [SwaggerOperation(Tags = new[] { "Authentication" })]
-    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    public async Task<IActionResult> ForgotPassword([FromBody] string username)
     {
-        if (string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(username))
         {
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Bắt buộc phải nhập địa chỉ email.",
+                Message = "Bắt buộc phải nhập tên đăng nhập.",
                 Result = false
             });
         }
 
-        var result = await _authenticationService.ForgotPassword(email);
+        var result = await _authenticationService.ForgotPassword(username);
     
         if (!result)
         {
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Email không tồn tại trong hệ thống",
+                Message = "Tên đăng nhập không tồn tại trong hệ thống",
                 Result = false
             });
         }

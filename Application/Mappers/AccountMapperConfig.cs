@@ -49,6 +49,7 @@ public partial class MapperConfigs : Profile
         ;
 
         CreateMap<Account, CompetitorResponse>()
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Birthday!.Value)))
             .ForMember(dest => dest.Prize, opt => opt.Ignore())
             .ForMember(dest => dest.RoundName, opt => opt.Ignore())

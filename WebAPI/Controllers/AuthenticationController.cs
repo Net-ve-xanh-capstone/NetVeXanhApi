@@ -188,7 +188,7 @@ public class AuthenticationController : ControllerBase
         return Ok(new BaseResponseModel
         {
             Status = Ok().StatusCode,
-            Message = "Mật khẩu đã được gửi tới địa chỉ email. Vui lòng check email.",
+            Message = "Mật khẩu đã được gửi tới địa chỉ Email.",
             Result = true
         });
     }

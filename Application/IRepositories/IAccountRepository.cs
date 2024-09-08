@@ -21,6 +21,7 @@ public interface IAccountRepository : IGenericRepository<Account>
 
     Task<int> CompetitorCountByContest(Guid contestId);
     Task<List<Account>> ListCompetitorByContest(FilterAccountRequest filter);
+    Task<List<Account>?> GetAccountInContestAsync(Guid contestId);
 
     #region Validate
 

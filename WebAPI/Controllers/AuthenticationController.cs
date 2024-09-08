@@ -168,7 +168,7 @@ public class AuthenticationController : ControllerBase
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Email is required.",
+                Message = "Bắt buộc phải nhập địa chỉ email.",
                 Result = false
             });
         }
@@ -180,7 +180,7 @@ public class AuthenticationController : ControllerBase
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Email is not exist",
+                Message = "Email không tồn tại trong hệ thống",
                 Result = false
             });
         }
@@ -188,7 +188,7 @@ public class AuthenticationController : ControllerBase
         return Ok(new BaseResponseModel
         {
             Status = Ok().StatusCode,
-            Message = "Reset password email sent successfully. Please check your email!",
+            Message = "Mật khẩu đã được gửi tới địa chỉ email. Vui lòng check email.",
             Result = true
         });
     }

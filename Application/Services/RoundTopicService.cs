@@ -28,6 +28,13 @@ public class RoundTopicService : IRoundTopicService
     public async Task<List<ListRoundTopicResponse>> GetAll()
     {
         var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
+
+        /*var distinctList = _mapper.Map<List<ListRoundTopicResponse>>(list)
+                              .GroupBy(x => x.Name)
+                              .Select(g => g.First())
+                              .ToList();
+
+        return distinctList;*/
         return _mapper.Map<List<ListRoundTopicResponse>>(list);
     }
 

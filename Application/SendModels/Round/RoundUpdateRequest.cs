@@ -9,4 +9,7 @@ public class RoundUpdateRequest
     public string? Location { get; set; }
     public string? Description { get; set; }
     public Guid CurrentUserId { get; set; }
+    public string? Status { get; set; }
+    public DateTime? DeadlineSubmissionDate { get; set; }
+    public DateTime? ResultAnnouncementDate { get; set; }
 }

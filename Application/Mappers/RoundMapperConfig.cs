@@ -14,7 +14,11 @@ public partial class MapperConfigs : Profile
     {
         CreateMap<CreateRoundRequest, Round>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RoundStatus.NotStarted.ToString()))
-            .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award));
+            .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award))
+            .ForMember(dest => dest.DeadlineSubmissionDate,
+                       opt => opt.MapFrom(src => src.EndTime.AddDays(7))) // Tính 7 ngày sau từ EndTime
+            .ForMember(dest => dest.ResultAnnouncementDate,
+                       opt => opt.MapFrom(src => src.EndTime.AddDays(10))); // Tính 10 ngày sau từ EndTime
 
 
         CreateMap<RoundRequest, Round>().ReverseMap()

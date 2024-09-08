@@ -139,7 +139,15 @@ public class AccountRepository : GenericRepository<Account>, IAccountRepository
         return query.ToList();
     }
 
-
+    public async Task<List<Account>?> GetAccountInContestAsync(Guid contestId)
+    {
+        return await DbSet.Include(x=>x.Painting)
+            .ThenInclude(x=>x.RoundTopic)
+            .ThenInclude(x=>x.Round)
+            .ThenInclude(x=>x.EducationalLevel).ThenInclude(x=>x.Contest)
+            .Where(x=>x.Painting.Any(x => x.RoundTopic.Round.EducationalLevel.Contest.Id == contestId))
+            .ToListAsync();
+    }
     #region Validate
 
     public async Task<bool> IsExistCompetitor(Guid id)

@@ -312,6 +312,7 @@ public class RoundController : Controller
 
     #region Get List Round
 
+    [Authorize(Roles = "Staff")]
     [HttpGet("roundsforstaff")]
     public async Task<IActionResult> GetListRoundsForStaff()
     {

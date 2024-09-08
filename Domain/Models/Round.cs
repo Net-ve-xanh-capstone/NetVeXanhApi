@@ -12,6 +12,9 @@ public class Round : BaseModel
     public Guid? EducationalLevelId { get; set; }
     public int? RoundNumber { get; set; }
 
+    public DateTime DeadlineSubmissionDate { get; set; }
+    public DateTime ResultAnnouncementDate { get; set; }
+
 
     //Relation
 

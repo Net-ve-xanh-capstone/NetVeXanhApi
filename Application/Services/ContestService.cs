@@ -291,4 +291,13 @@ public class ContestService : IContestService
     }
 
     #endregion
+
+    /*#region
+
+    public async Task<List<AccountInContestResponse>> GetAllCompetitorInContest(Guid contestId)
+    {
+        var listAccount = await _unitOfWork.AccountRepo.GetAccountInContestAsync(contestId);
+        return listAccount; 
+    }
+    #endregion*/
 }

@@ -12,4 +12,6 @@ public class RoundResponse
     public string EducationalLevelName { get; set; }
     public Guid? ContestId { get; set; }
     public string ContestName { get; set; }
+    public DateTime DeadlineSubmissionDate { get; set; }
+    public DateTime ResultAnnouncementDate { get; set; }
 }

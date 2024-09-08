@@ -449,7 +449,7 @@ public class PaintingController : Controller
     #endregion
 
     #region Get Painting By ScheduleId
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Examiner")]
     /// <summary>
     ///     Lấy danh sách bài dự thi theo schedule
     /// </summary>

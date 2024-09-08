@@ -161,9 +161,9 @@ public class AuthenticationController : ControllerBase
     [AllowAnonymous]
     [HttpPost("forgot-password")]
     [SwaggerOperation(Tags = new[] { "Authentication" })]
-    public async Task<IActionResult> ForgotPassword([FromBody] string username)
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest userName)
     {
-        if (string.IsNullOrWhiteSpace(username))
+        if (string.IsNullOrWhiteSpace(userName.UsernName))
         {
             return BadRequest(new BaseFailedResponseModel
             {
@@ -173,7 +173,7 @@ public class AuthenticationController : ControllerBase
             });
         }
 
-        var result = await _authenticationService.ForgotPassword(username);
+        var result = await _authenticationService.ForgotPassword(userName.UsernName);
     
         if (!result)
         {

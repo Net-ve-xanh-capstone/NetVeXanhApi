@@ -159,7 +159,7 @@ public class AuthenticationController : ControllerBase
     
     #region ResetPass
     [AllowAnonymous]
-    [HttpPost("/forgot-password")]
+    [HttpPost("forgot-password")]
     [SwaggerOperation(Tags = new[] { "Authentication" })]
     public async Task<IActionResult> ForgotPassword([FromBody] string email)
     {

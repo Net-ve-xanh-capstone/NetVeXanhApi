@@ -196,6 +196,22 @@ public class RoundService : IRoundService
 
     #endregion
 
+    #region Get List Competitor In Round
+
+    public async Task<List<CompetitorResponse>> GetListCompetitorInRound(Guid roundId)
+    {
+        var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
+
+        var competitor = round.RoundTopic
+            .SelectMany(rt => rt.Painting)
+            .Distinct()
+            .ToList();
+
+        return _mapper.Map<List<CompetitorResponse>>(competitor);
+    }
+
+    #endregion
+
     #region Announce
 
     public async Task<bool> AnnounceResults(Guid roundId)

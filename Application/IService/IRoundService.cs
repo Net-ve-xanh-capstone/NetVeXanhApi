@@ -22,6 +22,7 @@ public interface IRoundService
     Task<ValidationResult> ValidateRoundUpdateRequest(RoundUpdateRequest roundUpdate);
 
     Task<List<CompetitorResponse>> GetListCompetitorFinalRound(Guid roundId);
+    Task<List<CompetitorResponse>> GetListCompetitorInRound(Guid roundId);
 
     #region Export
 

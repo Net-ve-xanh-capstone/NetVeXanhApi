@@ -1,6 +1,7 @@
 ﻿using Application.BaseModels;
 using Application.IService;
 using Application.IService.ICommonService;
+using Application.SendModels.Account;
 using Application.SendModels.AccountSendModels;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
@@ -153,6 +154,13 @@ public class AccountService : IAccountService
     {
         var account = await _unitOfWork.AccountRepo.GetByIdActiveAsync(id);
         if (account == null) throw new Exception("Không tìm thấy tài khoản.");
+        return _mapper.Map<AccountResponse>(account);
+    }
+
+    public async Task<AccountResponse?> FilterAccount(FilterAccountRequest filter)
+    {
+        var account = await _unitOfWork.AccountRepo.ListCompetitorByContest(filter);
+        if (account.Count == 0) throw new Exception("Không tìm thấy tài khoản.");
         return _mapper.Map<AccountResponse>(account);
     }
 

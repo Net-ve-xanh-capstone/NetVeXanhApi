@@ -115,7 +115,7 @@ public class AuthenticationService : IAuthenticationService
             Role.Staff => "NV",
             Role.Admin => "AD",
             Role.Examiner => "GK",
-            _ => throw new ArgumentException("Invalid role")
+            _ => throw new ArgumentException("Vai trờ không hợp lệ")
         };
 
         var number = await _unitOfWork.AccountRepo.CreateNumberOfAccountCode(prefix);
@@ -124,6 +124,25 @@ public class AuthenticationService : IAuthenticationService
 
     #endregion
 
+    #region Forgot Password
+
+    public async Task<bool> ForgotPassword(string userName)
+    {
+        var account = await _unitOfWork.AccountRepo.FindUserByUsername(userName);
+        if (account != null)
+        {
+            var newPass = RandomPassword();
+            account!.Password = _authentication.Hash(newPass);
+            await _unitOfWork.SaveChangesAsync();
+            MailModel mail = new MailModel();
+            mail.To = account!.Email!;
+            mail.Body = newPass;
+            mail.Subject = "New passWord";
+            await _mailService.SendEmail(mail);
+            return true;
+        }
+        return false;
+    }
     public string RandomPassword()
     {
         var random = new Random();
@@ -133,6 +152,9 @@ public class AuthenticationService : IAuthenticationService
             .Select(s => s[random.Next(s.Length)]).ToArray());
         return randomString;
     }
+
+    #endregion
+
 
     #region Create Account
 

@@ -28,7 +28,7 @@ internal class RoundConfiguration : IEntityTypeConfiguration<Round>
         builder.Property(u => u.UpdatedBy);
 
         //Status
-        builder.Property(u => u.Status).HasDefaultValue("False");
+        builder.Property(u => u.Status);
 
         //Name 
         builder.Property(u => u.Name);
@@ -40,16 +40,24 @@ internal class RoundConfiguration : IEntityTypeConfiguration<Round>
         builder.Property(u => u.EndTime);
 
         //Location
-        builder.Property(u => u.Location).HasDefaultValue("");
+        builder.Property(u => u.Location).HasDefaultValue("Không có thông tin");
 
         //Description
-        builder.Property(u => u.Description).HasDefaultValue("");
+        builder.Property(u => u.Description).HasDefaultValue("Không có mô tả");
 
         //EducationalLevel
         builder.Property(u => u.EducationalLevelId);
 
         //RoundNumber
         builder.Property(u => u.RoundNumber);
+
+        //DeadlineSubmissionDate
+        builder.Property(u => u.DeadlineSubmissionDate);
+
+        //ResultAnnouncementDate
+        builder.Property(u => u.ResultAnnouncementDate);
+
+
 
 
         //Relation

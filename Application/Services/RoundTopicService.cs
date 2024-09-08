@@ -28,6 +28,13 @@ public class RoundTopicService : IRoundTopicService
     public async Task<List<ListRoundTopicResponse>> GetAll()
     {
         var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
+
+        /*var distinctList = _mapper.Map<List<ListRoundTopicResponse>>(list)
+                              .GroupBy(x => x.Name)
+                              .Select(g => g.First())
+                              .ToList();
+
+        return distinctList;*/
         return _mapper.Map<List<ListRoundTopicResponse>>(list);
     }
 
@@ -100,7 +107,7 @@ public class RoundTopicService : IRoundTopicService
         var roundtopic =
             await _unitOfWork.RoundTopicRepo.GetByRoundIdTopicId(roundTopicDeleteRequest.RoundId,
                 roundTopicDeleteRequest.TopicId);
-        if (roundtopic == null) throw new Exception("Khong tim thay RoundTopic");
+        if (roundtopic == null) throw new Exception("Không tìm thấy chủ đề trong vòng thi");
         await _unitOfWork.RoundTopicRepo.DeleteAsync(roundtopic);
 
         return await _unitOfWork.SaveChangesAsync() > 0;

@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Application.SendModels.Account;
+using Domain.Models;
 
 namespace Application.IRepositories;
 
@@ -19,6 +20,8 @@ public interface IAccountRepository : IGenericRepository<Account>
     Task<int> CreateNumberOfAccountCode(string roleCode);
 
     Task<int> CompetitorCountByContest(Guid contestId);
+    Task<List<Account>> ListCompetitorByContest(FilterAccountRequest filter);
+    Task<List<Account>?> GetAccountInContestAsync(Guid contestId);
 
     #region Validate
 

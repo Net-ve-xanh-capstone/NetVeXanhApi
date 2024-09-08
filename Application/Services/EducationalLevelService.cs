@@ -116,11 +116,11 @@ public class EducationalLevelService : IEducationalLevelService
         if (!validationResult.IsValid)
             // Handle validation failure
             throw new ValidationException(validationResult.Errors);
-        var EducationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
-        if (EducationalLevel == null) throw new Exception("Không tìm thấy đối tượng dự thi nào");
-        _mapper.Map(updateEducationalLevel, EducationalLevel);
-        EducationalLevel.UpdatedBy = updateEducationalLevel.CurrentUserId;
-        EducationalLevel.UpdatedTime = _currentTime.GetCurrentTime();
+        var educationalLevel = await _unitOfWork.EducationalLevelRepo.GetByIdAsync(updateEducationalLevel.Id);
+        if (educationalLevel == null) throw new Exception("Không tìm thấy đối tượng dự thi nào");
+        _mapper.Map(updateEducationalLevel, educationalLevel);
+        educationalLevel.UpdatedBy = updateEducationalLevel.CurrentUserId;
+        educationalLevel.UpdatedTime = _currentTime.GetCurrentTime();
 
         return await _unitOfWork.SaveChangesAsync() > 0;
     }

@@ -1,4 +1,5 @@
 ﻿using Application.BaseModels;
+using Application.SendModels.Account;
 using Application.SendModels.AccountSendModels;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
@@ -27,4 +28,5 @@ public interface IAccountService
     Task<AccountResponse?> GetAccountByCode(string code);
     Task<ValidationResult> ValidateAccountUpdateRequest(AccountUpdateRequest account);
     Task<ValidationResult> ValidateSubAccountRequest(SubAccountRequest accountUpdate);
+    Task<AccountResponse?> FilterAccount(FilterAccountRequest filter);
 }

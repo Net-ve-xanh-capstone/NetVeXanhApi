@@ -312,6 +312,7 @@ public class RoundController : Controller
 
     #region Get List Round
 
+    [Authorize(Roles = "Staff")]
     [HttpGet("roundsforstaff")]
     public async Task<IActionResult> GetListRoundsForStaff()
     {
@@ -339,7 +340,38 @@ public class RoundController : Controller
     }
 
     #endregion
+
+    #region Get List Competitor In Round
+
+    [HttpGet("{roundId}/competitors")]
+    public async Task<IActionResult> GetListCompetitorInRound(Guid roundId)
+    {
+        try
+        {
+            var result = await _roundService.GetListCompetitorInRound(roundId);
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách các vòng thi thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = null,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
     
+    
+
     #region Export
     [Authorize(Roles = "Staff")]
     [HttpGet("export-round-results")]

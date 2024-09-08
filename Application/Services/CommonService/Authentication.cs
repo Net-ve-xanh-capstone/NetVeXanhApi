@@ -52,7 +52,8 @@ public class Authentication : IAuthentication
         {
             new(ClaimTypes.NameIdentifier, account.Username!),
             new("Id", account.Id.ToString()),
-            new(ClaimTypes.Role, account.Role!)
+            new(ClaimTypes.Role, account.Role!),
+            new("FullName", account.FullName!)
         };
 
         if (!string.IsNullOrEmpty(account.Avatar))
@@ -63,7 +64,7 @@ public class Authentication : IAuthentication
         var tokenDescription = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddHours(2), 
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(secretKryByte), SecurityAlgorithms.HmacSha256)
         };

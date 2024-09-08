@@ -82,7 +82,7 @@ public class AuthenticationController : ControllerBase
     #endregion
 
     #region Create Account
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Staff")]
     [HttpPost("registerforstaffandexaminer")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<ActionResult<RegisterResponse>> CreateAccountV2(CreateAccountV2Request account)
@@ -156,4 +156,43 @@ public class AuthenticationController : ControllerBase
     }
 
     #endregion
+    
+    #region ResetPass
+    [AllowAnonymous]
+    [HttpPost("/forgot-password")]
+    [SwaggerOperation(Tags = new[] { "Authentication" })]
+    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Bắt buộc phải nhập địa chỉ email.",
+                Result = false
+            });
+        }
+
+        var result = await _authenticationService.ForgotPassword(email);
+    
+        if (!result)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = "Email không tồn tại trong hệ thống",
+                Result = false
+            });
+        }
+
+        return Ok(new BaseResponseModel
+        {
+            Status = Ok().StatusCode,
+            Message = "Mật khẩu đã được gửi tới địa chỉ email. Vui lòng check email.",
+            Result = true
+        });
+    }
+
+    #endregion
+
 }

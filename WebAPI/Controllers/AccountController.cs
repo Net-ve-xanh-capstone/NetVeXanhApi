@@ -1,5 +1,6 @@
 ﻿using Application.BaseModels;
 using Application.IService;
+using Application.SendModels.Account;
 using Application.SendModels.AccountSendModels;
 using Domain.Models;
 using FluentValidation;
@@ -341,6 +342,7 @@ public class AccountController : ControllerBase
 
     #region Get Account By Id
     [HttpGet("getaccountbyid/{id}")]
+    [Authorize(Roles = "Staff, Admin")]
     [SwaggerOperation(Tags = new[] { "Admin" })]
     public async Task<IActionResult> GetAccountById(Guid id)
     {
@@ -566,6 +568,36 @@ public class AccountController : ControllerBase
                 Status = BadRequest().StatusCode,
                 Message = ex.Message,
                 Result = false,
+                Errors = ex
+            });
+        }
+    }
+
+    #endregion
+
+    #region Filter
+    [Authorize(Roles = "Admin, Staff")]
+    [HttpPost("filter")]
+    [SwaggerOperation(Tags = new[] { "Admin" })]
+    public async Task<IActionResult> FilterAccount(FilterAccountRequest filter)
+    {
+        try
+        {
+            var result = await _accountService.FilterAccount(filter);
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Lấy danh sách thí sinh thành công",
+                Result = result
+            });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new BaseFailedResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = ex.Message,
+                Result = new List<Account>(),
                 Errors = ex
             });
         }

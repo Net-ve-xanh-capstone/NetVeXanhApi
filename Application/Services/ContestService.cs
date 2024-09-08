@@ -55,7 +55,7 @@ public class ContestService : IContestService
 
         contest.StaffId = contest.CreatedBy;
         if (await _unitOfWork.ContestRepo.CheckContestDuplicate(contest.StartTime, contest.EndTime))
-            throw new Exception("Thời gian bị trùng lặp");
+            throw new Exception("Thời gian bị trùng cuộc thi khác");
 
         await _unitOfWork.ContestRepo.AddAsync(contest);
         return await _unitOfWork.SaveChangesAsync() > 0;
@@ -136,7 +136,7 @@ public class ContestService : IContestService
     public async Task<List<ContestNameYearResponse>> Get5RecentYear()
     {
         var result = await _unitOfWork.ContestRepo.Get5RecentYearAsync();
-        if (result == null) throw new Exception("Không có Cuộc thi nào!");
+        if (result == null) throw new Exception("Không có cuộc thi nào");
         return result;
     }
 
@@ -291,4 +291,13 @@ public class ContestService : IContestService
     }
 
     #endregion
+
+    /*#region
+
+    public async Task<List<AccountInContestResponse>> GetAllCompetitorInContest(Guid contestId)
+    {
+        var listAccount = await _unitOfWork.AccountRepo.GetAccountInContestAsync(contestId);
+        return listAccount; 
+    }
+    #endregion*/
 }

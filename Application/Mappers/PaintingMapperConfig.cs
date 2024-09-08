@@ -173,7 +173,10 @@ public partial class MapperConfigs : Profile
         CreateMap<Painting, CompetitorResponse>()
             .IncludeMembers(s => s.Account)
             .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award!.Rank ?? "Không có giải thưởng"))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>
+                src.Account.Gender! == true ? "Nữ" :
+                src.Account.Gender! == false ? "Nam" : null));
         // Thêm mapping mới này
         CreateMap<ICollection<Painting>, CompetitorResponse>()
             .ConvertUsing((src, dest, context) =>

@@ -130,7 +130,7 @@ public class RoundController : Controller
     
     #region Get List Comepetitor
     [Authorize(Roles = "Staff")]
-    [HttpGet("/finalround/{id}")]
+    [HttpGet("finalround/{id}")]
     public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
     {
         try

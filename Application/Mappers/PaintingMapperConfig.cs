@@ -172,6 +172,7 @@ public partial class MapperConfigs : Profile
 
         CreateMap<Painting, CompetitorResponse>()
             .IncludeMembers(s => s.Account)
+            .ForMember(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
             .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award!.Rank ?? "Không có giải thưởng"))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForPath(dest => dest.Code, opt => opt.MapFrom(src =>src.Account.Code))

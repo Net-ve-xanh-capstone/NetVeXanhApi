@@ -166,7 +166,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<List<Contest>> StartContest()
     {
         return await DbSet.Include(src => src.EducationalLevel).Where(src =>
-            src.StartTime >= DateTime.Now && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
+            src.StartTime.Date == DateTime.Now.Date && src.Status == ContestStatus.NotStarted.ToString()).ToListAsync();
     }
 
     public async Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync()

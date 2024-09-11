@@ -26,7 +26,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public override async Task<List<Contest>> GetAllAsync()
     {
         return await DbSet.Where(x => x.Status != ContestStatus.Delete.ToString())
-            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
+            .Include(x => x.Account).OrderByDescending(x => x.StartTime)
             .ToListAsync();
     }
 
@@ -39,7 +39,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<List<Contest>> GetContestByStatus(string contestStatus)
     {
         return await DbSet.Where(x => x.Status == contestStatus)
-            .Include(x => x.Account).OrderByDescending(x => x.CreatedTime)
+            .Include(x => x.Account).OrderByDescending(x => x.StartTime)
             .ToListAsync();
     }
 
@@ -144,7 +144,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     {
         var result = await DbSet
             .Where(x => x.Status == ContestStatus.Complete.ToString())
-            .OrderBy(x => x.CreatedTime).Select(x => x.Id).Take(3).ToListAsync();
+            .OrderBy(x => x.StartTime).Select(x => x.Id).Take(3).ToListAsync();
         return result;
     }
 
@@ -172,7 +172,7 @@ public class ContestRepository : GenericRepository<Contest>, IContestRepository
     public async Task<List<AccountAwardResponse>> GetAccountsByMostRecentContestAsync()
     {
         var mostRecentContest = await DbSet.Where(x => x.Status == ContestStatus.Complete.ToString())
-            .OrderByDescending(c => c.CreatedTime)
+            .OrderByDescending(c => c.StartTime)
             .FirstOrDefaultAsync();
 
         if (mostRecentContest == null)

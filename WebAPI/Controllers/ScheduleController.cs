@@ -473,4 +473,113 @@ public class ScheduleController : Controller
     }
 
     #endregion
+
+    #region Create Schedule For Qualifying Round
+
+    /// <summary>
+    ///     Tạo lịch chấm tự động chia tranh theo số lượng giám khảo
+    /// </summary>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount để là 1</br>
+    /// </param>
+    /// <returns></returns>
+    [Authorize(Roles = "Staff")]
+    [HttpPost("qualifying-round")]
+    public async Task<IActionResult> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule)
+    {
+        try
+        {
+            var result = await _scheduleService.CreateScheduleForQualifyingRound2(schedule);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Tạo lịch chấm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+
+    }
+
+    #endregion
+    #region Create Schedule For Final Round
+
+    /// <summary>
+    ///     Tạo lịch chấm tự động chia tranh theo số lượng giám khảo
+    /// </summary>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount để là 1</br>
+    /// </param>
+    /// <returns></returns>
+    [Authorize(Roles = "Staff")]
+    [HttpPost("final-round")]
+    public async Task<IActionResult> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule)
+    {
+        try
+        {
+            var result = await _scheduleService.CreateScheduleForFinalRound2(schedule);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Tạo lịch chấm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+
+    }
+
+    #endregion
 }

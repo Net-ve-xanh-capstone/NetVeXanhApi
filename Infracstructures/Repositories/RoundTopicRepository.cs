@@ -33,6 +33,25 @@ public class RoundTopicRepository : GenericRepository<RoundTopic>, IRoundTopicRe
             .ToListAsync();
     }
 
+    public async Task<List<Painting>> ListPaintingForScheduleQualifyingRound(Guid roundId)
+    {
+        return await DbSet
+            .Where(tr => tr.RoundId == roundId)
+            .SelectMany(tr => tr.Painting)
+            .Where(p => p.Status == PaintingStatus.Accepted.ToString() && p.ScheduleId == null)
+            .OrderBy(p => Guid.NewGuid())
+            .ToListAsync();
+    }
+    public async Task<List<Painting>> ListPaintingForScheduleFinalRound(Guid roundId)
+    {
+        return await DbSet
+            .Where(tr => tr.RoundId == roundId)
+            .SelectMany(tr => tr.Painting)
+            .Where(p => p.Status == PaintingStatus.FinalRound.ToString() && p.ScheduleId == null)
+            .OrderBy(p => Guid.NewGuid())
+            .ToListAsync();
+    }
+
     public async Task<List<RoundTopic>> ListRoundTopicByRoundId(Guid roundId)
     {
         return await DbSet.Include(src => src.Topic).Where(src => src.RoundId == roundId).ToListAsync();

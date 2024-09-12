@@ -21,4 +21,6 @@ public interface IScheduleService
     Task<bool> ConfirmRating(Guid id);
     Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule);
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
+    Task<bool> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule);
+    Task<bool> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule);
 }

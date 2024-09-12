@@ -376,6 +376,120 @@ public class ScheduleService : IScheduleService
 
     #endregion
 
+    #region CreateScheduleForQualifyingRound2
+
+    public async Task<bool> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule)
+    {
+        var validationResult = await ValidateScheduleForPreliminaryRequest(schedule);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForScheduleQualifyingRound(schedule.RoundId);
+
+        if (listPainting.Count == 0) throw new Exception("Không có tranh nào để lên lịch chấm");
+
+        var paintingAssignments = AssignPaintingsToExaminers(listPainting, schedule.ListExaminer);
+        //Get Painting 
+        foreach (var e in paintingAssignments)
+        {
+            
+            var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
+            var award = round?.Award.ToList();
+            if (award == null) throw new Exception("Không có giải để lên lịch chấm.");
+
+            var newSchedule = new Schedule();
+            newSchedule.Id = Guid.NewGuid();
+            newSchedule.ExaminerId = e.Key;
+            newSchedule.EndDate = schedule.EndDate;
+            newSchedule.RoundId = schedule.RoundId;
+            newSchedule.Description = schedule.Description;
+            newSchedule.Status = ScheduleStatus.Rating.ToString();
+            newSchedule.CreatedBy = schedule.CurrentUserId;
+
+            //Add award schudele
+            var listAwardSchedule = new List<AwardSchedule>();
+            foreach (var a in schedule.Awards)
+            {
+                var newAwardSchedule = new AwardSchedule();
+                newAwardSchedule.ScheduleId = newSchedule.Id;
+                newAwardSchedule.AwardId = a.AwardId;
+                newAwardSchedule.Quantity = a.AwardCount;
+                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+                listAwardSchedule.Add(newAwardSchedule);
+            }
+
+            newSchedule.AwardSchedule = listAwardSchedule;
+
+            foreach (var p in e.Value) p.ScheduleId = newSchedule.Id;
+
+            await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+            var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(e.Key);
+            await _mailService.SendScheduleToExaminer(examiner);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
+        return true;
+    }
+    #endregion
+
+    #region CreateScheduleForFinalRound2
+
+    public async Task<bool> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule)
+    {
+        var validationResult = await ValidateScheduleForFinalRequest(schedule);
+        if (!validationResult.IsValid)
+            throw new ValidationException(validationResult.Errors);
+        var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForScheduleFinalRound(schedule.RoundId);
+
+        if (listPainting.Count == 0) throw new Exception("Không có tranh nào để lên lịch chấm");
+
+        var paintingAssignments = AssignPaintingsToExaminers(listPainting, schedule.ListExaminer);
+        //Get Painting 
+        foreach (var e in paintingAssignments)
+        {
+
+            var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
+            var award = round?.Award.ToList();
+            if (award == null) throw new Exception("Không có giải để lên lịch chấm.");
+
+            var newSchedule = new Schedule();
+            newSchedule.Id = Guid.NewGuid();
+            newSchedule.ExaminerId = e.Key;
+            newSchedule.EndDate = schedule.EndDate;
+            newSchedule.RoundId = schedule.RoundId;
+            newSchedule.Description = schedule.Description;
+            newSchedule.Status = ScheduleStatus.Rating.ToString();
+            newSchedule.CreatedBy = schedule.CurrentUserId;
+
+            //Add award schudele
+            var listAwardSchedule = new List<AwardSchedule>();
+            foreach (var a in schedule.Awards)
+            {
+                var newAwardSchedule = new AwardSchedule();
+                newAwardSchedule.ScheduleId = newSchedule.Id;
+                newAwardSchedule.AwardId = a.AwardId;
+                newAwardSchedule.Quantity = a.AwardCount;
+                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
+                listAwardSchedule.Add(newAwardSchedule);
+            }
+
+            newSchedule.AwardSchedule = listAwardSchedule;
+
+            foreach (var p in e.Value) p.ScheduleId = newSchedule.Id;
+
+            await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+            var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(e.Key);
+            await _mailService.SendScheduleToExaminer(examiner);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+
+        return true;
+    }
+    #endregion
+
     #region Validate
 
     public async Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule)
@@ -399,4 +513,30 @@ public class ScheduleService : IScheduleService
     }
 
     #endregion
+
+    public Dictionary<Guid, List<Painting>> AssignPaintingsToExaminers(List<Painting> paintings, List<Guid> examiners)
+    {
+        var paintingPerExaminer = paintings.Count / examiners.Count;
+        var remainder = paintings.Count % examiners.Count;
+
+        // Dictionary để lưu kết quả với key là examinerId và value là danh sách các tranh được chia cho examiner
+        var result = new Dictionary<Guid, List<Painting>>();
+
+        int currentIndex = 0;
+
+        // Vòng lặp qua từng giám khảo
+        for (int i = 0; i < examiners.Count; i++)
+        {
+            // Nếu có dư tranh, phân cho một số giám khảo nhiều hơn một tranh
+            int paintingsToAssign = paintingPerExaminer + (i < remainder ? 1 : 0);
+
+            // Lấy ra số tranh cần phân chia
+            var assignedPaintings = paintings.Skip(currentIndex).Take(paintingsToAssign).ToList();
+            result.Add(examiners[i], assignedPaintings);
+
+            currentIndex += paintingsToAssign;
+        }
+
+        return result;
+    }
 }

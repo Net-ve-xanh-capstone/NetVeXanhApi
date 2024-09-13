@@ -595,7 +595,7 @@ public class ScheduleController : Controller
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
     [HttpPost("qualify-round/manual-assign")]
-    public async Task<IActionResult> CreateScheduleForQualifyingRound2(List<CreateScheduleRequest> schedule)
+    public async Task<IActionResult> CreateScheduleForQualifyingRound2(CreateScheduleManualAssignRequest schedule)
     {
         try
         {
@@ -650,7 +650,7 @@ public class ScheduleController : Controller
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
     [HttpPost("final-round/manual-assign")]
-    public async Task<IActionResult> CreateScheduleForFinalRound2(List<CreateScheduleRequest> schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound2(CreateScheduleManualAssignRequest schedule)
     {
         try
         {

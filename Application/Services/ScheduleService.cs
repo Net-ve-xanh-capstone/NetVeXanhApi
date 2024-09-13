@@ -492,18 +492,20 @@ public class ScheduleService : IScheduleService
 
     #region CreateScheduleForQualifyingRound3
 
-    public async Task<bool> CreateScheduleForQualifyingRound3(List<CreateScheduleRequest> schedule)
+    public async Task<bool> CreateScheduleForQualifyingRound3(CreateScheduleManualAssignRequest schedule)
     {
-        foreach (var s in schedule)
-        {
-            /*var validationResult = await ValidateScheduleForPreliminaryRequest(s);
+        /*var validationResult = await ValidateScheduleForPreliminaryRequest(s);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);*/
+        var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
+        foreach (var s in schedule.listScheduleSingleExaminer)
+        {
+            
             //Get Painting 
             
                 var listPainting =
-                    await _unitOfWork.RoundTopicRepo.ListPaintingForQualifyingRound(s.RoundId, s.JudgedCount);
-                var round = await _unitOfWork.RoundRepo.GetByIdAsync(s.RoundId);
+                    await _unitOfWork.RoundTopicRepo.ListPaintingForQualifyingRound(schedule.RoundId, s.JudgedCount);
+                
                 var award = round?.Award.ToList();
                 if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
@@ -511,10 +513,10 @@ public class ScheduleService : IScheduleService
                 newSchedule.Id = Guid.NewGuid();
                 newSchedule.ExaminerId = s.ExaminerId;
                 newSchedule.EndDate = s.EndDate;
-                newSchedule.RoundId = s.RoundId;
+                newSchedule.RoundId = schedule.RoundId;
                 newSchedule.Description = s.Description;
                 newSchedule.Status = ScheduleStatus.Rating.ToString();
-                newSchedule.CreatedBy = s.CurrentUserId;
+                newSchedule.CreatedBy = schedule.CurrentUserId;
 
                 //Add award schudele
                 var listAwardSchedule = new List<AwardSchedule>();
@@ -525,7 +527,7 @@ public class ScheduleService : IScheduleService
                     newAwardSchedule.AwardId = a.AwardId;
                     newAwardSchedule.Quantity = a.AwardCount;
                     newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-                    newAwardSchedule.CreatedBy = s.CurrentUserId;
+                    newAwardSchedule.CreatedBy = schedule.CurrentUserId;
                     listAwardSchedule.Add(newAwardSchedule);
                 }
 
@@ -547,18 +549,19 @@ public class ScheduleService : IScheduleService
 
     #region CreateScheduleForFinalRound3
 
-    public async Task<bool> CreateScheduleForFinalRound3(List<CreateScheduleRequest> schedule)
+    public async Task<bool> CreateScheduleForFinalRound3(CreateScheduleManualAssignRequest schedule)
     {
-        foreach (var s in schedule)
-        {
-            /*var validationResult = await ValidateScheduleForFinalRequest(s);
+        /*var validationResult = await ValidateScheduleForFinalRequest(s);
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);*/
 
-            var round = await _unitOfWork.RoundRepo.GetByIdAsync(s.RoundId);
+        var round = await _unitOfWork.RoundRepo.GetByIdAsync(schedule.RoundId);
+        foreach (var s in schedule.listScheduleSingleExaminer)
+        {
+            
                 //Get Painting 
                 var listPainting =
-                    await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(s.RoundId, s.JudgedCount);
+                    await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(schedule.RoundId, s.JudgedCount);
                 var award = round?.Award.ToList();
                 if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
 
@@ -567,10 +570,10 @@ public class ScheduleService : IScheduleService
                 newSchedule.Id = Guid.NewGuid();
                 newSchedule.ExaminerId = s.ExaminerId;
                 newSchedule.EndDate = s.EndDate;
-                newSchedule.RoundId = s.RoundId;
+                newSchedule.RoundId = schedule.RoundId;
                 newSchedule.Description = s.Description;
                 newSchedule.Status = ScheduleStatus.Rating.ToString();
-                newSchedule.CreatedBy = s.CurrentUserId;
+                newSchedule.CreatedBy = schedule.CurrentUserId;
 
                 var listAwardSchedule = new List<AwardSchedule>();
                 foreach (var a in s.Awards)
@@ -580,7 +583,7 @@ public class ScheduleService : IScheduleService
                     newAwardSchedule.AwardId = a.AwardId;
                     newAwardSchedule.Quantity = a.AwardCount;
                     newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-                    newAwardSchedule.CreatedBy = s.CurrentUserId;
+                    newAwardSchedule.CreatedBy = schedule.CurrentUserId;
                     listAwardSchedule.Add(newAwardSchedule);
                 }
 

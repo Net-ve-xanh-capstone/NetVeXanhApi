@@ -23,6 +23,6 @@ public interface IScheduleService
     Task<ValidationResult> ValidateScheduleUpdateRequest(ScheduleUpdateRequest scheduleUpdate);
     Task<bool> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule);
     Task<bool> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule);
-    Task<bool> CreateScheduleForQualifyingRound3(List<CreateScheduleRequest> schedule);
-    Task<bool> CreateScheduleForFinalRound3(List<CreateScheduleRequest> schedule);
+    Task<bool> CreateScheduleForQualifyingRound3(CreateScheduleManualAssignRequest schedule);
+    Task<bool> CreateScheduleForFinalRound3(CreateScheduleManualAssignRequest schedule);
 }

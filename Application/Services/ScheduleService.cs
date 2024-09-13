@@ -490,6 +490,125 @@ public class ScheduleService : IScheduleService
     }
     #endregion
 
+    #region CreateScheduleForQualifyingRound3
+
+    public async Task<bool> CreateScheduleForQualifyingRound3(List<CreateScheduleRequest> schedule)
+    {
+        foreach (var s in schedule)
+        {
+            /*var validationResult = await ValidateScheduleForPreliminaryRequest(s);
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);*/
+            //Get Painting 
+            
+                var listPainting =
+                    await _unitOfWork.RoundTopicRepo.ListPaintingForQualifyingRound(s.RoundId, s.JudgedCount);
+                var round = await _unitOfWork.RoundRepo.GetByIdAsync(s.RoundId);
+                var award = round?.Award.ToList();
+                if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
+
+                var newSchedule = new Schedule();
+                newSchedule.Id = Guid.NewGuid();
+                newSchedule.ExaminerId = s.ExaminerId;
+                newSchedule.EndDate = s.EndDate;
+                newSchedule.RoundId = s.RoundId;
+                newSchedule.Description = s.Description;
+                newSchedule.Status = ScheduleStatus.Rating.ToString();
+                newSchedule.CreatedBy = s.CurrentUserId;
+
+                //Add award schudele
+                var listAwardSchedule = new List<AwardSchedule>();
+                foreach (var a in s.Awards)
+                {
+                    var newAwardSchedule = new AwardSchedule();
+                    newAwardSchedule.ScheduleId = newSchedule.Id;
+                    newAwardSchedule.AwardId = a.AwardId;
+                    newAwardSchedule.Quantity = a.AwardCount;
+                    newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                    newAwardSchedule.CreatedBy = s.CurrentUserId;
+                    listAwardSchedule.Add(newAwardSchedule);
+                }
+
+                newSchedule.AwardSchedule = listAwardSchedule;
+
+                foreach (var p in listPainting) p.ScheduleId = newSchedule.Id;
+
+                await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+                var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(s.ExaminerId);
+                await _mailService.SendScheduleToExaminer(examiner);
+                await _unitOfWork.SaveChangesAsync();
+            
+        }
+
+
+        return true;
+    }
+    #endregion
+
+    #region CreateScheduleForFinalRound3
+
+    public async Task<bool> CreateScheduleForFinalRound3(List<CreateScheduleRequest> schedule)
+    {
+        foreach (var s in schedule)
+        {
+            /*var validationResult = await ValidateScheduleForFinalRequest(s);
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);*/
+
+            var round = await _unitOfWork.RoundRepo.GetByIdAsync(s.RoundId);
+                //Get Painting 
+                var listPainting =
+                    await _unitOfWork.RoundTopicRepo.ListPaintingForFinalRound(s.RoundId, s.JudgedCount);
+                var award = round?.Award.ToList();
+                if (award == null) throw new Exception("Không có giải nào để lên lịch chấm.");
+
+                //Create new Schedule
+                var newSchedule = new Schedule();
+                newSchedule.Id = Guid.NewGuid();
+                newSchedule.ExaminerId = s.ExaminerId;
+                newSchedule.EndDate = s.EndDate;
+                newSchedule.RoundId = s.RoundId;
+                newSchedule.Description = s.Description;
+                newSchedule.Status = ScheduleStatus.Rating.ToString();
+                newSchedule.CreatedBy = s.CurrentUserId;
+
+                var listAwardSchedule = new List<AwardSchedule>();
+                foreach (var a in s.Awards)
+                {
+                    var newAwardSchedule = new AwardSchedule();
+                    newAwardSchedule.ScheduleId = newSchedule.Id;
+                    newAwardSchedule.AwardId = a.AwardId;
+                    newAwardSchedule.Quantity = a.AwardCount;
+                    newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+                    newAwardSchedule.CreatedBy = s.CurrentUserId;
+                    listAwardSchedule.Add(newAwardSchedule);
+                }
+
+                newSchedule.AwardSchedule = listAwardSchedule;
+
+                foreach (var p in listPainting)
+                {
+                    p.ScheduleId = newSchedule.Id;
+                    p.RatingStatus = RatingStatus.InProcess.ToString();
+                }
+
+                await _unitOfWork.ScheduleRepo.AddAsync(newSchedule);
+                var examiner = await _unitOfWork.AccountRepo.GetByIdAsync(s.ExaminerId);
+                await _mailService.SendScheduleToExaminer(examiner);
+
+                //Create Notification
+                var notification = new NotificationRequest("Lịch Chấm Mới",
+                    "Bạn có lịch chấm thi mới xin hãy vào Phần Lịch Chấm để xem chi tiết!", s.ExaminerId);
+
+                await _notificationService.CreateNotification(notification);
+                await _unitOfWork.SaveChangesAsync();
+            
+        }
+
+        return true;
+    }
+    #endregion
+
     #region Validate
 
     public async Task<ValidationResult> ValidateScheduleForPreliminaryRequest(ScheduleForPreliminaryRequest schedule)

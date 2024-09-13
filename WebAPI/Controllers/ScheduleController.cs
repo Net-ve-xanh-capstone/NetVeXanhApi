@@ -485,7 +485,7 @@ public class ScheduleController : Controller
     /// </param>
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
-    [HttpPost("qualifying-round")]
+    [HttpPost("qualifying-round/auto-assign")]
     public async Task<IActionResult> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule)
     {
         try
@@ -539,7 +539,7 @@ public class ScheduleController : Controller
     /// </param>
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
-    [HttpPost("final-round")]
+    [HttpPost("final-round/auto-assign")]
     public async Task<IActionResult> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule)
     {
         try
@@ -579,6 +579,128 @@ public class ScheduleController : Controller
             });
         }
 
+    }
+
+    #endregion
+
+    #region Create Schedule For Qualifying Round
+
+    /// <summary>
+    ///     Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
+    [Authorize(Roles = "Staff")]
+    [HttpPost("qualify-round/manual-assign")]
+    public async Task<IActionResult> CreateScheduleForQualifyingRound2(List<CreateScheduleRequest> schedule)
+    {
+        try
+        {
+            var result = await _scheduleService.CreateScheduleForQualifyingRound3(schedule);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "There is a certain painting that has an inappropriate status"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Tạo lịch chấm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
+
+    }
+
+    #endregion
+
+    #region Create Schedule For Final Round
+
+    /// <summary>
+    ///     Tạo lịch chấm
+    /// </summary>
+    /// <param name="schedule">
+    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
+    ///     <br>JudgeCount là số lượng mà giám khảo được phân công chấm</br>
+    /// </param>
+    /// <returns></returns>
+    [Authorize(Roles = "Staff")]
+    [HttpPost("final-round/manual-assign")]
+    public async Task<IActionResult> CreateScheduleForFinalRound2(List<CreateScheduleRequest> schedule)
+    {
+        try
+        {
+            /*var validationResult = await _scheduleService.ValidateScheduleRequest(schedule);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { e.PropertyName, e.ErrorMessage });
+                var response = new BaseFailedResponseModel
+                {
+                    Status = 400,
+                    Message = "Validation failed",
+                    Result = false,
+                    Errors = errors
+                };
+                return BadRequest(response);
+            }*/
+            var result = await _scheduleService.CreateScheduleForFinalRound3(schedule);
+            if (result == false)
+                return BadRequest(new BaseFailedResponseModel
+                {
+                    Status = BadRequest().StatusCode,
+                    Message = "Hệ thống bị lỗi vui lòng thử lại"
+                });
+            return Ok(new BaseResponseModel
+            {
+                Status = Ok().StatusCode,
+                Message = "Tạo lịch chấm thành công",
+                Result = result
+            });
+        }
+        catch (ValidationException ex)
+        {
+            var firstErrorMessage = ex.Errors.FirstOrDefault()?.ErrorMessage;
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = firstErrorMessage,
+                Result = false
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new BaseFailedResponseModel
+            {
+                Status = BadRequest().StatusCode,
+                Message = ex.Message,
+                Result = false,
+                Errors = ex
+            });
+        }
     }
 
     #endregion

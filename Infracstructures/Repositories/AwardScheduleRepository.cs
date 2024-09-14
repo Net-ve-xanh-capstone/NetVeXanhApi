@@ -1,4 +1,5 @@
 ﻿using Application.IRepositories;
+using DocumentFormat.OpenXml.InkML;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -29,5 +30,11 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
     public async Task<List<AwardSchedule?>> GetByAwardIdAsync(Guid awardId)
     {
         return await DbSet.Where(x => x.AwardId == awardId).ToListAsync();
+    }
+    public async Task<List<AwardSchedule>?> GetAwardScheduleByRoundId(Guid roundId)
+    {
+        return DbSet.Include(asch => asch.Schedule)  // Bao gồm dữ liệu từ bảng Schedule
+                   .Where(asch => asch.Schedule.RoundId == roundId)  // Lọc theo RoundId trong Schedule
+                   .ToList();
     }
 }

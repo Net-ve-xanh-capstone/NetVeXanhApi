@@ -376,17 +376,21 @@ public class ScheduleService : IScheduleService
 
     #endregion
 
-    #region CreateScheduleForQualifyingRound2
+    #region CreateScheduleForQualifyingRound2 Auto assign
 
-    public async Task<bool> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule)
+    public async Task<bool> CreateScheduleForQualifyingRound2(CreateScheduleAutoAssignRequest schedule)
     {
-        var validationResult = await ValidateScheduleForPreliminaryRequest(schedule);
+        /*var validationResult = await ValidateScheduleForPreliminaryRequest(schedule);
         if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+            throw new ValidationException(validationResult.Errors);*/
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForScheduleQualifyingRound(schedule.RoundId);
 
+        var listAward = await _unitOfWork.AwardRepo.GetAwardsByRoundId(schedule.RoundId);
+        var listAwardSchedule = await _unitOfWork.AwardScheduleRepo.GetAwardScheduleByRoundId(schedule.RoundId);
+        
         if (listPainting.Count == 0) throw new Exception("Không có tranh nào để lên lịch chấm");
 
+        var finalAward = DistributeAwardsToExaminers(listAward, listAwardSchedule, schedule.ListExaminer);
         var paintingAssignments = AssignPaintingsToExaminers(listPainting, schedule.ListExaminer);
         //Get Painting 
         foreach (var e in paintingAssignments)
@@ -406,19 +410,23 @@ public class ScheduleService : IScheduleService
             newSchedule.CreatedBy = schedule.CurrentUserId;
 
             //Add award schudele
-            var listAwardSchedule = new List<AwardSchedule>();
-            foreach (var a in schedule.Awards)
+            var listAwardScheduleForExaminer = new List<AwardSchedule>();
+            if (finalAward.ContainsKey(e.Key))
             {
-                var newAwardSchedule = new AwardSchedule();
-                newAwardSchedule.ScheduleId = newSchedule.Id;
-                newAwardSchedule.AwardId = a.AwardId;
-                newAwardSchedule.Quantity = a.AwardCount;
-                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
-                listAwardSchedule.Add(newAwardSchedule);
+                foreach (var a in finalAward[e.Key])
+                {
+                    var newAwardSchedule = new AwardSchedule
+                    {
+                        ScheduleId = newSchedule.Id,
+                        AwardId = a.AwardId,
+                        Quantity = a.AwardCount,
+                        Status = AwardScheduleStatus.Rating.ToString(),
+                        CreatedBy = schedule.CurrentUserId
+                    };
+                    listAwardScheduleForExaminer.Add(newAwardSchedule);
+                }
             }
-
-            newSchedule.AwardSchedule = listAwardSchedule;
+            newSchedule.AwardSchedule = listAwardScheduleForExaminer;
 
             foreach (var p in e.Value) p.ScheduleId = newSchedule.Id;
 
@@ -435,15 +443,18 @@ public class ScheduleService : IScheduleService
 
     #region CreateScheduleForFinalRound2
 
-    public async Task<bool> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule)
+    public async Task<bool> CreateScheduleForFinalRound2(CreateScheduleAutoAssignRequest schedule)
     {
-        var validationResult = await ValidateScheduleForFinalRequest(schedule);
+        /*var validationResult = await ValidateScheduleForFinalRequest(schedule);
         if (!validationResult.IsValid)
-            throw new ValidationException(validationResult.Errors);
+            throw new ValidationException(validationResult.Errors);*/
         var listPainting = await _unitOfWork.RoundTopicRepo.ListPaintingForScheduleFinalRound(schedule.RoundId);
 
         if (listPainting.Count == 0) throw new Exception("Không có tranh nào để lên lịch chấm");
+        var listAward = await _unitOfWork.AwardRepo.GetAwardsByRoundId(schedule.RoundId);
+        var listAwardSchedule = await _unitOfWork.AwardScheduleRepo.GetAwardScheduleByRoundId(schedule.RoundId);
 
+        var finalAward = DistributeAwardsToExaminers(listAward, listAwardSchedule, schedule.ListExaminer);
         var paintingAssignments = AssignPaintingsToExaminers(listPainting, schedule.ListExaminer);
         //Get Painting 
         foreach (var e in paintingAssignments)
@@ -463,19 +474,23 @@ public class ScheduleService : IScheduleService
             newSchedule.CreatedBy = schedule.CurrentUserId;
 
             //Add award schudele
-            var listAwardSchedule = new List<AwardSchedule>();
-            foreach (var a in schedule.Awards)
+            var listAwardScheduleForExaminer = new List<AwardSchedule>();
+            if (finalAward.ContainsKey(e.Key))
             {
-                var newAwardSchedule = new AwardSchedule();
-                newAwardSchedule.ScheduleId = newSchedule.Id;
-                newAwardSchedule.AwardId = a.AwardId;
-                newAwardSchedule.Quantity = a.AwardCount;
-                newAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
-                newAwardSchedule.CreatedBy = schedule.CurrentUserId;
-                listAwardSchedule.Add(newAwardSchedule);
+                foreach (var a in finalAward[e.Key])
+                {
+                    var newAwardSchedule = new AwardSchedule
+                    {
+                        ScheduleId = newSchedule.Id,
+                        AwardId = a.AwardId,
+                        Quantity = a.AwardCount,
+                        Status = AwardScheduleStatus.Rating.ToString(),
+                        CreatedBy = schedule.CurrentUserId
+                    };
+                    listAwardScheduleForExaminer.Add(newAwardSchedule);
+                }
             }
-
-            newSchedule.AwardSchedule = listAwardSchedule;
+            newSchedule.AwardSchedule = listAwardScheduleForExaminer;
 
             foreach (var p in e.Value) p.ScheduleId = newSchedule.Id;
 
@@ -657,6 +672,54 @@ public class ScheduleService : IScheduleService
             result.Add(examiners[i], assignedPaintings);
 
             currentIndex += paintingsToAssign;
+        }
+
+        return result;
+    }
+
+    public Dictionary<Guid, List<PrizeWithCountViewModel>> DistributeAwardsToExaminers(List<Award> awards, List<AwardSchedule> awardSchedules, List<Guid> listExaminer)
+    {
+        var result = new Dictionary<Guid, List<PrizeWithCountViewModel>>();
+        int examinerCount = listExaminer.Count;
+
+        foreach (var award in awards)
+        {
+            // Tính tổng số lượng đã sử dụng từ AwardSchedule
+            var usedQuantity = awardSchedules
+                .Where(asch => asch.AwardId == award.Id)
+                .Sum(asch => asch.Quantity);
+
+            // Tính toán số lượng còn lại
+            var remainingQuantity = award.Quantity - usedQuantity;
+
+            // Nếu không còn giải thưởng để chia, tiếp tục vòng lặp
+            if (remainingQuantity <= 0)
+                continue;
+
+            // Tính số lượng mỗi giám khảo sẽ chấm
+            int quantityPerExaminer = remainingQuantity / examinerCount;
+            int remainder = remainingQuantity % examinerCount;  // Phần dư sẽ được chia cho một số giám khảo
+
+            // Phân phối giải thưởng cho từng giám khảo
+            for (int i = 0; i < examinerCount; i++)
+            {
+                var examinerId = listExaminer[i];
+                int quantityForThisExaminer = quantityPerExaminer + (i < remainder ? 1 : 0);  // Phân bổ dư cho những giám khảo đầu tiên
+
+                // Nếu giám khảo chưa có trong dictionary, tạo mới danh sách giải thưởng
+                if (!result.ContainsKey(examinerId))
+                {
+                    result[examinerId] = new List<PrizeWithCountViewModel>();
+                }
+
+                // Tạo một bản sao của Award với số lượng giám khảo sẽ chấm
+                result[examinerId].Add(new PrizeWithCountViewModel
+                {
+                    AwardId = award.Id,
+                    AwardCount = quantityForThisExaminer,  // Gán số lượng giải thưởng mà giám khảo này sẽ chấm
+                    // Các thuộc tính khác của Award nếu có...
+                });
+            }
         }
 
         return result;

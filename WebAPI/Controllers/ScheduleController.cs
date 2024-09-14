@@ -480,13 +480,11 @@ public class ScheduleController : Controller
     ///     Tạo lịch chấm tự động chia tranh theo số lượng giám khảo
     /// </summary>
     /// <param name="schedule">
-    ///     <br>AwardCount là số lượng của giải mà giám khảo được chấm</br>
-    ///     <br>JudgeCount để là 1</br>
     /// </param>
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
     [HttpPost("qualifying-round/auto-assign")]
-    public async Task<IActionResult> CreateScheduleForQualifyingRound2(ScheduleForPreliminaryRequest schedule)
+    public async Task<IActionResult> CreateScheduleForQualifyingRound2(CreateScheduleAutoAssignRequest schedule)
     {
         try
         {
@@ -540,7 +538,7 @@ public class ScheduleController : Controller
     /// <returns></returns>
     [Authorize(Roles = "Staff")]
     [HttpPost("final-round/auto-assign")]
-    public async Task<IActionResult> CreateScheduleForFinalRound2(ScheduleForFinalRequest schedule)
+    public async Task<IActionResult> CreateScheduleForFinalRound2(CreateScheduleAutoAssignRequest schedule)
     {
         try
         {

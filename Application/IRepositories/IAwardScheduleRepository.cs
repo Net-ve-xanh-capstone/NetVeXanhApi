@@ -6,4 +6,5 @@ public interface IAwardScheduleRepository : IGenericRepository<AwardSchedule>
 {
     public Task<List<AwardSchedule>?> GetListByscheduleId(Guid id);
     Task<List<AwardSchedule?>> GetByAwardIdAsync(Guid awardId);
+    Task<List<AwardSchedule>?> GetAwardScheduleByRoundId(Guid roundId);
 }

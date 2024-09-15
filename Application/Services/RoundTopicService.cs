@@ -29,13 +29,12 @@ public class RoundTopicService : IRoundTopicService
     {
         var list = await _unitOfWork.RoundTopicRepo.GetAllAsync();
 
-        /*var distinctList = _mapper.Map<List<ListRoundTopicResponse>>(list)
+        var distinctList = _mapper.Map<List<ListRoundTopicResponse>>(list)
                               .GroupBy(x => x.Name)
                               .Select(g => g.First())
                               .ToList();
 
-        return distinctList;*/
-        return _mapper.Map<List<ListRoundTopicResponse>>(list);
+        return distinctList;
     }
 
     #endregion

@@ -80,9 +80,12 @@ public class AwardService : IAwardService
 
     #region Get List Award By ContestId
 
-    public async Task<List<AwardViewResponse>?> GetListAwardsByRoundIdForSchedule(Guid roundId)
+    public async Task<ListAwardForCreateSchedule?> GetListAwardsByRoundIdForSchedule(Guid roundId)
     {
-        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        var result = new ListAwardForCreateSchedule();
+        result.paintingForSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(roundId);
+
+                var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
         foreach (var a in list)
         {
             var count = 0;
@@ -93,7 +96,9 @@ public class AwardService : IAwardService
             a.Quantity = a.Quantity - count;
 
         }
-        return _mapper.Map<List<AwardViewResponse>>(list);
+        result.listAward = _mapper.Map<List<AwardViewResponse>>(list);
+
+        return result;
     }
 
     #endregion

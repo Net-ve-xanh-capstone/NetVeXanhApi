@@ -54,7 +54,7 @@ public partial class MapperConfigs : Profile
             .ForMember(dest => dest.Prize, opt => opt.Ignore())
             .ForMember(dest => dest.RoundName, opt => opt.Ignore())
             .ForMember(dest => dest.Status, opt => opt.Ignore())
-            .ForPath(dest => dest.Status, opt => opt.MapFrom(src =>
+            .ForPath(dest => dest.Prize, opt => opt.MapFrom(src =>
                 src.Status == PaintingStatus.Draft.ToString() ? "Bản nháp" :
                 src.Status == PaintingStatus.Submitted.ToString() ? "Đã nộp" :
                 src.Status == PaintingStatus.Delete.ToString() ? "Đã xóa" :

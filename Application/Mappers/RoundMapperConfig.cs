@@ -15,6 +15,7 @@ public partial class MapperConfigs : Profile
         CreateMap<CreateRoundRequest, Round>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => RoundStatus.NotStarted.ToString()))
             .ForPath(dest => dest.Award, opt => opt.MapFrom(src => src.Award))
+            .ForMember(x => x.CreatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForMember(dest => dest.DeadlineSubmissionDate,
                        opt => opt.MapFrom(src => src.EndTime.AddDays(7))) // Tính 7 ngày sau từ EndTime
             .ForMember(dest => dest.ResultAnnouncementDate,
@@ -23,9 +24,11 @@ public partial class MapperConfigs : Profile
 
         CreateMap<RoundRequest, Round>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy))
-            .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy));
+            .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))
+            ;
         CreateMap<RoundUpdateRequest, Round>().ReverseMap()
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))
+            .ForMember(dest => dest.Status, opt => opt.Condition(src => src.Status != null)) // Chỉ ánh xạ nếu Status khác null
             .ForAllMembers(opt =>
             {
                 opt.Condition((src, dest, srcMember) => srcMember != null); // Kiểm tra srcMember không null

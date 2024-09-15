@@ -8,7 +8,7 @@ public class CreateRoundRequest
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public int RoundNumber { get; set; }
-    public Guid? CreatedBy { get; set; }
+    public Guid? CurrentUserId { get; set; }
     public List<Guid>? LevelList { get; set; }
     public List<CreateDependentAwardRequest>? Award { get; set; } = null!;
 }

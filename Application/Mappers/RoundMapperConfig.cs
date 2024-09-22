@@ -26,9 +26,9 @@ public partial class MapperConfigs : Profile
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.CreatedBy))
             .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))
             ;
-        CreateMap<RoundUpdateRequest, Round>().ReverseMap()
-            .ForMember(x => x.CurrentUserId, x => x.MapFrom(x => x.UpdatedBy))
-            .ForMember(dest => dest.Status, opt => opt.Condition(src => src.Status != null)) // Chỉ ánh xạ nếu Status khác null
+        CreateMap<RoundUpdateRequest, Round>()
+            .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest) => src.Status ?? dest.Status))
             .ForAllMembers(opt =>
             {
                 opt.Condition((src, dest, srcMember) => srcMember != null); // Kiểm tra srcMember không null

@@ -40,7 +40,7 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Vòng Chung Kết")
+        if (round!.Name.ToLower() != "Vòng Chung Kết".ToLower())
         {
             if (round.Award.Where(x=>x.Status != AwardStatus.Inactive.ToString()).Count() > 0) throw new Exception("Các vòng khác vòng chung kết chỉ được có 1 giải"); 
         }

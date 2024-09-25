@@ -29,6 +29,8 @@ public partial class MapperConfigs : Profile
         CreateMap<RoundUpdateRequest, Round>()
             .ForMember(x => x.UpdatedBy, x => x.MapFrom(x => x.CurrentUserId))
             .ForMember(dest => dest.Status, opt => opt.MapFrom((src, dest) => src.Status ?? dest.Status))
+            .ForMember(dest => dest.DeadlineSubmissionDate, opt => opt.MapFrom((src, dest) => src.DeadlineSubmissionDate ?? dest.DeadlineSubmissionDate))
+            .ForMember(dest => dest.ResultAnnouncementDate, opt => opt.MapFrom((src, dest) => src.ResultAnnouncementDate ?? dest.ResultAnnouncementDate))
             .ForAllMembers(opt =>
             {
                 opt.Condition((src, dest, srcMember) => srcMember != null); // Kiểm tra srcMember không null

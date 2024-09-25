@@ -365,10 +365,10 @@ public class PaintingService : IPaintingService
         {
             throw new Exception("Không tìm thấy lịch chấm");
         }
-        if (schedule.EndDate.Date == DateTime.Now.Date)
+/*        if (schedule.EndDate.Date == DateTime.Now.Date)
         {
             throw new Exception("Không trong ngày được phép chấm bài");
-        }
+        }*/
 
         var listPainting = await _unitOfWork.PaintingRepo.GetByScheduleIdAsync(scheduleId);
         if (listPainting.Count == 0) throw new Exception("Không tìm thấy bài dự thi nào trong lịch chấm");

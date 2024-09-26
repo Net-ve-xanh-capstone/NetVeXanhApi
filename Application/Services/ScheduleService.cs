@@ -129,89 +129,88 @@ public class ScheduleService : IScheduleService
 
     #region Rating
 
-    public async Task<bool> RatingPainting(RatingSendModel ratingPainting)
+public async Task<bool> RatingPainting(RatingSendModel ratingPainting)
+{
+    var validationResult = await ValidateRatingRequest(ratingPainting);
+    if (!validationResult.IsValid)
+        throw new ValidationException(validationResult.Errors); // Handle validation failure
+
+    var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
+
+    if (schedule!.Status == ScheduleStatus.Done.ToString())
+        throw new Exception("Đã chấm bài");
+
+    foreach (var p in ratingPainting.Paintings)
     {
-        var validationResult = await ValidateRatingRequest(ratingPainting);
-        if (!validationResult.IsValid)
-            // Handle validation failure
-            throw new ValidationException(validationResult.Errors);
+        AwardSchedule? awardSchedule = null; // Khởi tạo awardSchedule bên trong vòng lặp
 
-        //Get schedule 
-        var schedule = await _unitOfWork.ScheduleRepo.GetByIdAsync(ratingPainting.ScheduleId);
-
-        if (schedule!.Status == ScheduleStatus.Done.ToString()) throw new Exception("Đã chấm bài");
-
-        foreach (var p in ratingPainting.Paintings)
+        // Lấy giải thưởng từ lịch giải thưởng nếu có AwardId
+        if (p.AwardId.HasValue)
         {
-            var awardSchedule = new AwardSchedule();
-            //Get Award from Award schedule
-            if (p.AwardId.HasValue)
-            {
-                awardSchedule = schedule.AwardSchedule.FirstOrDefault(a => a.AwardId == p.AwardId);
-                if (awardSchedule == null) throw new Exception($"Không tìm thấy giải thường. Vui lòng thử lại");
-                if (awardSchedule!.Status == AwardScheduleStatus.Done.ToString())
-                    throw new Exception($"Có giải thưởng đã hết");
-            }
-
-
-            //Create var to call all rated painting
-            var painting = schedule.Painting.FirstOrDefault(x => x.Id == p.PaintingId);
-
-            if (painting == null)
-                throw new Exception($"Có bài dự thi không nằm trong lịch chấm");
-
-            if (painting.AwardId.HasValue)
-                if (painting.AwardId != p.AwardId)
-                    if (painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId).Status ==
-                        AwardScheduleStatus.Done.ToString())
-                        painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId).Status =
-                            AwardScheduleStatus.Rating.ToString();
-
-            if (schedule!.Round!.Name!.Contains("Vòng Chung Kết"))
-            {
-                if (p.AwardId != null)
-                {
-                    painting.RatingStatus = PaintingStatus.HasPrizes.ToString();
-                    painting.AwardId = p.AwardId;
-                }
-                else
-                {
-                    painting.RatingStatus = PaintingStatus.FinalRound.ToString();
-                }
-            }
-            else
-            {
-                if (p.AwardId != null)
-                {
-                    painting.RatingStatus = PaintingStatus.Pass.ToString();
-                    painting.AwardId = p.AwardId;
-                }
-                else
-                {
-                    painting.RatingStatus = PaintingStatus.NotPass.ToString();
-                }
-            }
-
-            painting.JudgementReason = p.Reason;
-            painting.FinalDecisionTimestamp = DateTime.Now;
-
-            await _unitOfWork.SaveChangesAsync();
-
-            if (p.AwardId.HasValue)
-            {
-                var paintingAwardCount =
-                    await _unitOfWork.PaintingRepo.CountPaintingHaveAward(ratingPainting.ScheduleId, p.AwardId.Value);
-                if (awardSchedule.Quantity == paintingAwardCount)
-                    awardSchedule.Status = AwardScheduleStatus.Done.ToString();
-            }
-
-            await _unitOfWork.SaveChangesAsync();
+            awardSchedule = schedule.AwardSchedule.FirstOrDefault(a => a.AwardId == p.AwardId);
+            if (awardSchedule == null)
+                throw new Exception("Không tìm thấy giải thưởng. Vui lòng thử lại");
+            if (awardSchedule.Status == AwardScheduleStatus.Done.ToString())
+                throw new Exception("Có giải thưởng đã hết");
         }
 
-        return true;
+        // Tìm bức tranh tương ứng
+        var painting = schedule.Painting.FirstOrDefault(x => x.Id == p.PaintingId);
+        if (painting == null)
+            throw new Exception("Có bài dự thi không nằm trong lịch chấm");
+
+        // Kiểm tra bức tranh đã có giải thưởng hay chưa
+        if (painting.AwardId.HasValue)
+        {
+            // Cập nhật trạng thái giải thưởng nếu cần
+            var currentAwardSchedule = painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId);
+            if (currentAwardSchedule != null && currentAwardSchedule.Status == AwardScheduleStatus.Done.ToString())
+            {
+                currentAwardSchedule.Status = AwardScheduleStatus.Rating.ToString();
+            }
+        }
+
+        // Cập nhật trạng thái chấm theo vòng
+        if (schedule.Round!.Name!.Contains("Vòng Chung Kết"))
+        {
+            painting.RatingStatus = p.AwardId != null ? PaintingStatus.HasPrizes.ToString() : PaintingStatus.FinalRound.ToString();
+            if (p.AwardId != null) painting.AwardId = p.AwardId;
+        }
+        else
+        {
+            painting.RatingStatus = p.AwardId != null ? PaintingStatus.Pass.ToString() : PaintingStatus.NotPass.ToString();
+            if (p.AwardId != null) painting.AwardId = p.AwardId;
+        }
+
+        painting.JudgementReason = p.Reason;
+        painting.FinalDecisionTimestamp = DateTime.Now;
     }
 
-    #endregion
+    await _unitOfWork.SaveChangesAsync(); // Lưu thay đổi sau khi cập nhật tất cả các bức tranh
+
+    // Kiểm tra số lượng giải thưởng và cập nhật trạng thái giải thưởng
+    foreach (var p in ratingPainting.Paintings)
+    {
+        if (p.AwardId.HasValue)
+        {
+            var awardSchedule = schedule.AwardSchedule.FirstOrDefault(a => a.AwardId == p.AwardId);
+            if (awardSchedule != null)
+            {
+                var paintingAwardCount = await _unitOfWork.PaintingRepo.CountPaintingHaveAward(ratingPainting.ScheduleId, p.AwardId.Value);
+                if (awardSchedule.Quantity == paintingAwardCount)
+                {
+                    awardSchedule.Status = AwardScheduleStatus.Done.ToString();
+                }
+            }
+        }
+    }
+
+    await _unitOfWork.SaveChangesAsync(); // Lưu bất kỳ thay đổi nào cho lịch giải thưởng
+
+    return true;
+}
+#endregion
+
 
     #region Create
 

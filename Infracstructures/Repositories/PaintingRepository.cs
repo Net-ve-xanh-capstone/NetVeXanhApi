@@ -156,7 +156,7 @@ public class PaintingRepository : GenericRepository<Painting>, IPaintingReposito
 
         if (!string.IsNullOrEmpty(filterPainting.Status)) query = query.Where(p => p.Status == filterPainting.Status);
 
-        return query.OrderBy(x=>x.CreatedTime).ToList();
+        return query.OrderByDescending(x=>x.SubmittedTimestamp).ToList();
     }
 
 

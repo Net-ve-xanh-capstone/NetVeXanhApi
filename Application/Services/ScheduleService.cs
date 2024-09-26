@@ -167,7 +167,7 @@ public class ScheduleService : IScheduleService
                         painting.Award.AwardSchedule.FirstOrDefault(a => a.AwardId == painting.AwardId).Status =
                             AwardScheduleStatus.Rating.ToString();
 
-            if (schedule!.Round!.Name!.Contains("Vòng Chung Kết"))
+            if (schedule!.Round!.Name!.Contains("Vòng Chung Kết".ToLower()))
             {
                 if (p.AwardId != null)
                 {

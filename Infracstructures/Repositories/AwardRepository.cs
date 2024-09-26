@@ -27,6 +27,7 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
             .Include(x => x.AwardSchedule)
             .Where(x => x.RoundId == roundId
                         && x.Status == AwardStatus.Active.ToString())
+            .AsNoTracking()
             .ToListAsync();
 
         // Lọc AwardSchedule với điều kiện Status là Active

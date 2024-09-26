@@ -35,6 +35,7 @@ public class AwardScheduleRepository : GenericRepository<AwardSchedule>, IAwardS
     {
         return DbSet.Include(asch => asch.Schedule)  // Bao gồm dữ liệu từ bảng Schedule
                    .Where(asch => asch.Schedule.RoundId == roundId && asch.Status != AwardScheduleStatus.Delete.ToString())  // Lọc theo RoundId trong Schedule
+                   .AsNoTracking()
                    .ToList();
     }
 }

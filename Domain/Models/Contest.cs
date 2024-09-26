@@ -13,6 +13,6 @@ public class Contest : BaseModel
 
     //Relation
     public Account Account { get; set; }
-    public ICollection<EducationalLevel> EducationalLevel { get; set; }
-    public ICollection<Resources> Resources { get; set; }
+    public ICollection<EducationalLevel>? EducationalLevel { get; set; }
+    public ICollection<Resources>? Resources { get; set; }
 }

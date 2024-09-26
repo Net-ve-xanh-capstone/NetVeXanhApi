@@ -74,20 +74,26 @@ public class ContestService : IContestService
         contest.Status = ContestStatus.Delete.ToString();
 
         //Resource
-        foreach (var resource in contest.Resources) resource.Status = ResourcesStatus.Inactive.ToString();
+        if (contest.Resources != null)
+        {
+            foreach (var resource in contest.Resources) resource.Status = ResourcesStatus.Inactive.ToString();
+        }
 
         //Level 
-        foreach (var level in contest.EducationalLevel)
+        if (contest.Resources != null)
         {
-            //round
-            foreach (var round in level.Round)
+            foreach (var level in contest.EducationalLevel)
             {
-                round.Status = RoundStatus.Delete.ToString();
-                foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
-                foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
-            }
+                //round
+                foreach (var round in level.Round)
+                {
+                    round.Status = RoundStatus.Delete.ToString();
+                    foreach (var schedule in round.Schedule) schedule.Status = ScheduleStatus.Delete.ToString();
+                    foreach (var award in round.Award) award.Status = AwardStatus.Inactive.ToString();
+                }
 
-            level.Status = EducationalLevelStatus.Delete.ToString();
+                level.Status = EducationalLevelStatus.Delete.ToString();
+            }
         }
 
 

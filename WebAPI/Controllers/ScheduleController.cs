@@ -344,7 +344,7 @@ public class ScheduleController : Controller
 
     #region Get Schedule for examiner by examiner Id
     [Authorize(Roles = "Examiner")]
-    [HttpGet("/examiner/{id}")]
+    [HttpGet("examiner/{id}")]
     public async Task<IActionResult> GetScheduleByExaminerId([FromRoute] Guid id)
     {
         try

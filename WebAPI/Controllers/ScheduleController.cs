@@ -380,7 +380,7 @@ public class ScheduleController : Controller
     /// <param name="rating"></param>
     /// <returns></returns>
     [Authorize(Roles = "Examiner")]
-    [HttpPut("confirmrating/{id}")]
+    [HttpPut("confirm-rating/{id}")]
     public async Task<IActionResult> ConfirmRating(Guid id)
     {
         try

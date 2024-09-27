@@ -64,7 +64,7 @@ public class Authentication : IAuthentication
         var tokenDescription = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(2), 
+            Expires = DateTime.UtcNow.AddHours(5), 
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(secretKryByte), SecurityAlgorithms.HmacSha256)
         };

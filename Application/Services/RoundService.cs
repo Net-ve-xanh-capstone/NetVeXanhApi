@@ -218,10 +218,10 @@ public class RoundService : IRoundService
     {
         var round = await _unitOfWork.RoundRepo.GetRoundDetail(roundId);
 
-        if (round.EndTime.AddDays(5) < DateTime.Now)
+        /*if (round.EndTime.AddDays(5) < DateTime.Now)
         {
             throw new Exception("Công bố kết quả đc thực hiện sau 10 ngày kể từ ngày kêt thúc");
-        }
+        }*/
         
         List<Painting> listPass;
         List<Painting> listNotPass;

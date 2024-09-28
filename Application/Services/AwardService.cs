@@ -85,7 +85,7 @@ public class AwardService : IAwardService
         var result = new ListAwardForCreateSchedule();
         result.paintingForSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(roundId);
 
-                var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+                var list = await _unitOfWork.AwardRepo.GetAwardsByRoundIdForCreateSchedule(roundId);
         foreach (var a in list)
         {
             var count = 0;
@@ -107,7 +107,7 @@ public class AwardService : IAwardService
 
     public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
-        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundIdForCreateSchedule(roundId);
 
         return _mapper.Map<List<AwardViewResponse>>(list);
     }

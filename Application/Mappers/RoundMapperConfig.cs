@@ -62,6 +62,7 @@ public partial class MapperConfigs : Profile
         CreateMap<Round, ListScheduleResponse>()
             .ForMember(des => des.RoundId, src => src.MapFrom(opt => opt.Id))
             .ForMember(des => des.RoundName, src => src.MapFrom(opt => opt.Name))
+            .ForMember(des => des.RoundStatus, src => src.MapFrom(opt => opt.Status))
             .ForMember(des => des.EducationName, src => src.MapFrom(opt => opt.EducationalLevel.Level))
             .ForMember(des => des.Schedules,
                 src => src.MapFrom(opt => opt.Schedule.Where(s => s.Status != ScheduleStatus.Delete.ToString())));

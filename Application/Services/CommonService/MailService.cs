@@ -154,7 +154,8 @@ public class MailService : IMailService
     {
         var template = GetEmailTemplate("SuccessFinalRound.html");
 
-        template = template.Replace("[Tên Thí Sinh]", painting.Account.FullName);
+        template = template.Replace("[Tên thí sinh]", painting.Account.FullName);
+        template = template.Replace("[Tên Giải Thưởng]", painting.Award.Rank);
         template = template.Replace("[Vòng Thi]", round.Name);
         template = template.Replace("[Lý do]", painting.JudgementReason ?? "Tranh của bạn đáp ứng tiêu chí");
         var nextRound = round.EducationalLevel.Round.FirstOrDefault(src => src.RoundNumber == round.RoundNumber + 1);

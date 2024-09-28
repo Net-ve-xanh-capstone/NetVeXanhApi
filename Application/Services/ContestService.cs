@@ -2,9 +2,11 @@
 using Application.IService;
 using Application.IService.ICommonService;
 using Application.SendModels.Contest;
+using Application.Services.CommonService;
 using Application.ViewModels.AccountViewModels;
 using Application.ViewModels.ContestViewModels;
 using AutoMapper;
+using Domain;
 using Domain.Enums;
 using Domain.Models;
 using FluentValidation;
@@ -21,9 +23,10 @@ public class ContestService : IContestService
     private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IValidatorFactory _validatorFactory;
+    private readonly ISortAwardService _sortAwardService;
 
     public ContestService(IUnitOfWork unitOfWork, IMapper mapper, ICurrentTime currentTime,
-        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory)
+        IConfiguration configuration, IClaimsService claimsService, IValidatorFactory validatorFactory, ISortAwardService sortAwardService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -31,6 +34,7 @@ public class ContestService : IContestService
         _configuration = configuration;
         _claimsService = claimsService;
         _validatorFactory = validatorFactory;
+        _sortAwardService = sortAwardService;
     }
 
     #region Create Contest
@@ -128,9 +132,17 @@ public class ContestService : IContestService
     {
         var contest = await _unitOfWork.ContestRepo.GetAllContestInformationAsync(contestId);
         if (contest == null) throw new Exception("Không tìm thấy cuộc thi");
+        foreach (var x in contest.EducationalLevel)
+        {
+            foreach (var y in x.Round)
+            {
+                y.Award = _sortAwardService.SortAwards(y.Award.ToList());
+            }
+        }
         var result = _mapper.Map<ContestDetailResponse>(contest);
         result.PaintingCount = await _unitOfWork.PaintingRepo.PaintingCountByContest(contestId);
         result.CompetitorCount = await _unitOfWork.AccountRepo.CompetitorCountByContest(contestId);
+        
 
         return result;
     }

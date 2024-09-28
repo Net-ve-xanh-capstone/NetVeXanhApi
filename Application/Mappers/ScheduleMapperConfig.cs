@@ -26,6 +26,7 @@ public partial class MapperConfigs : Profile
             .ForMember(x => x.Year, x => x.MapFrom(x => x.EndDate.Year.ToString()))
             .ForPath(x => x.Round, x => x.MapFrom(x => x.Round.Name))
             .ForPath(x => x.ExaminerName, x => x.MapFrom(x => x.Account.FullName))
+            .ForPath(x => x.ContestName, x => x.MapFrom(x => x.Round.EducationalLevel.Contest.Name))
             .ForMember(dest => dest.Awards, opt => opt.MapFrom(src => src.AwardSchedule.Select(sa => sa.Award)));
 
         CreateMap<Schedule, ScheduleRatingResponse>();

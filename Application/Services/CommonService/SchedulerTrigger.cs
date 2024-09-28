@@ -47,7 +47,7 @@ public class SchedulerTrigger : ISchedulerTrigger
             end.ToList().ForEach(src => src.Status = ContestStatus.Complete.ToString());
             end.ToList().ForEach(src =>
                 src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.Complete.ToString()));
-
+            Console.WriteLine("End Contest");
             foreach (var c in end)
             {
                 var paintings = _unitOfWork.ContestRepo.GetPaintingHasPriceOfContest(c.Id).Result.Select(src => src.Id)
@@ -66,6 +66,7 @@ public class SchedulerTrigger : ISchedulerTrigger
         var start = await _unitOfWork.ContestRepo.StartContest();
         if (start.Any())
         {
+            Console.WriteLine("Start Contest");
             start.ToList().ForEach(src => src.Status = ContestStatus.InProcess.ToString());
             end.ToList().ForEach(src =>
                 src.EducationalLevel.ToList().ForEach(ed => ed.Status = EducationalLevelStatus.InProcess.ToString()));

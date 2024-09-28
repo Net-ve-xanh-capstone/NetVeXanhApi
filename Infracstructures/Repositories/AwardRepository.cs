@@ -23,9 +23,40 @@ public class AwardRepository : GenericRepository<Award>, IAwardRepository
 
     public async Task<List<Award>?> GetAwardsByRoundId(Guid roundId)
     {
-        return await DbSet
+        var awards = await DbSet
             .Include(x => x.AwardSchedule)
-            .Where(x => x.RoundId == roundId && x.Status == AwardStatus.Active.ToString())
+            .Where(x => x.RoundId == roundId
+                        && x.Status == AwardStatus.Active.ToString())
+            .AsNoTracking()
             .ToListAsync();
+
+        // Lọc AwardSchedule với điều kiện Status là Active
+        foreach (var award in awards)
+        {
+            award.AwardSchedule = award.AwardSchedule
+                .Where(schedule => schedule.Status == AwardStatus.Active.ToString())
+                .ToList();
+        }
+
+        return awards;
+    }
+
+    public async Task<List<Award>?> GetAwardsByRoundIdForCreateSchedule(Guid roundId)
+    {
+        var awards = await DbSet
+            .Include(x => x.AwardSchedule)
+            .Where(x => x.RoundId == roundId
+                        && x.Status == AwardStatus.Active.ToString())
+            .ToListAsync();
+
+        // Lọc AwardSchedule với điều kiện Status là Active
+        foreach (var award in awards)
+        {
+            award.AwardSchedule = award.AwardSchedule
+                .Where(schedule => schedule.Status == AwardStatus.Active.ToString())
+                .ToList();
+        }
+
+        return awards;
     }
 }

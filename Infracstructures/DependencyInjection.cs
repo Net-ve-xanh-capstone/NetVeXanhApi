@@ -215,7 +215,7 @@ public static class DependencyInjection
 
         services.AddSingleton(new JobSchedule(
             typeof(SchedulerTriggerJob),
-            "0 10 0 * * ?",
+            "0 10 0 * * ?", //s m h 
             vietnamTimeZone
         ));
 

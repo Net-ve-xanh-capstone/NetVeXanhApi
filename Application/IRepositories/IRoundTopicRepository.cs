@@ -9,4 +9,6 @@ public interface IRoundTopicRepository : IGenericRepository<RoundTopic>
     Task<List<Painting>> ListPaintingForFinalRound(Guid roundId, int number);
     Task<Guid?> GetRoundTopicId(Guid roundId, Guid topicId);
     Task<RoundTopic?> GetByRoundIdTopicId(Guid roundId, Guid topicId);
+    Task<List<Painting>> ListPaintingForScheduleQualifyingRound(Guid roundId);
+    Task<List<Painting>> ListPaintingForScheduleFinalRound(Guid roundId);
 }

@@ -99,7 +99,7 @@ public class RoundController : Controller
     #endregion
 
     #region Get Round By Id
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Admin,Staff")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetRoundById([FromRoute] Guid id)
     {
@@ -130,7 +130,7 @@ public class RoundController : Controller
     
     #region Get List Comepetitor
     [Authorize(Roles = "Staff")]
-    [HttpGet("/finalround/{id}")]
+    [HttpGet("finalround/{id}")]
     public async Task<IActionResult> GetListCompetitorFinalRound([FromRoute] Guid id)
     {
         try
@@ -159,7 +159,7 @@ public class RoundController : Controller
     #endregion
 
     #region Update Round
-    [Authorize(Roles = "Staff")]
+    [Authorize(Roles = "Staff,Admin")]
     [HttpPut]
     public async Task<IActionResult> UpdateRound(RoundUpdateRequest updateRound)
     {
@@ -369,9 +369,6 @@ public class RoundController : Controller
     }
 
     #endregion
-    
-    
-
     #region Export
     [Authorize(Roles = "Staff")]
     [HttpGet("export-round-results")]

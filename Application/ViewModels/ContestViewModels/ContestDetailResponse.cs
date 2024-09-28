@@ -77,6 +77,8 @@ public class RoundInLevelViewModel
     public string Location { get; set; }
     public string Description { get; set; }
     public string Status { get; set; }
+    public DateTime DeadlineSubmissionDate { get; set; }
+    public DateTime ResultAnnouncementDate { get; set; }
     public List<AwardInLevelViewModel> Award { get; set; }
     public List<RoundTopicInContestViewModel> RoundTopic { get; set; }
 }

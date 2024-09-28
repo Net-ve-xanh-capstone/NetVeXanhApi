@@ -159,28 +159,28 @@ public class AuthenticationController : ControllerBase
     
     #region ResetPass
     [AllowAnonymous]
-    [HttpPost("/forgot-password")]
+    [HttpPost("forgot-password")]
     [SwaggerOperation(Tags = new[] { "Authentication" })]
-    public async Task<IActionResult> ForgotPassword([FromBody] string email)
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest userName)
     {
-        if (string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(userName.UserName))
         {
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Bắt buộc phải nhập địa chỉ email.",
+                Message = "Bắt buộc phải nhập tên đăng nhập.",
                 Result = false
             });
         }
 
-        var result = await _authenticationService.ForgotPassword(email);
+        var result = await _authenticationService.ForgotPassword(userName.UserName);
     
         if (!result)
         {
             return BadRequest(new BaseFailedResponseModel
             {
                 Status = BadRequest().StatusCode,
-                Message = "Email không tồn tại trong hệ thống",
+                Message = "Tên đăng nhập không tồn tại trong hệ thống",
                 Result = false
             });
         }
@@ -188,7 +188,7 @@ public class AuthenticationController : ControllerBase
         return Ok(new BaseResponseModel
         {
             Status = Ok().StatusCode,
-            Message = "Mật khẩu đã được gửi tới địa chỉ email. Vui lòng check email.",
+            Message = "Mật khẩu đã được gửi tới địa chỉ Email.",
             Result = true
         });
     }

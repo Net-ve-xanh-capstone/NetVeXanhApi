@@ -40,7 +40,7 @@ public class AwardService : IAwardService
     public async Task<bool> AddAward(CreateAwardRequest model)
     {
         var round = await _unitOfWork.RoundRepo.GetByIdAsync(model.RoundId);
-        if (round!.Name != "Vòng Chung Kết")
+        if (round!.Name.ToLower() != "Vòng Chung Kết".ToLower())
         {
             if (round.Award.Where(x=>x.Status != AwardStatus.Inactive.ToString()).Count() > 0) throw new Exception("Các vòng khác vòng chung kết chỉ được có 1 giải"); 
         }
@@ -80,9 +80,12 @@ public class AwardService : IAwardService
 
     #region Get List Award By ContestId
 
-    public async Task<List<AwardViewResponse>?> GetListAwardsByRoundIdForSchedule(Guid roundId)
+    public async Task<ListAwardForCreateSchedule?> GetListAwardsByRoundIdForSchedule(Guid roundId)
     {
-        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        var result = new ListAwardForCreateSchedule();
+        result.paintingForSchedule = await _unitOfWork.PaintingRepo.GetNumPaintingInRoundIsNotHaveSchedule(roundId);
+
+                var list = await _unitOfWork.AwardRepo.GetAwardsByRoundIdForCreateSchedule(roundId);
         foreach (var a in list)
         {
             var count = 0;
@@ -93,7 +96,9 @@ public class AwardService : IAwardService
             a.Quantity = a.Quantity - count;
 
         }
-        return _mapper.Map<List<AwardViewResponse>>(list);
+        result.listAward = _mapper.Map<List<AwardViewResponse>>(list);
+
+        return result;
     }
 
     #endregion
@@ -102,7 +107,7 @@ public class AwardService : IAwardService
 
     public async Task<List<AwardViewResponse>?> GetAwardsByRoundId(Guid roundId)
     {
-        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundId(roundId);
+        var list = await _unitOfWork.AwardRepo.GetAwardsByRoundIdForCreateSchedule(roundId);
 
         return _mapper.Map<List<AwardViewResponse>>(list);
     }

@@ -14,7 +14,7 @@ public class Account : BaseModel
     public string? Password { get; set; }
     public string? Phone { get; set; }
     public string? Code { get; set; }
-    public string? Avatar { get; set; }
+    public string? Avatar { get; set; } = AppConstants.DefaultAvatar;
     public bool Gender { get; set; } = true;
 
     // Other properties and relationships

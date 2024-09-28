@@ -174,7 +174,7 @@ public partial class MapperConfigs : Profile
             .IncludeMembers(s => s.Account)
             .ForPath(dest => dest.Id, opt => opt.MapFrom(src => src.Account.Id))
             .ForMember(dest => dest.RoundName, opt => opt.MapFrom(src => src.RoundTopic.Round.Name))
-            .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award!.Rank ?? "Không có giải thưởng"))
+            .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Award.Rank ?? "Không có giải thưởng"))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForPath(dest => dest.Code, opt => opt.MapFrom(src =>src.Account.Code))
             .ForPath(dest => dest.Gender, opt => opt.MapFrom(src =>

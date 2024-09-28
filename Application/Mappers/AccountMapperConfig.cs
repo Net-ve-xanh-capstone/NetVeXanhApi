@@ -51,21 +51,9 @@ public partial class MapperConfigs : Profile
         CreateMap<Account, CompetitorResponse>()
             .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
             .ForMember(dest => dest.Age, opt => opt.MapFrom(src => CalculateAge(src.Birthday!.Value)))
-            .ForMember(dest => dest.Prize, opt => opt.Ignore())
+            .ForMember(dest => dest.Prize, opt => opt.MapFrom(src => src.Painting.FirstOrDefault().Award.Rank))
             .ForMember(dest => dest.RoundName, opt => opt.Ignore())
-            .ForMember(dest => dest.Status, opt => opt.Ignore())
-            .ForPath(dest => dest.Prize, opt => opt.MapFrom(src =>
-                src.Status == PaintingStatus.Draft.ToString() ? "Bản nháp" :
-                src.Status == PaintingStatus.Submitted.ToString() ? "Đã nộp" :
-                src.Status == PaintingStatus.Delete.ToString() ? "Đã xóa" :
-                src.Status == PaintingStatus.Accepted.ToString() ? "Đã chấp nhận" :
-                src.Status == PaintingStatus.Rejected.ToString() ? "Đã từ chối" :
-                src.Status == PaintingStatus.Pass.ToString() ? "Qua Vòng" :
-                src.Status == PaintingStatus.NotPass.ToString() ? "Không qua vòng" :
-                src.Status == PaintingStatus.FinalRound.ToString() ? "Vòng chung kết" :
-                src.Status == PaintingStatus.HasPrizes.ToString() ? "Có giải thưởng" :
-                "Trạng thái không xác định"
-            ));
+            .ForMember(dest => dest.Status, opt => opt.Ignore());
     }
 
     private int CalculateAge(DateTime birthday)
